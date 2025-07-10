@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use SebastianBergmann\Type\TrueType;
 use Illuminate\Support\Facades\Log;
-
+use PhpZip\ZipFile;
 
 class AutoUpdaterService
 {
@@ -168,6 +168,22 @@ class AutoUpdaterService
         closedir($dir);
     }
 
+    function extractZipFile($zipPath, $extractPath)
+    {
+        try {
+            $zipFile = new ZipFile();
+            $zipFile->openFile($zipPath) // or openFromString($zipContent)
+                ->extractTo($extractPath);
+        } catch (\PhpZip\Exception\ZipException $e) {
+            // Handle error
+            error_log('Zip extraction failed: ' . $e->getMessage());
+        } finally {
+            // Always close the archive to free resources
+            if (isset($zipFile)) {
+                $zipFile->close();
+            }
+        }
+    }
     public function extractZip(string $zipPath): ?string
     {
         $extractPath = base_path('update-temp');
@@ -198,9 +214,23 @@ class AutoUpdaterService
             Log::info("ZipArchive class not available, trying shell unzip...");
         }
 
+        if (!$extracted) {
+            if ($this->extractZipFile($zipPath, $extractPath)) {
+                Log::info("Extracted ZIP using ZipFile to {$extractPath}");
+                $extracted = true;
+            } else {
+                Log::warning("ZipFile could not extract {$zipPath}");
+            }
+        }
+
         // ✅ Fallback to shell unzip if needed
         if (!$extracted) {
-            $this->fallbackShellUnzip( $zipPath,  $extractPath);
+            if ($this->fallbackShellUnzip($zipPath, $extractPath)) {
+                Log::info("Extracted ZIP using ShellUnzip to {$extractPath}");
+                $extracted = true;
+            } else {
+                Log::warning("ShellUnzip could not extract {$zipPath}");
+            }
         }
 
         return $extracted ? $extractPath : null;
