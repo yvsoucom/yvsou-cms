@@ -1,18 +1,19 @@
- 
+
 import './setup-jquery.js';
 
 import 'trumbowyg/dist/trumbowyg.min.js';
 import 'trumbowyg/dist/ui/trumbowyg.min.css';
 import 'trumbowyg/plugins/upload/trumbowyg.upload';
 
-$.trumbowyg.svgPath = '/icons/trumbowyg/icons.svg';
+
+$.trumbowyg.svgPath = window.trumbowygSvgPath; // '/icons/trumbowyg/icons.svg';
 
 let isEditorInitialized = false;
 
 function initEditor() {
     if (isEditorInitialized) return;
     isEditorInitialized = true;
- 
+
     function generateFilePreviewHTML(file) {
         const ext = file.name.split('.').pop().toLowerCase();
         const iconSize = '40px';
@@ -234,6 +235,7 @@ function initEditor() {
 $(document).ready(() => {
     if (typeof window.shouldLoadEditor === 'undefined' || window.shouldLoadEditor) {
         initEditor();
+
         console.log('Editor initialized');
     }
 });

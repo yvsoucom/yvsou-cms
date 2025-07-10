@@ -1,7 +1,7 @@
 {{--
-  @copyright (c) 2025  Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo
-  @author Lican Huang
-  @created 2025-06-26
+@copyright (c) 2025 Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo
+@author Lican Huang
+@created 2025-06-26
 * License: Dual Licensed – GPLv3 or Commercial
 *
 * This program is free software: you can redistribute it and/or modify
@@ -47,7 +47,7 @@
 
       <!-- Content Editor -->
       <div>
-      <label for="editor" class="block text-sm font-medium text-gray-700">{{ __('post.postcontent') }}</label>
+      <label for="ys_editor" class="block text-sm font-medium text-gray-700">{{ __('post.postcontent') }}</label>
       <textarea id="ys_editor" name="content"
         class="mt-1 block w-full h-48 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
         required> {{ old('content', $post_content) }}  </textarea>
@@ -63,7 +63,7 @@
       <div class="flex justify-end">
       <button type="submit"
         class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-        {{ __('post.updatepost') }} 
+        {{ __('post.updatepost') }}
       </button>
       </div>
     </form>
@@ -78,6 +78,9 @@
   @vite('resources/css/editor.css')
 @endpush
 @push('scripts')
-  <script>window.shouldLoadEditor = true;</script>
+  <script>
+    window.trumbowygSvgPath = "{{ app()->isLocal() ? asset('icons/trumbowyg/icons.svg') : Vite::asset('icons/trumbowyg/icons.svg') }}";
+    window.shouldLoadEditor = true;
+  </script>
   @vite('resources/js/editor.js')
 @endpush
