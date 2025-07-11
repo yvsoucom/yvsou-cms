@@ -26,8 +26,9 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+
 use Illuminate\Support\Facades\File;
-use SebastianBergmann\Type\TrueType;
+
 use Illuminate\Support\Facades\Log;
 use PhpZip\ZipFile;
 
@@ -84,6 +85,7 @@ class AutoUpdaterService
         ];
     }
 
+
     public function downloadLatestZip(): ?string
     {
         $release = $this->checkLatestVersion();
@@ -96,29 +98,31 @@ class AutoUpdaterService
             return null;
         }
 
-        // ✅ Find the specific asset
         $asset = collect($release['assets'] ?? [])
             ->firstWhere('name', 'installvendor-' . $release['tag_name'] . '.zip');
 
         if (!$asset) {
-            return null; // Asset not found
-        }
-
-        $zipUrl = $asset['browser_download_url']; // This is the real download link
-        $fileName = 'update-' . $release['tag_name'] . '.zip';
-
-        $zipContent = Http::withHeaders([
-            'Accept' => 'application/vnd.github.v3+json',
-        ])->get($zipUrl);
-
-        if ($zipContent->failed()) {
+            \Log::warning("No matching ZIP asset found for tag {$release['tag_name']}");
             return null;
         }
 
-        Storage::disk('local')->put($fileName, $zipContent->body());
+        $zipUrl = $asset['browser_download_url'];
+        $fileName = 'update-' . $release['tag_name'] . '.zip';
+        $tempPath = storage_path("app/{$fileName}");
 
-        return storage_path("app/{$fileName}");
+        $response = Http::withHeaders([
+            'Accept' => 'application/vnd.github.v3+json',
+        ])->sink($tempPath)->get($zipUrl);
+
+        if ($response->failed()) {
+            \Log::error("Failed to download ZIP from GitHub: {$zipUrl}");
+            return null;
+        }
+
+        return $tempPath;
     }
+
+
 
 
     public function backupCurrentCopy(): ?string

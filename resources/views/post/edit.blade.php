@@ -79,8 +79,9 @@
 @endpush
 @push('scripts')
   <script>
-    window.trumbowygSvgPath = "{{ app()->isLocal() ? asset('icons/trumbowyg/icons.svg') : Vite::asset('icons/trumbowyg/icons.svg') }}";
     window.shouldLoadEditor = true;
+    window.trumbowygSvgPath = "{{asset('build/icons/trumbowyg/icons.svg') }}";
+
   </script>
   @vite('resources/js/editor.js')
 @endpush
