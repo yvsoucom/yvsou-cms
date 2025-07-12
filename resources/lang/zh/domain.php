@@ -59,5 +59,6 @@ return [
   'domaintitle' => '域标题',
   'domaindescription' => '域描述',
   'submit' => '提交',
+  'updatedomaintitledescription' => '编辑域标题与描述',
 ];
 

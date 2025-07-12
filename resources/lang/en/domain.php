@@ -58,6 +58,7 @@ return [
   'domaintitle' => 'Domain Title',
   'domaindescription' => 'Domain Description',
   'submit' => 'Submit',
+  'updatedomaintitledescription'  => 'Edit Domain Titles & Descriptions',
 
 ];
 

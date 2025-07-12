@@ -59,5 +59,7 @@ return [
   'domaintitle' => 'ドメインタイトル',
   'domaindescription' => 'ドメインの説明',
   'submit' => '送信',
+  'updatedomaintitledescription' => 'ドメインのタイトルと説明を編集',
+
 ];
 

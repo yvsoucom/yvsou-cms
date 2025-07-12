@@ -25,7 +25,7 @@
 
 @section('content')
     <div class="container">
-        <h1>Manage Rights for Group: {{ $groupid }}</h1>
+        <h1>{{__('right.editdomainright')}}{{ $groupid }}</h1>
 
         @if (session('success'))
             <div class="bg-green-200 p-2 my-2">{{ session('success') }}</div>
@@ -37,12 +37,12 @@
             <thead>
 
                 <tr>
-                    <th class="text-left px-4 py-2">Role</th>
-                    <th class="text-left px-4 py-2">Write Dir</th>
-                    <th class="text-left px-4 py-2">Read Dir</th>
-                    <th class="text-left px-4 py-2">Add SubDir</th>
-                    <th class="text-left px-4 py-2">Show Dir</th>
-                    <th class="text-left px-4 py-2">Action</th>
+                    <th class="text-left px-4 py-2">{{__('right.Role')}}</th>
+                    <th class="text-left px-4 py-2">{{__('right.writedir')}}</th>
+                    <th class="text-left px-4 py-2">{{__('right.readdir')}}</th>
+                    <th class="text-left px-4 py-2">{{__('right.adddir')}}</th>
+                    <th class="text-left px-4 py-2">{{__('right.showdir')}}</th>
+                    <th class="text-left px-4 py-2">{{__('right.action')}}</th>
                 </tr>
 
             </thead>
@@ -55,7 +55,7 @@
                             <input type="hidden" name="groupid" value="{{ $groupid }}">
                             <input type="hidden" name="role_key" value="{{ $role['key'] }}">
 
-                            <td class="p-2">{{ $role['label'] }}</td>
+                            <td class="p-2">{{__('right.'.$role['label'])}}</td>
 
                             @php
 
@@ -80,7 +80,7 @@
                                 <input type="radio" name="showdir" value="0" {{ ((($value >> 0) & 1) == 0) ? 'checked' : '' }}>No
                             </td>
                             <td class="p-2">
-                                <button type="submit" class="px-3 py-1 bg-blue-500 text-white rounded">Save</button>
+                                <button type="submit" class="px-3 py-1 bg-blue-500 text-white rounded">{{__('right.save')}}</button>
                             </td>
                         </form>
                     </tr>
