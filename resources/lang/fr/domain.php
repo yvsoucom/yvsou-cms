@@ -40,6 +40,7 @@ return [
   'deletedomain' => 'Supprimer le domaine',
 
   'broadcastmsg' => '📢 Diffuser un message de groupe',
+  'sendMessage2Users' => '📩 Envoyer un message aux utilisateurs',
   'approvegroup' => '✅ Approuver le groupe',
   'invitegroup' => '✉️ Inviter dans le groupe',
   'auditcheckgroup' => '✔️ Valider l’audit du groupe',

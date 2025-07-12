@@ -40,6 +40,7 @@ return [
   'deletedomain' => 'ドメインを削除',
 
   'broadcastmsg' => '📢 グループメッセージを一斉送信',
+  'sendMessage2Users' => '📩 ユーザーにメッセージを送信',
   'approvegroup' => '✅ グループを承認',
   'invitegroup' => '✉️ グループに招待',
   'auditcheckgroup' => '✔️ グループ監査承認',

@@ -54,6 +54,10 @@ return [
     'select_lang' => 'Select Language',
     'selectfilefromlib' => 'Select a file from the library',
 
+    'Actions' => 'Actions',
+    'showrights' => 'Show Rights',
+    'showcommentrights' => 'Show Comment Rights',
+
     // Post Fields
     'posttitle' => 'Post Title',
     'postcontent' => 'Post Content',

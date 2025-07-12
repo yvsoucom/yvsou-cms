@@ -23,6 +23,7 @@
 
 use App\Http\Controllers\Admin\PluginController;
 use App\Http\Controllers\Admin\MailSettingsController;
+use App\Http\Controllers\Admin\CastMsgController;
 use App\Http\Controllers\Admin\CustomConfigSettingsController;
 use App\Http\Controllers\ProfileController;
 
@@ -68,6 +69,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
         Route::post('/run', [\App\Http\Controllers\Admin\UpdaterController::class, 'run'])->name('run');
     });
 
+    Route::prefix('castmsg')->name('castmsg.')->group(function () {
+        Route::get('edit', [CastMsgController::class, 'edit'])->name('edit');
+        Route::post('update', [CastMsgController::class, 'update'])->name('update');
+    });
 });
 
 

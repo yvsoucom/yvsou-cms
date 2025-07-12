@@ -29,4 +29,7 @@ return [
     'msg_handled' => 'Handling Type:',
     'msg_from' => 'Publisher',
     'msg_time' => 'Published Time',
+    'msg_castgroupid' => 'Cast Groupid',
+    'newplatformcast' => 'New platform broadcast Message',
+    'savemessage' => 'Save Message',
 ];

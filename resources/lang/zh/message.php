@@ -29,4 +29,7 @@ return [
     'msg_handled' => " 处理类型 ：",
     'msg_from' => "发布者",
     'msg_time' => " 发布时间 ",
+    'msg_castgroupid' => '群组ID',
+    'newplatformcast' => '新建平台广播消息',
+    'savemessage' => '保存消息',
 ];

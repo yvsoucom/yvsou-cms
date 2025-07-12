@@ -54,6 +54,11 @@ return [
     'select_lang' => '言語を選択',
     'selectfilefromlib' => 'ライブラリからファイルを選択',
 
+    'Actions' => 'アクション',
+    'showrights' => '権限を表示',
+    'showcommentrights' => 'コメント権限を表示',
+
+
     // 投稿フィールド
     'posttitle' => '投稿タイトル',
     'postcontent' => '投稿内容',

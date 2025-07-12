@@ -27,8 +27,47 @@
     <div class="px-4 py-6 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
 
+            <!-- 📱 Mobile Cards -->
+            <div class="sm:hidden space-y-4">
+                @foreach ($allMessages as $msg)
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-2">
+                            <div>
+                                <span class="text-xs uppercase text-gray-500">{{ __('message.msg_from') }}</span>
+                                <div class="text-gray-900 dark:text-gray-100 font-medium">
+                                    {{ $msg->from_username ?? __('System') }}
+                                </div>
+                            </div>
 
-            <div class="overflow-x-auto">
+                            <div>
+                                <span class="text-xs uppercase text-gray-500">{{ __('message.msg_content') }}</span>
+                                <div class="text-gray-700 dark:text-gray-200 break-words whitespace-normal">
+                                    {{ $msg->msg_content }}
+                                </div>
+                            </div>
+
+                            @if (isset($msg->to_domainid))
+                                <div>
+                                    <span class="text-xs uppercase text-gray-500">{{ __('message.msg_castgroupid') }}</span>
+                                    <div class="text-gray-700 dark:text-gray-200">
+                                        {{ $msg->to_domainid }}
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div>
+                                <span class="text-xs uppercase text-gray-500">{{ __('message.msg_time') }}</span>
+                                <div class="text-gray-600 dark:text-gray-400">
+                                    {!! ($lastReadTime && $msg->dtime > $lastReadTime)
+                    ? '<span class="text-red-600 dark:text-red-400 font-semibold">' . $msg->dtime . '</span>'
+                    : $msg->dtime !!}
+                                </div>
+                            </div>
+                        </div>
+                @endforeach
+            </div>
+
+            <!-- 🖥️ Desktop Table -->
+            <div class="hidden sm:block overflow-x-auto rounded-lg shadow">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                     <thead class="bg-gray-50 dark:bg-gray-800">
                         <tr>
@@ -47,16 +86,16 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
-                        @foreach ($castMessages as $msg)
+                        @foreach ($allMessages as $msg)
                                         <tr>
                                             <td class="px-4 py-2 text-gray-700 dark:text-gray-200">
                                                 {{ $msg->from_username ?? __('System') }}
                                             </td>
-                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-200">
+                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-200 break-words whitespace-normal max-w-md">
                                                 {{ $msg->msg_content }}
                                             </td>
                                             <td class="px-4 py-2 text-gray-700 dark:text-gray-200">
-
+                                                {{ $msg->to_domainid ?? '' }}
                                             </td>
                                             <td class="px-4 py-2">
                                                 {!! ($lastReadTime && $msg->dtime > $lastReadTime)
@@ -64,54 +103,20 @@
                             : '<span class="text-gray-600 dark:text-gray-400">' . $msg->dtime . '</span>' !!}
                                             </td>
                                         </tr>
-                        @endforeach
-
-                        @foreach ($groupcastMessages as $msg)
-                                        <tr>
-                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-200">
-                                                {{ $msg->from_username ?? __('System') }}
-                                            </td>
-                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-200">
-                                                {{ $msg->msg_content }}
-                                            </td>
-                                            <td class="px-4 py-2 text-gray-700 dark:text-gray-200">
-                                                {{ $msg->to_domainid }}
-                                            </td>
-                                            <td class="px-4 py-2">
-                                                {!! ($lastReadTime && $msg->dtime > $lastReadTime)
-                            ? '<span class="text-red-600 dark:text-red-400 font-semibold">' . $msg->dtime . '</span>'
-                            : '<span class="text-gray-600 dark:text-gray-400">' . $msg->dtime . '</span>' !!}
-                                            </td>
-                                        </tr>
-                        @endforeach
-
-
-                        @foreach ($userMessages as $msg)
-                            <tr>
-                                <td class="px-4 py-2 text-gray-700 dark:text-gray-200">
-                                    {{ $msg->from_username ?? __('System') }}
-                                </td>
-                                <td class="px-4 py-2 text-gray-700 dark:text-gray-200">
-                                    {{ $msg->msg_content }}
-                                </td>
-                                <td class="px-4 py-2 text-gray-700 dark:text-gray-200">
-
-                                </td>
-                                <td class="px-4 py-2 text-gray-600 dark:text-gray-400">
-                                    {{ $msg->dtime }}
-                                </td>
-                            </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
 
+            <!-- Cancel Button -->
             <div class="mt-6">
                 <a href="{{ route('home') }}"
                     class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow-sm transition">
                     {{ __('Cancel') }}
                 </a>
             </div>
+
         </div>
     </div>
+
 @endsection

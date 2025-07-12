@@ -32,4 +32,5 @@ return [
     'custompagesettings'=> 'カスタムページ設定',
     'plugins'           => 'プラグイン',
     'usercenter'        => 'ユーザーセンター',
+    'castmsg' => 'プラットフォーム全体への一斉メッセージ',
 ];

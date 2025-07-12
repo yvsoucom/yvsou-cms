@@ -40,6 +40,7 @@ return [
   'deletedomain' => '永久删除领域',
 
   'broadcastmsg' => '📢 广播领域消息',
+  'sendMessage2Users' => '📩 发送消息给用户',
   'approvegroup' => '✅ 批准小组',
   'invitegroup' => '✉️ 邀请加入小组',
   'auditcheckgroup' => '✔️ 小组审核通过',

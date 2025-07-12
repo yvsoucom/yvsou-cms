@@ -54,6 +54,10 @@ return [
     'select_lang' => '选择语言',
     'selectfilefromlib' => '从文件库中选择文件',
 
+    'Actions' => '操作',
+    'showrights' => '查看权限',
+    'showcommentrights' => '查看评论权限',
+
     // 帖子字段
     'posttitle' => '帖子标题',
     'postcontent' => '帖子内容',

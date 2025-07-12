@@ -29,4 +29,7 @@ return [
     'msg_handled' => "Type de traitement :",
     'msg_from' => "Éditeur",
     'msg_time' => "Heure de publication",
+    'msg_castgroupid' => 'ID de groupe',
+    'newplatformcast' => 'Nouveau message diffusé sur la plateforme',
+    'savemessage' => 'Enregistrer le message',
 ];

@@ -25,7 +25,7 @@
 
 @section('content')
 
-    <div class="text-center mt-12">
+    <div class="text-left mt-12">
         <p class="text-lg text-gray-700">{{ $aboutText }}</p>
     </div>
 

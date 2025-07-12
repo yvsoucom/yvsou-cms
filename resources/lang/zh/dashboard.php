@@ -32,4 +32,5 @@ return [
     'custompagesettings'=> '自定义页面设置',
     'plugins'           => '插件',
     'usercenter'        => '用户中心',
+    'castmsg' => '全平台广播消息',
 ];

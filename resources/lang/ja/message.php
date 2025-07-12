@@ -29,4 +29,7 @@ return [
     'msg_handled' => '処理タイプ：',
     'msg_from' => '発行者',
     'msg_time' => '公開時間',
+    'msg_castgroupid' => 'グループID',
+    'newplatformcast' => '新規プラットフォーム一斉メッセージ',
+    'savemessage' => 'メッセージを保存',
 ];
