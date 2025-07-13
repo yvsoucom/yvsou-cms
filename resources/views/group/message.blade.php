@@ -25,7 +25,7 @@
 
 @section('content')
   <div class="overflow-x-auto">
-    <form method="POST" action="{{route('group.editmessage')}}">
+    <form method="GET" action="{{route('group.editmessage')}}">
     @csrf
     <input type="hidden" name="groupid" value="{{$groupid}}">
     <table class="min-w-full divide-y divide-gray-200 border border-gray-200">
@@ -35,13 +35,13 @@
         <input type="checkbox" id="select-all" class="form-checkbox h-5 w-5 text-blue-600">
         </th>
         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-        User ID
+        {{ __('domain.User ID') }} 
         </th>
         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-        Name
+        {{ __('domain.Name') }} 
         </th>
         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-        Email
+       {{ __('domain.Email') }}
         </th>
       </tr>
       </thead>
@@ -64,7 +64,7 @@
 
     <div class="mt-4">
       <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
-      Submit Selected
+      {{ __('domain.Submit Selected') }} 
       </button>
     </div>
     </form>

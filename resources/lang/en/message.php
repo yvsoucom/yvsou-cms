@@ -28,5 +28,14 @@ return [
     'msg_content' => 'Message Content',
     'msg_handled' => 'Handling Type:',
     'msg_from' => 'Publisher',
-    'msg_time' => 'Published Time',
+    'msg_time' => 'Published Time', 
+    'msg_castgroupid' => 'Cast Groupid',
+    'newplatformcast' => 'New platform broadcast Message',
+    'savemessage' => 'Save Message',
+
+    'Message to users'  => 'Message to users',
+    'Send Message' => 'Send Message' ,
+    'New group broadcast Message'  => 'New group broadcast Message' ,
+    'New Message to users'  => 'New Message to users',
+ 
 ];

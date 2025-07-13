@@ -58,5 +58,15 @@ return [
   'domaintitle' => 'ドメインタイトル',
   'domaindescription' => 'ドメインの説明',
   'submit' => '送信',
+<<<<<<< HEAD
+=======
+  'updatedomaintitledescription' => 'ドメインのタイトルと説明を編集',
+
+  'User ID' => 'ユーザーID',
+  'Name' => '名前',
+  'Email' => 'メールアドレス',
+  'Submit Selected' => '選択項目を送信',
+  'New Message to users' => '新しいユーザー向けメッセージ',
+>>>>>>> 76ee78d (translation, post action  update)
 ];
 

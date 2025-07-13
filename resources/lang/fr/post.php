@@ -68,4 +68,6 @@ return [
     'submitreply' => 'Envoyer la réponse',
     'Login' => 'Connexion',
 
+    'Create New Post' => 'Créer un nouveau post',
+
 ];

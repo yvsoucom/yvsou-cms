@@ -135,6 +135,14 @@ class User extends Authenticatable implements MustVerifyEmail
 			->where('id', $pid)
 			->exists();
 	}
+
+	public function canManagePaper($pid )
+	{
+		if (ConstantService::$adminHasAllRights)
+			if ($this->isAdmin())
+				return true;
+		return $this->isPaperOwner($pid);
+	}
 	public function isGrantUser($groupId)
 	{
 

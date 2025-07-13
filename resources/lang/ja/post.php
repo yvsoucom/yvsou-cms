@@ -68,4 +68,6 @@ return [
     'submitreply' => '返信を送信',
     'Login' => 'ログイン',
 
+    'Create New Post' => '新しい投稿を作成',
+
 ];
