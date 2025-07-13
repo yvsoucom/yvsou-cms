@@ -32,4 +32,9 @@ return [
     'msg_castgroupid' => 'Cast Groupid',
     'newplatformcast' => 'New platform broadcast Message',
     'savemessage' => 'Save Message',
+
+    'Message to users'  => 'Message to users',
+    'Send Message' => 'Send Message' ,
+    'New group broadcast Message'  => 'New group broadcast Message' ,
+    'New Message to users'  => 'New Message to users',
 ];

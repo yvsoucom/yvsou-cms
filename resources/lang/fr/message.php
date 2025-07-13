@@ -32,4 +32,9 @@ return [
     'msg_castgroupid' => 'ID de groupe',
     'newplatformcast' => 'Nouveau message diffusé sur la plateforme',
     'savemessage' => 'Enregistrer le message',
+
+    'Message to users' => 'Message aux utilisateurs',
+    'Send Message' => 'Envoyer le message',
+    'New group broadcast Message' => 'Nouveau message de diffusion de groupe',
+
 ];

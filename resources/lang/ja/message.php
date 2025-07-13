@@ -32,4 +32,9 @@ return [
     'msg_castgroupid' => 'グループID',
     'newplatformcast' => '新規プラットフォーム一斉メッセージ',
     'savemessage' => 'メッセージを保存',
+
+    'Message to users' => 'ユーザーへのメッセージ',
+    'Send Message' => 'メッセージを送信',
+    'New group broadcast Message' => '新しいグループ一斉送信メッセージ',
+
 ];

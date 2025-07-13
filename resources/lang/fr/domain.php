@@ -60,5 +60,11 @@ return [
   'domaindescription' => 'Description du domaine',
   'submit' => 'Soumettre',
   'updatedomaintitledescription' => 'Modifier les titres et descriptions du domaine',
+
+  'User ID' => 'ID utilisateur',
+  'Name' => 'Nom',
+  'Email' => 'E-mail',
+  'Submit Selected' => 'Soumettre la sélection',
+  'New Message to users' => 'Nouveau message aux utilisateurs',
 ];
 

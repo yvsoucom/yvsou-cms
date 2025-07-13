@@ -291,7 +291,7 @@ class PostController extends Controller
 
         }
 
-        return view('post.index', compact('pid', 'groupid', 'post_title', 'content', 'author_by', 'domain_links', 'comments'));
+        return view('post.index', compact('post','pid', 'groupid', 'post_title', 'content', 'author_by', 'domain_links', 'comments'));
     }
 
     public function postview($groupid, $srec = 0)
@@ -713,8 +713,6 @@ class PostController extends Controller
             ->exists();
 
         if (!$exists) {
-            // No active (non-trash) record exists
-
             DB::table('domain_posts')
                 ->where('id', $pid)
                 ->update(['post_status' => 2]);
@@ -738,8 +736,7 @@ class PostController extends Controller
             ->exists();
 
         if ($exists) {
-            // No active (non-trash) record exists
-
+    
             DB::table('domain_posts')
                 ->where('id', $pid)
                 ->update(['post_status' => 0]);
@@ -768,7 +765,7 @@ class PostController extends Controller
         }
 
 
-        return redirect()->route('post.index', compact('groupid', 'pid'));
+        return redirect()->route('home');
     }
 
 

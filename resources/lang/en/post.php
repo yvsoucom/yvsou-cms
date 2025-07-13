@@ -64,7 +64,7 @@ return [
     'updatepost' => 'Update Post',
     'publish' => 'Publish',
     'close' => 'Close',
-    
+
     //comments
     'plslogin' => 'Please login to reply.',
     'Reply' => 'Reply',
@@ -72,5 +72,6 @@ return [
     'submitreply' => 'Submit Reply',
     'Login' => 'Login',
 
-
+    'Create New Post' => 'Create New Post',
+     
 ];

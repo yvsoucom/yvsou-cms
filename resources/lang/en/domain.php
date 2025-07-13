@@ -60,5 +60,10 @@ return [
   'submit' => 'Submit',
   'updatedomaintitledescription'  => 'Edit Domain Titles & Descriptions',
 
+  'User ID' => 'User ID',
+  'Name' => 'Name',
+  'Email' => 'Email',
+  'Submit Selected' => 'Submit Selected',
+  
 ];
 

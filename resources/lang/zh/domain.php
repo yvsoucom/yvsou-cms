@@ -31,7 +31,7 @@ return [
   'createsub' => '创建子目录',
   'editdomain' => '编辑领域目录',
   'editrights' => '编辑权限',
-  'auditcheck' => '审核通过',
+  'auditcheck' => '审核',
   'audituncheck' => '取消审核',
   'comfirmtrash' => '您确定要将此领域移入回收站吗？',
   'trashdomain' => '移入回收站',
@@ -43,7 +43,7 @@ return [
   'sendMessage2Users' => '📩 发送消息给用户',
   'approvegroup' => '✅ 批准小组',
   'invitegroup' => '✉️ 邀请加入小组',
-  'auditcheckgroup' => '✔️ 小组审核通过',
+  'auditcheckgroup' => '✔️ 小组审核',
   'audituncheckgroup' => '❌ 小组取消审核',
   'groupstatus' => '小组状态',
   'joined' => '已加入',
@@ -60,5 +60,10 @@ return [
   'domaindescription' => '域描述',
   'submit' => '提交',
   'updatedomaintitledescription' => '编辑域标题与描述',
+
+  'User ID' => '用户ID',
+  'Name' => '姓名',
+  'Email' => '邮箱',
+  'Submit Selected' => '提交所选',
 ];
 

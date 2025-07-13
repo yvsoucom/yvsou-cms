@@ -32,4 +32,9 @@ return [
     'msg_castgroupid' => '群组ID',
     'newplatformcast' => '新建平台广播消息',
     'savemessage' => '保存消息',
+
+    'Message to users' => '发送给用户的消息',
+    'Send Message' => '发送消息',
+    'New group broadcast Message' => '新建群组广播消息',
+    'New Message to users' => '新建发送给用户的消息',
 ];
