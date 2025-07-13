@@ -58,5 +58,10 @@ return [
   'domaindescription' => 'Domain Description',
   'submit' => 'Submit',
 
+  'User ID' => 'User ID',
+  'Name' => 'Name',
+  'Email' => 'Email',
+  'Submit Selected' => 'Submit Selected',
+  
 ];
 

@@ -35,7 +35,7 @@ return [
     'move2group' => '📂 移动到分组',
     'copy2group' => '📄 复制到分组',
     'movelang' => '🌐 语言迁移',
-    'auditcheck' => '✅ 审核通过',
+    'auditcheck' => '✅ 审核',
     'uncheck' => '🚫 撤销审核',
     'trash' => '🗑️ 移入回收站',
     'deletepermanent' => '❌ 永久删除',
@@ -67,5 +67,7 @@ return [
     'yourreply' => '你的回复...',
     'submitreply' => '提交回复',
     'Login' => '登录',
+
+    'Create New Post' => '创建新帖子',
 
 ];

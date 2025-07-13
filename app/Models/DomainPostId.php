@@ -47,11 +47,11 @@ use Illuminate\Database\Eloquent\Model;
 class DomainPostId extends Model
 {
 	protected $table = 'domain_post_ids';
-	 
+
 	protected $primaryKey = 'id';
 	public $incrementing = true;
 	public $timestamps = false;
- 
+
 
 	protected $casts = [
 		'postid' => 'int',
@@ -69,4 +69,12 @@ class DomainPostId extends Model
 		'gDate',
 		'isTrash'
 	];
+
+	public static function isTrashedFor($postid, $groupid)
+	{
+		return self::where('postid', $postid)
+			->where('groupid', $groupid)
+			->value('isTrash') ?? false;
+	}
+
 }
