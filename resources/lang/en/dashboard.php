@@ -32,5 +32,6 @@ return [
     'custompagesettings' => 'Custom Page Settings',
     'plugins' => 'Plugins',
     'usercenter' => 'User center',
+    'castmsg' => 'Whole Platform Cast Message',
 
 ];

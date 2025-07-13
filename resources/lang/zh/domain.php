@@ -40,6 +40,7 @@ return [
   'deletedomain' => '永久删除领域',
 
   'broadcastmsg' => '📢 广播领域消息',
+  'sendMessage2Users' => '📩 发送消息给用户',
   'approvegroup' => '✅ 批准小组',
   'invitegroup' => '✉️ 邀请加入小组',
   'auditcheckgroup' => '✔️ 小组审核',
@@ -59,13 +60,17 @@ return [
   'domaindescription' => '域描述',
   'submit' => '提交',
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> dev
   'updatedomaintitledescription' => '编辑域标题与描述',
 
   'User ID' => '用户ID',
   'Name' => '姓名',
   'Email' => '邮箱',
   'Submit Selected' => '提交所选',
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -76,5 +81,7 @@ return [
 =======
 >>>>>>> 48305c325ff70bc4af5a3119cf26f84c4cc4a393
 >>>>>>> 76ee78d (translation, post action  update)
+=======
+>>>>>>> dev
 ];
 

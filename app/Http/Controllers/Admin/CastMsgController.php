@@ -1,0 +1,63 @@
+<?php
+/**
+  @copyright (c) 2025  Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo
+  @author Lican Huang
+  @created 2025-07-12
+* License: Dual Licensed – GPLv3 or Commercial
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* As an alternative to GPLv3, commercial licensing is available for organizations
+* or individuals requiring proprietary usage, private modifications, or support.
+*
+* Contact: yvsoucom@gmail.com
+* GPL License: https://www.gnu.org/licenses/gpl-3.0.html
+*/
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\DomainMsgCast;
+use Illuminate\Http\Request;
+use App\Services\LocaleService;
+
+class CastMsgController extends Controller
+{
+
+    public function edit()
+    {
+        return view('admin.castmsg.edit');
+    }
+    public function update(Request $request)
+    {
+
+        $validated = $request->validate([
+
+            'message' => 'required',
+
+        ]);
+
+        $msg = $validated['message'];
+        $lang = (new LocaleService())->getcurlang();
+
+
+        DomainMsgCast::create([
+            'msg_content' => $msg,
+            'lang' => $lang,
+            'cast_type' => 0,
+            'dtime' => now(),
+        ]);
+
+        return redirect()->route('home')
+            ->with('message', 'Broadcast message sent!');
+
+    }
+}

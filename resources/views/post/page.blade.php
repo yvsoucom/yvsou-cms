@@ -40,6 +40,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 48305c3 (translation)
 =======
@@ -57,6 +58,9 @@
 >>>>>>> 48305c3 (translation)
 =======
 >>>>>>> 48305c325ff70bc4af5a3119cf26f84c4cc4a393
+=======
+                            {{ __('post.Actions') }}
+>>>>>>> dev
                             <svg class="w-4 h-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd"
                                     d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.25 8.27a.75.75 0 01-.02-1.06z"

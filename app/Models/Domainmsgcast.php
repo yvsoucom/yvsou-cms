@@ -35,8 +35,8 @@ use Illuminate\Database\Eloquent\Model;
  * Class DomainMsgCast
  * 
  * @property int $msgid
- * @property string $msgcontent
- * @property int $msghandled
+ * @property string $msg_content
+ * @property int $msg_handled
  * @property int $lang
  * @property Carbon $dtime
  *
@@ -49,14 +49,14 @@ class DomainMsgCast extends Model
 	public $timestamps = false;
 
 	protected $casts = [
-		'msghandled' => 'int',
+		'msg_handled' => 'int',
 		'lang' => 'int',
 		'dtime' => 'datetime'
 	];
 
 	protected $fillable = [
-		'msgcontent',
-		'msghandled',
+		'msg_content',
+		'msg_handled',
 		'lang',
 		'dtime'
 	];

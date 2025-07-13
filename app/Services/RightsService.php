@@ -209,15 +209,14 @@ class RightsService
      */
     public function checkCommentRightPermission(int $postId, string $groupId, string $type): bool
     {
-        return true; // debug
-        /*
+         
         $post = DomainPost::find($postId);
 
         if (!$post) {
             return false;
         }
 
-        $rights = trim($post->commentrights);
+        $rights = trim($post->comment_rights);
 
         if (!$rights || strlen($rights) < 5) {
             return false;
@@ -247,7 +246,7 @@ class RightsService
         }
 
         return false;
-        */
+        
     }
 
 
@@ -274,7 +273,7 @@ class RightsService
 
     public function fileAccess(string $groupid, string $pid): string
     {
-        $accesspermition = (new RightsService())->checkFileAccess($groupid, $pid);
+        $accesspermition = $this->checkFileAccess($groupid, $pid);
         //    logger("accesspermition ", [$accesspermition]);
 
         if ($accesspermition === false) {
@@ -342,11 +341,11 @@ class RightsService
         }
         //   logger("user ", [$user]);
 
-        $isReadfile = (new RightsService())->check_filerightpermision($pid, $groupid, 'READ');
+        $isReadfile = $this->check_filerightpermision($pid, $groupid, 'READ');
         //   logger("isReadfile", [$isReadfile]);
         if (!$isReadfile)
             return false;
-        $isReaddir = (new RightsService())->checkRightPermission($groupid, 'READDIR');
+        $isReaddir = $this->checkRightPermission($groupid, 'READDIR');
         //  logger("isReaddir", [$isReaddir]);
         if (!$isReaddir)
             return false;

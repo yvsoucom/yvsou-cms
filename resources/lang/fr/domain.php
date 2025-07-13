@@ -40,6 +40,7 @@ return [
   'deletedomain' => 'Supprimer le domaine',
 
   'broadcastmsg' => '📢 Diffuser un message de groupe',
+  'sendMessage2Users' => '📩 Envoyer un message aux utilisateurs',
   'approvegroup' => '✅ Approuver le groupe',
   'invitegroup' => '✉️ Inviter dans le groupe',
   'auditcheckgroup' => '✔️ Valider l’audit du groupe',
@@ -59,7 +60,10 @@ return [
   'domaindescription' => 'Description du domaine',
   'submit' => 'Soumettre',
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> dev
   'updatedomaintitledescription' => 'Modifier les titres et descriptions du domaine',
 
   'User ID' => 'ID utilisateur',
@@ -70,6 +74,7 @@ return [
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 76ee78d (translation, post action  update)
 =======
 =======
@@ -77,5 +82,7 @@ return [
 =======
 >>>>>>> 48305c325ff70bc4af5a3119cf26f84c4cc4a393
 >>>>>>> 76ee78d (translation, post action  update)
+=======
+>>>>>>> dev
 ];
 

@@ -54,6 +54,10 @@ return [
     'select_lang' => 'Choisir la langue',
     'selectfilefromlib' => 'Sélectionner un fichier depuis la bibliothèque',
 
+    'Actions' => 'Actions',
+    'showrights' => 'Afficher les droits',
+    'showcommentrights' => 'Afficher les droits de commentaire',
+
     // Champs du post
     'posttitle' => 'Titre du post',
     'postcontent' => 'Contenu du post',

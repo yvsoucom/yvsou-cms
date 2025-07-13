@@ -26,7 +26,7 @@
 
 @section('content')
     <div class="container">
-        <h1>Manage Rights for Comment: {{ $post->id }} in Group {{ $groupid }}</h1>
+        <h1>{{__('right.Manage Rights for Comment')}} : {{ $post->id }} {{__('right.in Group')}} {{ $groupid }}</h1>
 
         @if (session('success'))
             <div class="bg-green-200 p-2 my-2">{{ session('success') }}</div>
@@ -38,12 +38,14 @@
             <thead>
 
                 <tr>
-                    <th class="text-left px-4 py-2">Role</th>
-                    <th class="text-left px-4 py-2">Audit</th>
-                    <th class="text-left px-4 py-2">Read</th>
-                    <th class="text-left px-4 py-2">Write</th>
-                    <th class="text-left px-4 py-2">Execute</th>
-                    <th class="text-left px-4 py-2">Action</th>
+
+                    <th class="text-left px-4 py-2">{{__('right.Role')}}</th>
+                    <th class="text-left px-4 py-2">{{__('right.Audit')}}</th>
+                    <th class="text-left px-4 py-2">{{__('right.Read')}}</th>
+                    <th class="text-left px-4 py-2">{{__('right.Write')}}</th>
+                    <th class="text-left px-4 py-2">{{__('right.Execute')}}</th>
+                    <th class="text-left px-4 py-2">{{__('right.action')}}</th>
+
                 </tr>
 
             </thead>
@@ -58,7 +60,7 @@
                             <input type="hidden" name="role_key" value="{{ $role['key'] }}">
                             <input type="hidden" name="charorder" value="{{ $role['index'] }}">
 
-                            <td class="p-2">{{ $role['label'] }}</td>
+                            <td class="p-2">{{__('right.'.$role['label'])}}</td>
 
                             @php
 
@@ -83,7 +85,7 @@
                                 <input type="radio" name="mexecute" value="0" {{ ((($value >> 0) & 1) == 0) ? 'checked' : '' }}>No
                             </td>
                             <td class="p-2">
-                                <button type="submit" class="px-3 py-1 bg-blue-500 text-white rounded">Save</button>
+                                <button type="submit" class="px-3 py-1 bg-blue-500 text-white rounded">{{__('right.save')}}</button>
                             </td>
                         </form>
                     </tr>

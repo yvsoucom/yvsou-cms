@@ -39,6 +39,7 @@ return [
   'deletedomain' => 'Delete Domain',
 
   'broadcastmsg' => '📢 Broadcast Group Message',
+  'sendMessage2Users' => '📩 Send Message to Users',
   'approvegroup' => '✅ Approve Group',
   'invitegroup' => '✉️ Invite Group',
   'auditcheckgroup' => '✔️ Audit Check Group',
@@ -57,6 +58,7 @@ return [
   'domaintitle' => 'Domain Title',
   'domaindescription' => 'Domain Description',
   'submit' => 'Submit',
+  'updatedomaintitledescription'  => 'Edit Domain Titles & Descriptions',
 
   'User ID' => 'User ID',
   'Name' => 'Name',

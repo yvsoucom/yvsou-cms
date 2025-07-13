@@ -28,7 +28,11 @@ return [
     'msg_content' => 'Message Content',
     'msg_handled' => 'Handling Type:',
     'msg_from' => 'Publisher',
+<<<<<<< HEAD
     'msg_time' => 'Published Time', 
+=======
+    'msg_time' => 'Published Time',
+>>>>>>> dev
     'msg_castgroupid' => 'Cast Groupid',
     'newplatformcast' => 'New platform broadcast Message',
     'savemessage' => 'Save Message',
@@ -37,6 +41,7 @@ return [
     'Send Message' => 'Send Message' ,
     'New group broadcast Message'  => 'New group broadcast Message' ,
     'New Message to users'  => 'New Message to users',
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -49,4 +54,6 @@ return [
 =======
  
 >>>>>>> 48305c325ff70bc4af5a3119cf26f84c4cc4a393
+=======
+>>>>>>> dev
 ];

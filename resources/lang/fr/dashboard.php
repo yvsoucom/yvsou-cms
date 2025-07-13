@@ -28,8 +28,11 @@ return [
     'stats' => 'Voici vos dernières statistiques :',
     'logout' => 'Se déconnecter',
 
-    'mailsettings'      => 'Paramètres de messagerie',
-    'custompagesettings'=> 'Paramètres des pages personnalisées',
-    'plugins'           => 'Extensions',
-    'usercenter'        => 'Centre utilisateur',
+    'mailsettings' => 'Paramètres de messagerie',
+    'custompagesettings' => 'Paramètres des pages personnalisées',
+    'plugins' => 'Extensions',
+    'usercenter' => 'Centre utilisateur',
+    'castmsg' => 'Diffuser un message sur toute la plateforme',
+
+
 ];

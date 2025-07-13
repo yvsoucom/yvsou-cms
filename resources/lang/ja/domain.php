@@ -40,6 +40,7 @@ return [
   'deletedomain' => 'ドメインを削除',
 
   'broadcastmsg' => '📢 グループメッセージを一斉送信',
+  'sendMessage2Users' => '📩 ユーザーにメッセージを送信',
   'approvegroup' => '✅ グループを承認',
   'invitegroup' => '✉️ グループに招待',
   'auditcheckgroup' => '✔️ グループ監査承認',
@@ -59,7 +60,10 @@ return [
   'domaindescription' => 'ドメインの説明',
   'submit' => '送信',
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> dev
   'updatedomaintitledescription' => 'ドメインのタイトルと説明を編集',
 
   'User ID' => 'ユーザーID',
@@ -70,6 +74,7 @@ return [
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 76ee78d (translation, post action  update)
 =======
 =======
@@ -77,5 +82,7 @@ return [
 =======
 >>>>>>> 48305c325ff70bc4af5a3119cf26f84c4cc4a393
 >>>>>>> 76ee78d (translation, post action  update)
+=======
+>>>>>>> dev
 ];
 

@@ -42,6 +42,9 @@
                     <a href="{{ route('admin.setcustomconfig.edit') }}" class="block text-gray-800 hover:font-semibold">
                         {{ __('dashboard.custompagesettings') }}
                     </a>
+                     <a href="{{ route('admin.castmsg.edit') }}" class="block text-gray-800 hover:font-semibold">
+                        {{ __('dashboard.castmsg') }}
+                    </a>
                 @endcan
             </nav>
         </div>
