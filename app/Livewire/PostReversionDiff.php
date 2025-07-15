@@ -21,54 +21,150 @@
  * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
  */
 
-
 namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\PostReversion;
-use Jfcherng\Diff\DiffHelper;
 use App\Services\ReversionService;
 
 class PostReversionDiff extends Component
 {
     public $reversionId;
     public $reversion;
-    public $baseContent;
     public $diffHtml;
- 
-    function styleHtmlDiff(string $html): string
-    {
-        return str_replace(
-            ['<ins>', '<del>'],
-            [
-                '<ins class="bg-green-100 text-green-800 no-underline transition hover:bg-green-200 hover:text-green-900">',
-                '<del class="bg-red-100 text-red-800 line-through transition hover:bg-red-200 hover:text-red-900">'
-            ],
-            $html
-        );
-    }
+
     public function mount($reversionId)
     {
         $this->reversionId = $reversionId;
         $this->reversion = PostReversion::findOrFail($reversionId);
-        if ($this->reversion->version <= 0) {
-            $old = (new ReversionService())->reconstructHtmlPostVersion($this->reversion->postid, 0);
-            $new = (new ReversionService())->reconstructHtmlPostVersion($this->reversion->postid, 0);
-            $old = html_entity_decode($old, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $new = html_entity_decode($new, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $this->diffHtml = DiffHelper::calculate($old, $new, 'SideBySide', ['context' => 3]);
 
-        } else {
-            $old = (new ReversionService())->reconstructHtmlPostVersion($this->reversion->postid, $this->reversion->version - 1);
-            $new = (new ReversionService())->reconstructHtmlPostVersion($this->reversion->postid, $this->reversion->version);
-            $old = html_entity_decode($old, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $new = html_entity_decode($new, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $this->diffHtml = DiffHelper::calculate($old, $new, 'SideBySide', ['context' => 3]);
+        $service = new ReversionService();
 
-        }
-        //   $this->diffHtml = $this->styleHtmlDiff($this->diffHtml);
+        $oldContent = $service->reconstructHtmlPostVersion(
+            $this->reversion->postid,
+            max(0, $this->reversion->version - 1)
+        );
 
+        $newContent = $service->reconstructHtmlPostVersion(
+            $this->reversion->postid,
+            $this->reversion->version
+        );
+
+        $diffData = $service->compare($oldContent, $newContent);
+
+        $this->diffHtml = $this->generateDiffHtml($oldContent, $diffData);
     }
+
+    private function generateDiffHtml(string $oldContent, array $diffData): string
+    {
+        $oldLines = preg_split('/\R/u', $oldContent);
+        $htmlLines = [];
+
+        // Index modifications by line number
+        $modByLine = collect($diffData['modifications'] ?? [])->keyBy('line');
+
+        // Prepare deletions and insertions grouped by start_line for quick lookup
+        $deletions = collect($diffData['deletions'] ?? [])->groupBy('start_line');
+        $insertions = collect($diffData['insertions'] ?? [])->groupBy('start_line');
+
+        $totalLines = count($oldLines);
+
+        for ($i = 0; $i <= $totalLines; $i++) {
+            $lineNum = $i + 1;
+
+            // Insertions before the first line or between lines (start_line means insert before that line)
+            if ($insertions->has($lineNum)) {
+                foreach ($insertions[$lineNum] as $ins) {
+                    foreach ($ins['lines'] as $insLine) {
+                        $htmlLines[] = '<div class="bg-green-100 text-green-700">+ ' . e($insLine) . '</div>';
+                    }
+                }
+            }
+
+            if ($i === $totalLines) {
+                // We are past the last old line, no more lines to process
+                break;
+            }
+
+            // Deleted lines: check if this line is fully deleted
+            if ($deletions->has($lineNum)) {
+                // One or more deleted chunks start here, show each chunk's deleted lines
+                foreach ($deletions[$lineNum] as $del) {
+                    foreach ($del['lines'] as $delLine) {
+                        $htmlLines[] = '<del class="bg-red-100 text-red-700 block">- ' . e($delLine) . '</del>';
+                    }
+                }
+                // Skip rendering the current old line as it is deleted
+                continue;
+            }
+
+            // If not deleted, check for modification char-level highlighting
+            if ($modByLine->has($lineNum)) {
+                $charDiff = $modByLine[$lineNum]['char_diff'];
+                $htmlLines[] = $this->highlightCharDiff($oldLines[$i], $charDiff);
+            } else {
+                // Normal line, no change
+                $htmlLines[] = '<div>' . e($oldLines[$i]) . '</div>';
+            }
+        }
+
+        return '<div class="diff-container space-y-1">' . implode("\n", $htmlLines) . '</div>';
+    }
+
+    private function highlightCharDiff(string $line, array $charDiff): string
+    {
+        $result = '';
+        $pos = 0;
+        $len = mb_strlen($line);
+
+        $deletions = $charDiff['deletions'] ?? [];
+        $insertions = $charDiff['insertions'] ?? [];
+
+        usort($deletions, fn($a, $b) => $a['start_pos'] <=> $b['start_pos']);
+        usort($insertions, fn($a, $b) => $a['start_pos'] <=> $b['start_pos']);
+
+        $delIdx = 0;
+        $insIdx = 0;
+
+        while ($pos < $len) {
+            while ($insIdx < count($insertions) && $insertions[$insIdx]['start_pos'] - 1 == $pos) {
+                $result .= '<span class="bg-green-100 text-green-700">+ ' . e($insertions[$insIdx]['content']) . '</span>';
+                $insIdx++;
+            }
+
+            if ($delIdx < count($deletions)) {
+                $del = $deletions[$delIdx];
+                $delStart = max($del['start_pos'] - 1, 0);
+                $delEnd = max($del['end_pos'] - 1, 0);
+
+                if ($pos < $delStart) {
+                    $result .= e(mb_substr($line, $pos, $delStart - $pos));
+                    $pos = $delStart;
+                }
+
+                if ($pos >= $delStart && $pos <= $delEnd) {
+                    $deletedText = mb_substr($line, $delStart, $delEnd - $delStart + 1);
+                    $result .= '<del class="bg-red-100 text-red-700">- ' . e($deletedText) . '</del>';
+                    $pos = $delEnd + 1;
+                    $delIdx++;
+                    continue;
+                }
+            }
+
+            if ($pos < $len) {
+                $result .= e(mb_substr($line, $pos, 1));
+                $pos++;
+            }
+        }
+
+        while ($insIdx < count($insertions) && $insertions[$insIdx]['start_pos'] - 1 == $len) {
+            $result .= '<span class="bg-green-100 text-green-700">+ ' . e($insertions[$insIdx]['content']) . '</span>';
+            $insIdx++;
+        }
+
+        return '<div>' . $result . '</div>';
+    }
+
 
     public function render()
     {

@@ -1,5 +1,5 @@
--- SQL Version: sql-v1.0.1
--- Generated on: Wed Jul  9 22:46:49 UTC 2025-- MySQL dump 10.13  Distrib 8.4.5, for macos15.2 (arm64)
+-- SQL Version: sql-v1.1.0
+-- Generated on: Tue Jul 15 12:49:43 UTC 2025-- MySQL dump 10.13  Distrib 8.4.5, for macos15.2 (arm64)
 --
 -- Host: localhost    Database: yvsou
 -- ------------------------------------------------------
@@ -52,33 +52,12 @@ CREATE TABLE IF NOT EXISTS `cache_locks` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `caches` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `value` varchar(255) DEFAULT NULL,
-  `expiration` varchar(255) DEFAULT NULL,
+  `value` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `expiration` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `domain_attachments`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE IF NOT EXISTS `domain_attachments` (
-  `ID` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `post_author` bigint unsigned NOT NULL DEFAULT '0',
-  `post_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `guid` varchar(255) NOT NULL DEFAULT '',
-  `post_mime_type` varchar(100) NOT NULL DEFAULT '',
-  `post_status` varchar(20) NOT NULL,
-  `attachment_metadata` longtext NOT NULL,
-  `attached_file` varchar(255) NOT NULL,
-  PRIMARY KEY (`ID`),
-  UNIQUE KEY `guid` (`guid`),
-  KEY `post_author` (`post_author`)
-) ENGINE=InnoDB AUTO_INCREMENT=63346 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -90,9 +69,9 @@ CREATE TABLE IF NOT EXISTS `domain_attachments` (
 CREATE TABLE IF NOT EXISTS `domain_comments` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `postid` bigint unsigned NOT NULL,
-  `comment_ip` varchar(100) NOT NULL DEFAULT '',
+  `comment_ip` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `comment_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `comment_content` text NOT NULL,
+  `comment_content` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `comment_approved` int NOT NULL DEFAULT '1' COMMENT '1 批准 2 封锁',
   `comment_parent` bigint unsigned NOT NULL DEFAULT '0',
   `userid` bigint unsigned DEFAULT NULL,
@@ -100,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `domain_comments` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `comment_post_ID` (`postid`)
-) ENGINE=InnoDB AUTO_INCREMENT=4083 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=4083 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -112,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `domain_comments` (
 CREATE TABLE IF NOT EXISTS `domain_dicts` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=86709 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=86709 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -122,14 +101,14 @@ CREATE TABLE IF NOT EXISTS `domain_dicts` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `domain_download_zips` (
-  `groupid` varchar(200) NOT NULL,
+  `groupid` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `ziptype` int NOT NULL,
-  `filename` varchar(200) NOT NULL,
-  `filedownloadname` varchar(200) NOT NULL,
-  `realfilename` varchar(200) NOT NULL,
+  `filename` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `filedownloadname` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `realfilename` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `updatedate` datetime NOT NULL,
   PRIMARY KEY (`groupid`,`ziptype`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -139,9 +118,9 @@ CREATE TABLE IF NOT EXISTS `domain_download_zips` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `domain_grant_groups` (
-  `domainid` varchar(600) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
-  `grant_domain` varchar(600) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `domainid` varchar(600) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `grant_domain` varchar(600) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -151,10 +130,10 @@ CREATE TABLE IF NOT EXISTS `domain_grant_groups` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `domain_grant_users` (
-  `domainid` varchar(600) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+  `domainid` varchar(600) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `userid` int NOT NULL,
   PRIMARY KEY (`domainid`,`userid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -166,10 +145,10 @@ CREATE TABLE IF NOT EXISTS `domain_grant_users` (
 CREATE TABLE IF NOT EXISTS `domain_id_manages` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `dictid` bigint NOT NULL,
-  `m_type` enum('c','m','s') CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+  `m_type` enum('c','m','s') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `userid` int NOT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=86307 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=86307 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -180,8 +159,8 @@ CREATE TABLE IF NOT EXISTS `domain_id_manages` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `domain_managers` (
   `userid` int DEFAULT NULL,
-  `m_type` enum('c','m','s') CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
-  `domainid` varchar(600) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+  `m_type` enum('c','m','s') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `domainid` varchar(600) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `owner_rights` tinyint unsigned NOT NULL DEFAULT '255',
   `own_group_rights` tinyint unsigned NOT NULL DEFAULT '255',
   `grant_group_rights` tinyint unsigned NOT NULL DEFAULT '255',
@@ -192,12 +171,12 @@ CREATE TABLE IF NOT EXISTS `domain_managers` (
   `dDelchild` tinyint(1) NOT NULL DEFAULT '1',
   `bHide` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0, public, 1, private, 2 , hide',
   `bTrash` tinyint(1) NOT NULL DEFAULT '0',
-  `IP` varchar(256) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL DEFAULT '0.0.0.0',
+  `IP` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0.0.0.0',
   `cDate` datetime NOT NULL,
   `sem` int unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`domainid`),
   KEY `cDate` (`cDate`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -208,12 +187,12 @@ CREATE TABLE IF NOT EXISTS `domain_managers` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `domain_msg_casts` (
   `msgid` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `msg_content` text NOT NULL,
+  `msg_content` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `msg_handled` tinyint NOT NULL DEFAULT '0' COMMENT '0, unread, 1, read ',
   `lang` int NOT NULL,
   `dtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`msgid`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -224,18 +203,18 @@ CREATE TABLE IF NOT EXISTS `domain_msg_casts` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `domain_msg_centers` (
   `msgid` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `msg_content` text NOT NULL,
+  `msg_content` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `from_userid` int NOT NULL,
   `to_userid` int NOT NULL,
   `msg_handled` int NOT NULL DEFAULT '0' COMMENT '0, unread, 1, read ',
-  `to_domainid` varchar(255) NOT NULL,
+  `to_domainid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `cast_type` tinyint NOT NULL DEFAULT '0' COMMENT '0 user , 1 domain 2 domain and sub domain 3 all ',
   `lang` int NOT NULL,
   `dtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`msgid`),
   KEY `touser` (`to_userid`),
   KEY `todomainID` (`to_domainid`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -248,7 +227,7 @@ CREATE TABLE IF NOT EXISTS `domain_msg_reads` (
   `readtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `lang` int NOT NULL,
   `userid` int unsigned NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -259,11 +238,11 @@ CREATE TABLE IF NOT EXISTS `domain_msg_reads` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `domain_msg_templates` (
   `t_id` int NOT NULL AUTO_INCREMENT,
-  `user` varchar(255) DEFAULT NULL,
-  `groupid` varchar(600) NOT NULL,
-  `msgText` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `groupid` varchar(600) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `msgText` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`t_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -275,11 +254,11 @@ CREATE TABLE IF NOT EXISTS `domain_msg_templates` (
 CREATE TABLE IF NOT EXISTS `domain_names` (
   `userid` int NOT NULL,
   `checked` tinyint(1) NOT NULL COMMENT '0, join, 1, blocked, 2 request',
-  `domainid` varchar(600) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+  `domainid` varchar(600) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `rights` tinyint(1) NOT NULL DEFAULT '0',
-  `name4group` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `name4group` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`domainid`,`userid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -291,7 +270,7 @@ CREATE TABLE IF NOT EXISTS `domain_names` (
 CREATE TABLE IF NOT EXISTS `domain_post_ids` (
   `id` int NOT NULL AUTO_INCREMENT,
   `postid` bigint unsigned NOT NULL DEFAULT '0',
-  `groupid` varchar(600) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL DEFAULT '''0''',
+  `groupid` varchar(600) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '''0''',
   `lang` int NOT NULL DEFAULT '1',
   `guserid` int NOT NULL,
   `gDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -300,7 +279,7 @@ CREATE TABLE IF NOT EXISTS `domain_post_ids` (
   KEY `lastgroup` (`groupid`,`gDate`),
   KEY `gDate` (`gDate`),
   KEY `groupblogdate` (`groupid`,`gDate`)
-) ENGINE=InnoDB AUTO_INCREMENT=635368 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=635378 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -311,22 +290,22 @@ CREATE TABLE IF NOT EXISTS `domain_post_ids` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `domain_posts` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `post_title` varchar(220) NOT NULL,
+  `post_title` varchar(220) COLLATE utf8mb4_unicode_ci NOT NULL,
   `post_author` bigint NOT NULL,
   `revised_author` bigint DEFAULT NULL,
-  `post_content` longtext NOT NULL,
+  `post_content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `post_date` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL,
-  `ip` varchar(15) NOT NULL,
+  `ip` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
   `md5code` varbinary(32) NOT NULL,
   `post_status` int unsigned NOT NULL DEFAULT '0' COMMENT 'O publish  1. Audit    2 trash',
-  `rights` varchar(10) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL DEFAULT '44444',
-  `comment_rights` varchar(20) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL DEFAULT '66666',
+  `rights` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '44444',
+  `comment_rights` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '66666',
   `canzip` tinyint DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `md5code` (`md5code`),
   UNIQUE KEY `ID` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1351795 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=1351805 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -336,13 +315,13 @@ CREATE TABLE IF NOT EXISTS `domain_posts` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `domain_right_managers` (
-  `domainid` varchar(600) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+  `domainid` varchar(600) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `userid` int DEFAULT NULL,
   `bAddchild` tinyint(1) NOT NULL DEFAULT '1',
   `dDelchild` tinyint(1) NOT NULL DEFAULT '0',
   `bHide` tinyint(1) NOT NULL DEFAULT '0',
   `bTrash` tinyint(1) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -353,9 +332,9 @@ CREATE TABLE IF NOT EXISTS `domain_right_managers` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `domain_search_dirs` (
   `lang` int NOT NULL,
-  `directory` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `directory` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `numbers` decimal(32,0) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -366,9 +345,9 @@ CREATE TABLE IF NOT EXISTS `domain_search_dirs` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `domain_search_keys` (
   `lang` int NOT NULL,
-  `keyword` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `keyword` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `numbers` decimal(32,0) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -379,9 +358,9 @@ CREATE TABLE IF NOT EXISTS `domain_search_keys` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `domain_tree_child_ids` (
   `child_id` bigint unsigned NOT NULL,
-  `domainid` varchar(600) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+  `domainid` varchar(600) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`child_id`,`domainid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -392,13 +371,13 @@ CREATE TABLE IF NOT EXISTS `domain_tree_child_ids` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `domain_trees` (
   `id` bigint unsigned NOT NULL,
-  `domain_dict_name` varchar(200) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `domain_dict_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `lang` int NOT NULL,
-  `description` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`id`,`lang`),
   UNIQUE KEY `domainN` (`domain_dict_name`,`lang`),
   CONSTRAINT `id` FOREIGN KEY (`id`) REFERENCES `domain_dicts` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -408,30 +387,11 @@ CREATE TABLE IF NOT EXISTS `domain_trees` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `domain_unread_subs` (
-  `domainid` varchar(600) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+  `domainid` varchar(600) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `bUnread` int NOT NULL DEFAULT '0',
   `userid` int NOT NULL,
   PRIMARY KEY (`domainid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `domain_upload_attaches`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE IF NOT EXISTS `domain_upload_attaches` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `userid` varchar(255) DEFAULT NULL,
-  `md5filename` varchar(255) DEFAULT NULL,
-  `filedownloadname` varchar(255) DEFAULT NULL,
-  `realfilename` varchar(255) DEFAULT NULL,
-  `extention` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -443,14 +403,14 @@ CREATE TABLE IF NOT EXISTS `domain_upload_attaches` (
 CREATE TABLE IF NOT EXISTS `domain_upload_attachs` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `userid` bigint NOT NULL,
-  `md5filename` varchar(200) NOT NULL,
-  `filedownloadname` varchar(200) NOT NULL,
-  `realfilename` varchar(200) NOT NULL,
-  `extention` varchar(10) NOT NULL,
+  `md5filename` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `filedownloadname` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `realfilename` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `extention` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `md5filename_UNIQUE` (`md5filename`),
   KEY `md5filename` (`md5filename`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=71687 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -462,9 +422,9 @@ CREATE TABLE IF NOT EXISTS `domain_upload_attachs` (
 CREATE TABLE IF NOT EXISTS `domain_user_search_keys` (
   `userid` int NOT NULL,
   `lang` int NOT NULL,
-  `keyword` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `keyword` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `numbers` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -475,12 +435,12 @@ CREATE TABLE IF NOT EXISTS `domain_user_search_keys` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `dscloud_msg_models` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `msgModelName` varchar(255) DEFAULT NULL,
-  `msgModel` varchar(255) DEFAULT NULL,
+  `msgModelName` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `msgModel` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -491,10 +451,10 @@ CREATE TABLE IF NOT EXISTS `dscloud_msg_models` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `dscloud_msg_type` (
   `msgtype` int NOT NULL AUTO_INCREMENT,
-  `msgname` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `msgname` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `msgModelID` int DEFAULT NULL,
   PRIMARY KEY (`msgtype`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -505,12 +465,12 @@ CREATE TABLE IF NOT EXISTS `dscloud_msg_type` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `dscloud_msg_types` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `msgname` varchar(255) DEFAULT NULL,
-  `msgModelID` varchar(255) DEFAULT NULL,
+  `msgname` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `msgModelID` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -521,10 +481,10 @@ CREATE TABLE IF NOT EXISTS `dscloud_msg_types` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `dscloud_msgModel` (
   `msgtypeID` int NOT NULL AUTO_INCREMENT,
-  `msgModelName` varchar(100) NOT NULL,
+  `msgModelName` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `msgModel` tinyint NOT NULL,
   PRIMARY KEY (`msgtypeID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -554,15 +514,15 @@ CREATE TABLE IF NOT EXISTS `failed_jobs` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `group_emails` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `user_send` varchar(256) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `IP` varchar(256) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `user_send` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `IP` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `sDate` date NOT NULL,
-  `title` varchar(560) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `header` varchar(256) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `content` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `emailgroup` text CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `title` varchar(560) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `header` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `emailgroup` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -572,12 +532,12 @@ CREATE TABLE IF NOT EXISTS `group_emails` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `invite_friends` (
-  `user` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `inviteEmail` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `domainID` varchar(520) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL DEFAULT '  ',
+  `user` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `inviteEmail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `domainID` varchar(520) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '  ',
   `invitetime` datetime NOT NULL,
   PRIMARY KEY (`inviteEmail`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -628,18 +588,18 @@ CREATE TABLE IF NOT EXISTS `jobs` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `logs` (
   `logID` int NOT NULL AUTO_INCREMENT,
-  `user_login` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `user_login` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `dtime` datetime NOT NULL,
-  `type` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `contents` mediumtext CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `where` varchar(256) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `fromUser` varchar(300) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `toUser` varchar(300) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `msgtype` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `type` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `contents` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `where` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fromUser` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `toUser` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `msgtype` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `creattime` int unsigned NOT NULL,
   PRIMARY KEY (`logID`),
   KEY `creattime` (`creattime`)
-) ENGINE=InnoDB AUTO_INCREMENT=869 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=869 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -709,7 +669,7 @@ CREATE TABLE IF NOT EXISTS `post_reversions` (
   KEY `post_reversions_userid_foreign` (`userid`),
   CONSTRAINT `post_reversions_postid_foreign` FOREIGN KEY (`postid`) REFERENCES `domain_posts` (`id`) ON DELETE CASCADE,
   CONSTRAINT `post_reversions_userid_foreign` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -719,12 +679,12 @@ CREATE TABLE IF NOT EXISTS `post_reversions` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `process_invite_friends` (
-  `user` varchar(128) NOT NULL,
-  `friend` varchar(128) NOT NULL,
+  `user` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `friend` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
   `handled` tinyint NOT NULL DEFAULT '0' COMMENT '0,  request, 1 normal, 2, from user deleted 3 touser delete',
   PRIMARY KEY (`user`,`friend`),
   KEY `friend` (`friend`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -752,16 +712,16 @@ CREATE TABLE IF NOT EXISTS `shortcodes` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `user_log` (
-  `user_login` varchar(60) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `log_type` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `user_login` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `log_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `log_date` datetime NOT NULL,
-  `ip` varchar(64) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `ip` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `blog_id` int NOT NULL,
-  `content` varchar(568) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `where` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `content` varchar(568) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `where` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `loginfailnum` int unsigned NOT NULL DEFAULT '0',
   `floginsum` int unsigned NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -771,18 +731,18 @@ CREATE TABLE IF NOT EXISTS `user_log` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `user_logs` (
-  `user_login` varchar(60) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `log_type` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `user_login` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `log_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `log_date` datetime NOT NULL,
-  `ip` varchar(64) NOT NULL,
+  `ip` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `blog_id` int NOT NULL,
-  `content` varchar(568) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `where` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `content` varchar(568) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `where` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `loginfailnum` int unsigned NOT NULL DEFAULT '0',
   `floginsum` int unsigned NOT NULL DEFAULT '0',
   KEY `log_date` (`log_date`),
   KEY `user_type_ip` (`user_login`,`log_type`,`ip`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -818,4 +778,4 @@ CREATE TABLE IF NOT EXISTS `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-07-10  6:46:50
+-- Dump completed on 2025-07-15 20:49:46
