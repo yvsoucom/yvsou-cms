@@ -25,8 +25,7 @@ namespace App\Services;
 
 use InvalidArgumentException;
 use App\Models\PostReversion;
-use Jfcherng\Diff\DiffHelper;
-class ReversionService
+ class ReversionService
 {
     public function reconstructHtmlPostVersion(int $postId, int $targetVersion): string
     {
@@ -55,26 +54,16 @@ class ReversionService
         return $content;
     }
 
-
     public function generateCompareJson($baseText, $modifiedText)
     {
         $diff = $this->compare($baseText, $modifiedText);
         return json_encode($diff, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 
-    function LineDiffWithBaseLineNumbers($baseText, $modifiedText)
+    public function LineDiffWithBaseLineNumbers($baseText, $modifiedText)
     {
-        // $baseLines = preg_split('/\R/', $baseText, -1, PREG_SPLIT_NO_EMPTY);
-        // $modifiedLines = preg_split('/\R/', $modifiedText, -1, PREG_SPLIT_NO_EMPTY);
         $baseLines = $this->normalizeHtmlToLines($baseText);
         $modifiedLines = $this->normalizeHtmlToLines($modifiedText);
-
-
-        // Create a map of base lines with their positions
-        $baseLineMap = [];
-        foreach ($baseLines as $lineNum => $line) {
-            $baseLineMap[$line][] = $lineNum + 1; // Store 1-based line numbers
-        }
 
         $result = [
             'insertions' => [],
@@ -99,31 +88,42 @@ class ReversionService
                 $modGap = $nextMatch['modifiedPos'] - $modifiedPointer;
 
                 if ($baseGap > 0 && $modGap > 0 && $baseGap === $modGap) {
+                    // same length mismatch => treat as modifications
                     for ($i = 0; $i < $baseGap; $i++) {
                         $baseLine = $baseLines[$basePointer + $i];
                         $modLine = $modifiedLines[$modifiedPointer + $i];
-                        if ($baseLine !== $modLine) {
 
+                        if ($baseLine !== $modLine) {
                             $result['modifications'][] = [
-                                'line' => $basePointer + $i + 1,
+                                'line' => $basePointer + $i + 1, // 1-based
                                 'base' => $baseLine,
                                 'modified' => $modLine,
                             ];
-
                         }
                     }
                 } else {
+                    // Process deletions
                     for ($i = $basePointer; $i < $nextMatch['basePos']; $i++) {
                         $result['deletions'][] = [
-                            'line' => $i + 1,
+                            'line' => $i + 1, // 1-based
                             'content' => $baseLines[$i],
                         ];
                     }
 
+                    // Process insertions with relative position
                     for ($i = $modifiedPointer; $i < $nextMatch['modifiedPos']; $i++) {
+                        $relative = ($i - $modifiedPointer) + 1;
+                        $insertLine = $basePointer + 1;
+
+                        // If we’re past the end, append after last line
+                        if ($insertLine > count($baseLines)) {
+                            $insertLine = count($baseLines) + 1;
+                        }
+
                         $result['insertions'][] = [
-                            'line' => $basePointer + 1,
+                            'line' => $insertLine,  // 1-based, insert before this line (or at end)
                             'content' => $modifiedLines[$i],
+                            'relative_position' => $relative,
                         ];
                     }
                 }
@@ -133,10 +133,10 @@ class ReversionService
             }
         }
 
-
-
         return $result;
     }
+
+
 
     private function findNextMatch(array $base, array $modified, int $basePos, int $modifiedPos): array
     {
@@ -207,45 +207,52 @@ class ReversionService
     }
 
 
-    public function reconstructFromDiffRanges(string $baseContent, string $jsonDiff): string
+    public function reconstructFromDiffRanges(string $baseContent, array|string $diffData): string
     {
-        $diffData = json_decode($jsonDiff, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new InvalidArgumentException("Invalid JSON diff data");
+        if (is_string($diffData)) {
+            $diffData = json_decode($diffData, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+       //         throw new \InvalidArgumentException("Invalid JSON diff data");
+            }
         }
 
-        // $baseLines = preg_split('/\R/u', $baseContent);
+        // Split base content into lines
         $baseLines = $this->normalizeHtmlToLines($baseContent);
-        $modifications = $diffData['modifications'] ?? [];
-        usort($modifications, fn($a, $b) => $a['line'] <=> $b['line']);
-        foreach ($modifications as $mod) {
-            $startLine = $mod['line'];
-            array_splice(
-                $baseLines,
-                $mod['line'],
-                1,                     // remove 1 line at this index
-                $mod['modified']       // this can be an array of new lines
-            );
-        }
 
+        // 1️⃣ Process deletions - from bottom up
         $deletions = $diffData['deletions'] ?? [];
         usort($deletions, fn($a, $b) => $b['line'] <=> $a['line']);
+
         foreach ($deletions as $del) {
-            $startLine = max($del['line'] - 1, 0); // convert to 0-based index
+            $startLine = max($del['line'] - 1, 0);
             array_splice($baseLines, $startLine, 1);
         }
 
+        // 2️⃣ Process insertions - sort by line + relative_position
         $insertions = $diffData['insertions'] ?? [];
-        usort($insertions, fn($a, $b) => $a['line'] <=> $b['line']);
+        usort($insertions, function ($a, $b) {
+            if ($a['line'] === $b['line']) {
+                return $a['relative_position'] <=> $b['relative_position'];
+            }
+            return $a['line'] <=> $b['line'];
+        });
+
         foreach ($insertions as $ins) {
             $startLine = max($ins['line'] - 1, 0);
             array_splice($baseLines, $startLine, 0, [$ins['content']]);
         }
 
+        // 3️⃣ Process modifications - replace whole lines
+        $modifications = $diffData['modifications'] ?? [];
+        foreach ($modifications as $mod) {
+            $startLine = max($mod['line'] - 1, 0);
+            $baseLines[$startLine] = $mod['modified'];
+        }
 
-
+        // 4️⃣ Convert lines back to HTML <p>
         return $this->linesToHtml($baseLines);
     }
+
     /**
      * Convert normalized lines back to HTML paragraphs.
      *
