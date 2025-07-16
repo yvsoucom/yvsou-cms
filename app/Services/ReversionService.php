@@ -25,7 +25,7 @@ namespace App\Services;
 
 use InvalidArgumentException;
 use App\Models\PostReversion;
- class ReversionService
+class ReversionService
 {
     public function reconstructHtmlPostVersion(int $postId, int $targetVersion): string
     {
@@ -60,6 +60,121 @@ use App\Models\PostReversion;
         return json_encode($diff, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 
+
+    public function lineDiffLCS(string $baseText, string $modifiedText): array
+    {
+        $baseLines = $this->normalizeHtmlToLines($baseText);
+        $modLines = $this->normalizeHtmlToLines($modifiedText);
+
+        $m = count($baseLines);
+        $n = count($modLines);
+
+        // Step 1: Build LCS table
+        $lcs = array_fill(0, $m + 1, array_fill(0, $n + 1, 0));
+        for ($i = $m - 1; $i >= 0; $i--) {
+            for ($j = $n - 1; $j >= 0; $j--) {
+                if ($baseLines[$i] === $modLines[$j]) {
+                    $lcs[$i][$j] = $lcs[$i + 1][$j + 1] + 1;
+                } else {
+                    $lcs[$i][$j] = max($lcs[$i + 1][$j], $lcs[$i][$j + 1]);
+                }
+            }
+        }
+
+        // Step 2: Walk through to get diff
+        $i = $j = 0;
+        $result = [
+            'insertions' => [],
+            'deletions' => [],
+            'modifications' => [],
+        ];
+        $relative = 1;
+
+        while ($i < $m && $j < $n) {
+            if ($baseLines[$i] === $modLines[$j]) {
+                $i++;
+                $j++;
+                $relative = 1;
+            } elseif ($lcs[$i + 1][$j] >= $lcs[$i][$j + 1]) {
+                $result['deletions'][] = [
+                    'line' => $i + 1,
+                    'content' => $baseLines[$i],
+                ];
+                $i++;
+                $relative = 1;
+            } elseif ($lcs[$i + 1][$j] < $lcs[$i][$j + 1]) {
+                $result['insertions'][] = [
+                    'line' => $i + 1,
+                    'content' => $modLines[$j],
+                    'relative_position' => $relative++,
+                ];
+                $j++;
+            }
+        }
+
+        // Handle remaining lines
+        while ($i < $m) {
+            $result['deletions'][] = [
+                'line' => $i + 1,
+                'content' => $baseLines[$i],
+            ];
+            $i++;
+        }
+
+        while ($j < $n) {
+            $result['insertions'][] = [
+                'line' => $i + 1,
+                'content' => $modLines[$j],
+                'relative_position' => $relative++,
+            ];
+            $j++;
+        }
+
+        // Step 3: Detect modification pairs (delete + insert at same line)
+        $mods = [];
+        foreach ($result['deletions'] as $dKey => $del) {
+            foreach ($result['insertions'] as $iKey => $ins) {
+                if ($del['line'] === $ins['line']) {
+                    $mods[] = [
+                        'line' => $del['line'],
+                        'base' => $del['content'],
+                        'modified' => $ins['content'],
+                    ];
+                    unset($result['deletions'][$dKey]);
+                    unset($result['insertions'][$iKey]);
+                    break;
+                }
+            }
+        }
+
+        $result['modifications'] = array_merge($result['modifications'], $mods);
+        $result['deletions'] = array_values($result['deletions']);
+        $result['insertions'] = array_values($result['insertions']);
+
+
+        $expectedLineCount = count($baseLines)
+            + count($result['insertions'])
+            - count($result['deletions']);
+
+        $actualModifiedLineCount = count($modLines);
+
+        if ($expectedLineCount !== $actualModifiedLineCount) {
+            logger()->warning('LineDiff mismatch detected', [
+                'baseLineCount' => count($baseLines),
+                'insertionCount' => count($result['insertions']),
+                'deletionCount' => count($result['deletions']),
+                'expectedModifiedLineCount' => $expectedLineCount,
+                'actualModifiedLineCount' => $actualModifiedLineCount,
+                'modificationCount' => count($result['modifications']),
+                'insertions' => $result['insertions'],
+                'deletions' => $result['deletions'],
+                'modifications' => $result['modifications'],
+            ]);
+        }
+
+        return $result;
+    }
+
     public function LineDiffWithBaseLineNumbers($baseText, $modifiedText)
     {
         $baseLines = $this->normalizeHtmlToLines($baseText);
@@ -78,95 +193,114 @@ use App\Models\PostReversion;
             $baseLine = $baseLines[$basePointer] ?? null;
             $modifiedLine = $modifiedLines[$modifiedPointer] ?? null;
 
+            // ✅ If same, move on
             if ($baseLine === $modifiedLine) {
                 $basePointer++;
                 $modifiedPointer++;
-            } else {
-                $nextMatch = $this->findNextMatch($baseLines, $modifiedLines, $basePointer, $modifiedPointer);
-
-                $baseGap = $nextMatch['basePos'] - $basePointer;
-                $modGap = $nextMatch['modifiedPos'] - $modifiedPointer;
-
-                if ($baseGap > 0 && $modGap > 0 && $baseGap === $modGap) {
-                    // same length mismatch => treat as modifications
-                    for ($i = 0; $i < $baseGap; $i++) {
-                        $baseLine = $baseLines[$basePointer + $i];
-                        $modLine = $modifiedLines[$modifiedPointer + $i];
-
-                        if ($baseLine !== $modLine) {
-                            $result['modifications'][] = [
-                                'line' => $basePointer + $i + 1, // 1-based
-                                'base' => $baseLine,
-                                'modified' => $modLine,
-                            ];
-                        }
-                    }
-                } else {
-                    // Process deletions
-                    for ($i = $basePointer; $i < $nextMatch['basePos']; $i++) {
-                        $result['deletions'][] = [
-                            'line' => $i + 1, // 1-based
-                            'content' => $baseLines[$i],
-                        ];
-                    }
-
-                    // Process insertions with relative position
-                    for ($i = $modifiedPointer; $i < $nextMatch['modifiedPos']; $i++) {
-                        $relative = ($i - $modifiedPointer) + 1;
-                        $insertLine = $basePointer + 1;
-
-                        // If we’re past the end, append after last line
-                        if ($insertLine > count($baseLines)) {
-                            $insertLine = count($baseLines) + 1;
-                        }
-
-                        $result['insertions'][] = [
-                            'line' => $insertLine,  // 1-based, insert before this line (or at end)
-                            'content' => $modifiedLines[$i],
-                            'relative_position' => $relative,
-                        ];
-                    }
-                }
-
-                $basePointer = $nextMatch['basePos'];
-                $modifiedPointer = $nextMatch['modifiedPos'];
+                continue;
             }
+
+            // ✅ Try to match future sync points
+            $nextMatch = $this->findNextMatch($baseLines, $modifiedLines, $basePointer, $modifiedPointer);
+
+            $baseGap = $nextMatch['basePos'] - $basePointer;
+            $modGap = $nextMatch['modifiedPos'] - $modifiedPointer;
+
+            $maxGap = max($baseGap, $modGap);
+
+            // ✅ Process line-by-line to extract modifications or partial inserts/deletes
+            for ($i = 0; $i < $maxGap; $i++) {
+                $baseLine = $baseLines[$basePointer + $i] ?? null;
+                $modLine = $modifiedLines[$modifiedPointer + $i] ?? null;
+
+                if ($baseLine !== null && $modLine !== null) {
+                    // ✅ Modification
+                    $result['modifications'][] = [
+                        'line' => $basePointer + $i + 1,
+                        'base' => $baseLine,
+                        'modified' => $modLine,
+                    ];
+                } elseif ($baseLine !== null) {
+                    // ✅ Pure deletion
+                    $result['deletions'][] = [
+                        'line' => $basePointer + $i + 1,
+                        'content' => $baseLine,
+                    ];
+                } elseif ($modLine !== null) {
+                    // ✅ Pure insertion
+                    $insertLine = $basePointer + 1;
+                    if ($insertLine > count($baseLines)) {
+                        $insertLine = count($baseLines) + 1;
+                    }
+
+                    $result['insertions'][] = [
+                        'line' => $insertLine,
+                        'content' => $modLine,
+                        'relative_position' => $i + 1,
+                    ];
+                }
+            }
+
+            $basePointer = $nextMatch['basePos'];
+            $modifiedPointer = $nextMatch['modifiedPos'];
         }
+
+        /*    assert(
+                count($modifiedLines) === count($baseLines)
+                + count($result['insertions'])
+                - count($result['deletions'])
+            );
+            */
+        $expectedLineCount = count($baseLines)
+            + count($result['insertions'])
+            - count($result['deletions']);
+
+        $actualModifiedLineCount = count($modifiedLines);
+
+        if ($expectedLineCount !== $actualModifiedLineCount) {
+            logger()->warning('LineDiff mismatch detected', [
+                'baseLineCount' => count($baseLines),
+                'insertionCount' => count($result['insertions']),
+                'deletionCount' => count($result['deletions']),
+                'expectedModifiedLineCount' => $expectedLineCount,
+                'actualModifiedLineCount' => $actualModifiedLineCount,
+                'modificationCount' => count($result['modifications']),
+                'insertions' => $result['insertions'],
+                'deletions' => $result['deletions'],
+                'modifications' => $result['modifications'],
+            ]);
+        }
+
 
         return $result;
     }
 
 
-
-    private function findNextMatch(array $base, array $modified, int $basePos, int $modifiedPos): array
+    private function findNextMatch(array $base, array $modified, int $basePos, int $modifiedPos, int $window = 5): array
     {
         $baseLength = count($base);
         $modifiedLength = count($modified);
 
-        // Create a map of modified lines for quick lookup
-        $modifiedMap = [];
-        for ($i = $modifiedPos; $i < $modifiedLength; $i++) {
-            $line = $modified[$i];
-            if (!isset($modifiedMap[$line])) {
-                $modifiedMap[$line] = $i;
+        for ($i = $basePos; $i < min($basePos + $window, $baseLength); $i++) {
+            for ($j = $modifiedPos; $j < min($modifiedPos + $window, $modifiedLength); $j++) {
+                if ($base[$i] === $modified[$j]) {
+                    return [
+                        'basePos' => $i,
+                        'modifiedPos' => $j,
+                    ];
+                }
             }
         }
 
-        // Find first line in base that exists in modified
-        for ($i = $basePos; $i < $baseLength; $i++) {
-            if (isset($modifiedMap[$base[$i]])) {
-                return [
-                    'basePos' => $i,
-                    'modifiedPos' => $modifiedMap[$base[$i]]
-                ];
-            }
-        }
-
+        // No match found; assume end
         return [
             'basePos' => $baseLength,
-            'modifiedPos' => $modifiedLength
+            'modifiedPos' => $modifiedLength,
         ];
     }
+
+
+
 
     /**
      * Normalize HTML content to an array of "lines"
@@ -201,8 +335,8 @@ use App\Models\PostReversion;
 
     public function compare(string $baseText, string $modifiedText): array
     {
-        $result = $this->LineDiffWithBaseLineNumbers($baseText, $modifiedText);
-        logger("LineDiffWithBaseLineNumbers", $result);
+        $result = $this->lineDiffLCS($baseText, $modifiedText);
+        logger("lineDiffLCS", $result);
         return $result;
     }
 
@@ -212,7 +346,7 @@ use App\Models\PostReversion;
         if (is_string($diffData)) {
             $diffData = json_decode($diffData, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
-       //         throw new \InvalidArgumentException("Invalid JSON diff data");
+                //         throw new \InvalidArgumentException("Invalid JSON diff data");
             }
         }
 

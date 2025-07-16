@@ -55,7 +55,6 @@ class PostReversionDiff extends Component
         $this->diffHtml = $this->generateDiffHtml($oldContent, $diffData);
     }
 
-
     private function generateDiffHtml(string $oldContent, array $diffData): string
     {
         $service = new ReversionService();
@@ -79,60 +78,76 @@ class PostReversionDiff extends Component
         usort($deletions, fn($a, $b) => $a['line'] <=> $b['line']);
 
         $insertions = $diffData['insertions'] ?? [];
+
         usort($insertions, function ($a, $b) {
-            return ($a['line'] === $b['line'])
-                ? ($b['relative_position'] <=> $a['relative_position'])
-                : ($a['line'] <=> $b['line']);
+            // Sort first by base line number
+            if ($a['line'] === $b['line']) {
+                // Then by original order in modified file
+                return $a['relative_position'] <=> $b['relative_position'];
+            }
+            return $a['line'] <=> $b['line'];
         });
+   
 
         $totalLines = count($oldLines);
-        $insertionIndex = 0; // track where we are in the insertion list
+        $insertionIndex = 0;
 
-        for ($i = 0; $i < $totalLines; $i++) {
-            // ✅ Insert all insertions before this line
-            while ($insertionIndex < count($insertions) && ($insertions[$insertionIndex]['line'] -1) === $i) {
-                $ins = $insertions[$insertionIndex];
-                $htmlLines[] = '<tr><td style="color: green;">+</td>';
-                $htmlLines[] = '<td></td>';
-                $htmlLines[] = '<td style="background-color: #dcfce7;">' . e($ins['content']) . '</td></tr>';
-                $insertionIndex++;
-            }
-
-            $unchanged = true;
-
-            // ✅ Deletions at this line
-            foreach ($deletions as $del) {
-                if (($del['line'] - 1) === $i) {
-                    $htmlLines[] = '<tr><td style="color: red;">-</td>';
-                    $htmlLines[] = '<td style="background-color: #fee2e2;">' . e($del['content']) . '</td>';
-                    $htmlLines[] = '<td></td></tr>';
-                    $unchanged = false;
+        for ($i = 1; $i <= $totalLines; $i++) {
+            // Insertions BEFORE this line
+            foreach ($insertions as $ins) {
+                if ($ins['line'] === $i) {
+                    while (
+                        $insertionIndex < count($insertions) &&
+                        $insertions[$insertionIndex]['line'] === $i
+                    ) {
+                        $ins = $insertions[$insertionIndex];
+                        $htmlLines[] = '<tr><td style="color: green;">' . $i . ' +</td>';
+                        $htmlLines[] = '<td></td>';
+                        $htmlLines[] = '<td style="background-color: #dcfce7;">' . e($ins['content']) . '</td></tr>';
+                        $insertionIndex++;
+                    }
+                    break;
                 }
             }
+            $matched = false;
 
-            // ✅ Modifications at this line
+            // Modifications take priority
             foreach ($modByLine as $mod) {
-                if (($mod['line'] - 1) === $i) {
-                    $htmlLines[] = '<tr><td style="color: orange;">c</td>';
+                if ($mod['line'] === $i) {
+                    $htmlLines[] = '<tr><td style="color: orange;">' . $i . ' c</td>';
                     $htmlLines[] = '<td style="background-color: #fee2e2;">' . e($mod['base']) . '</td>';
                     $htmlLines[] = '<td style="background-color: #dcfce7;">' . e($mod['modified']) . '</td></tr>';
-                    $unchanged = false;
+                    $matched = true;
+                    break;
                 }
             }
 
-            // ✅ Unchanged line
-            if ($unchanged) {
-                $htmlLines[] = '<tr><td></td>';
-                $htmlLines[] = '<td>' . e($oldLines[$i]) . '</td>';
-                $htmlLines[] = '<td>' . e($oldLines[$i]) . '</td></tr>';
+            // If not modified, check for deletion
+            if (!$matched) {
+                foreach ($deletions as $del) {
+                    if ($del['line'] === $i) {
+                        $htmlLines[] = '<tr><td style="color: red;">' . $i . ' -</td>';
+                        $htmlLines[] = '<td style="background-color: #fee2e2;">' . e($del['content']) . '</td>';
+                        $htmlLines[] = '<td></td></tr>';
+                        $matched = true;
+                        break;
+                    }
+                }
+            }
+
+            // If not matched, unchanged
+            if (!$matched) {
+                $htmlLines[] = '<tr><td>' . $i . '</td>';
+                $htmlLines[] = '<td>' . e($oldLines[$i - 1]) . '</td>';
+                $htmlLines[] = '<td>' . e($oldLines[$i - 1]) . '</td></tr>';
             }
         }
 
-        // ✅ Insertions after the end of file
+        // Insertions AFTER the last line
         while ($insertionIndex < count($insertions)) {
             $ins = $insertions[$insertionIndex];
-            if (($ins['line'] - 1) >= $totalLines) {
-                $htmlLines[] = '<tr><td style="color: green;">+</td>';
+            if ($ins['line'] > $totalLines) {
+                $htmlLines[] = '<tr><td style="color: green;">' . ($totalLines + 1) . ' +</td>';
                 $htmlLines[] = '<td></td>';
                 $htmlLines[] = '<td style="background-color: #dcfce7;">' . e($ins['content']) . '</td></tr>';
             }
@@ -142,6 +157,7 @@ class PostReversionDiff extends Component
         $htmlLines[] = '</tbody></table>';
         return '<div class="diff-container space-y-1">' . implode("\n", $htmlLines) . '</div>';
     }
+
 
 
     public function render()

@@ -536,8 +536,17 @@ class PostController extends Controller
                     $content,
                 );
                 logger($diff);
+
+                $reconstruct = (new ReversionService())->reconstructFromDiffRanges($oldContent, $diff);
+                if ($reconstruct != $content) {
+                    DB::rollBack();
+                    $errorno = '5';
+                    Log::error('Post reconstruct error: ' . $reconstruct);
+                    return redirect()->route('error.attachedfile', compact(['errorno']));
+
+                }
             }
-          //  logger("old new Content 3");
+
 
             $lastVersion = PostReversion::where('postid', $post->id)->max('version') ?? 0;
 
