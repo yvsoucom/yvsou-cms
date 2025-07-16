@@ -510,13 +510,10 @@ class PostController extends Controller
 
             $oldTitle = $post->post_title;
             $diff = null;
-            logger("here1", ["1"]);
             if ($oldContent === $content && $oldTitle === $title) {
                 return back()->with('info', 'No changes detected.');
             }
-            logger("old new Content 1", [$oldContent, $content]);
             $lastVersion = PostReversion::where('postid', $post->id)->max('version') ?? 0;
-            logger("old new Content 2", [$oldContent, $content]);
             if ($lastVersion === 0) {
                 PostReversion::create([
                     'postid' => $post->id,
@@ -524,7 +521,6 @@ class PostController extends Controller
                     'userid' => $post->post_author,
                     'version' => 0,
                     'base_content' => $post->post_content,
-                    //   'updated_at' => $post->updated_at,
                     'md5code' => $post->md5code,
                     'diff' => null,
                     'ip' => $post->ip,
@@ -533,8 +529,7 @@ class PostController extends Controller
 
             if ($oldContent !== $content) {
 
-
-                logger("old new Content", [$oldContent, $content]);
+                logger("old and new Content:", [$oldContent, $content]);
 
                 $diff = (new ReversionService())->generateCompareJson(
                     $oldContent,
@@ -542,22 +537,16 @@ class PostController extends Controller
                 );
                 logger($diff);
             }
-            logger("old new Content 3");
+          //  logger("old new Content 3");
 
             $lastVersion = PostReversion::where('postid', $post->id)->max('version') ?? 0;
 
             if (!$diff) {
-                PostReversion::create([
-                    'postid' => $post->id,
-                    'userid' => auth()->id(),
-                    'post_title' => $title,
-                    'version' => $lastVersion + 1,
-                    'base_content' => null,
-                    'diff' => null,
-                    'ip' => $ip,
-                    'updated_at' => $curtime,
-                    'md5code' => $md5code,
-                ]);
+                DB::rollBack();
+                $errorno = '3';
+                Log::error('Post create error: no diff ');
+                return redirect()->route('error.attachedfile', compact(['errorno']));
+
             } else {
                 //           logger("herein sidefirst", [json_encode($diff)]);
                 PostReversion::create([
@@ -566,7 +555,6 @@ class PostController extends Controller
                     'post_title' => $title,
                     'version' => $lastVersion + 1,
                     'base_content' => null,
-                    //   'diff' => json_encode(value: $diff),
                     'diff' => $diff,
                     'ip' => $ip,
                     'updated_at' => $curtime,

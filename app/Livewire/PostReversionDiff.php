@@ -57,113 +57,87 @@ class PostReversionDiff extends Component
 
     private function generateDiffHtml(string $oldContent, array $diffData): string
     {
-        $oldLines = preg_split('/\R/u', $oldContent);
+        // $oldLines = preg_split('/\R/u', $oldContent);
+        $service = new ReversionService();
+        $oldLines = $service->normalizeHtmlToLines($oldContent);
+
         $htmlLines = [];
-
+        $htmlLines[] = '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+  <thead>
+    <tr>
+      <th style="width: 5%;">type</th>
+      <th style="width: 45%;">Content</th>
+      <th style="width: 50%;">newContent</th>
+    </tr>
+  </thead>
+  <tbody>';
         // Index modifications by line number
-        $modByLine = collect($diffData['modifications'] ?? [])->keyBy('line');
+        $modByLine = $diffData['modifications'] ?? [];
+        usort($modByLine, fn($a, $b) => $a['line'] <=> $b['line']);
 
-        // Prepare deletions and insertions grouped by start_line for quick lookup
-        $deletions = collect($diffData['deletions'] ?? [])->groupBy('start_line');
-        $insertions = collect($diffData['insertions'] ?? [])->groupBy('start_line');
+        $deletions = $diffData['deletions'] ?? [];
+        usort($deletions, fn($a, $b) => $b['line'] <=> $a['line']);
+
+        $insertions = $diffData['insertions'] ?? [];
+        usort($insertions, fn($a, $b) => $a['line'] <=> $b['line']);
 
         $totalLines = count($oldLines);
 
-        for ($i = 0; $i <= $totalLines; $i++) {
-            $lineNum = $i + 1;
+        for ($i = 0; $i < $totalLines; $i++) {
+
 
             // Insertions before the first line or between lines (start_line means insert before that line)
-            if ($insertions->has($lineNum)) {
-                foreach ($insertions[$lineNum] as $ins) {
-                    foreach ($ins['lines'] as $insLine) {
-                        $htmlLines[] = '<div class="bg-green-100 text-green-700">+ ' . e($insLine) . '</div>';
-                    }
+
+            foreach ($insertions as $ins) {
+                $startLine = $ins['line'];
+                if ($startLine === $i) {
+                    $htmlLines[] = '<tr><td>+</td>';
+                    $htmlLines[] = '<td>     </td>';
+                    $htmlLines[] = '<td><div class="bg-green-100 text-green-700">' . e($ins['content']) . '</div></td></tr>';
+
+                    continue;
                 }
+
             }
 
-            if ($i === $totalLines) {
-                // We are past the last old line, no more lines to process
-                break;
-            }
+
 
             // Deleted lines: check if this line is fully deleted
-            if ($deletions->has($lineNum)) {
-                // One or more deleted chunks start here, show each chunk's deleted lines
-                foreach ($deletions[$lineNum] as $del) {
-                    foreach ($del['lines'] as $delLine) {
-                        $htmlLines[] = '<del class="bg-red-100 text-red-700 block">- ' . e($delLine) . '</del>';
-                    }
-                }
-                // Skip rendering the current old line as it is deleted
-                continue;
-            }
 
-            // If not deleted, check for modification char-level highlighting
-            if ($modByLine->has($lineNum)) {
-                $charDiff = $modByLine[$lineNum]['char_diff'];
-                $htmlLines[] = $this->highlightCharDiff($oldLines[$i], $charDiff);
-            } else {
-                // Normal line, no change
-                $htmlLines[] = '<div>' . e($oldLines[$i]) . '</div>';
-            }
-        }
+            foreach ($deletions as $del) {
+                $startLine = $del['line'];
+                if ($startLine === $i) {
+                    $htmlLines[] = '<tr><td>-</td>';
+                    $htmlLines[] = '<td><del class="bg-red-100 text-red-700 block">' . e($del['content']) . '</del></td></tr>';
 
-        return '<div class="diff-container space-y-1">' . implode("\n", $htmlLines) . '</div>';
-    }
-
-    private function highlightCharDiff(string $line, array $charDiff): string
-    {
-        $result = '';
-        $pos = 0;
-        $len = mb_strlen($line);
-
-        $deletions = $charDiff['deletions'] ?? [];
-        $insertions = $charDiff['insertions'] ?? [];
-
-        usort($deletions, fn($a, $b) => $a['start_pos'] <=> $b['start_pos']);
-        usort($insertions, fn($a, $b) => $a['start_pos'] <=> $b['start_pos']);
-
-        $delIdx = 0;
-        $insIdx = 0;
-
-        while ($pos < $len) {
-            while ($insIdx < count($insertions) && $insertions[$insIdx]['start_pos'] - 1 == $pos) {
-                $result .= '<span class="bg-green-100 text-green-700">+ ' . e($insertions[$insIdx]['content']) . '</span>';
-                $insIdx++;
-            }
-
-            if ($delIdx < count($deletions)) {
-                $del = $deletions[$delIdx];
-                $delStart = max($del['start_pos'] - 1, 0);
-                $delEnd = max($del['end_pos'] - 1, 0);
-
-                if ($pos < $delStart) {
-                    $result .= e(mb_substr($line, $pos, $delStart - $pos));
-                    $pos = $delStart;
+                    continue;
                 }
 
-                if ($pos >= $delStart && $pos <= $delEnd) {
-                    $deletedText = mb_substr($line, $delStart, $delEnd - $delStart + 1);
-                    $result .= '<del class="bg-red-100 text-red-700">- ' . e($deletedText) . '</del>';
-                    $pos = $delEnd + 1;
-                    $delIdx++;
+            }
+
+            foreach ($modByLine as $mod) {
+                $startLine = $mod['line'];
+                if ($startLine === $i) {
+                    $htmlLines[] = '<tr><td>c</td>';
+                    $htmlLines[] = '<td style="background-color: #fee2e2;">' . e($mod['base']) . '</td>';   // Red for deletion
+                    $htmlLines[] = '<td style="background-color: #dcfce7;">' . e($mod['modified']) . '</td>'; // Green for insertion
+                    $htmlLines[] = '</tr>';
                     continue;
                 }
             }
 
-            if ($pos < $len) {
-                $result .= e(mb_substr($line, $pos, 1));
-                $pos++;
-            }
-        }
 
-        while ($insIdx < count($insertions) && $insertions[$insIdx]['start_pos'] - 1 == $len) {
-            $result .= '<span class="bg-green-100 text-green-700">+ ' . e($insertions[$insIdx]['content']) . '</span>';
-            $insIdx++;
-        }
+            // Normal line, no change
+            $htmlLines[] = '<tr><td> </td>';
+             $htmlLines[] = '<td><div>' . e($oldLines[$i]) . '</div></td>';
 
-        return '<div>' . $result . '</div>';
+            $htmlLines[] = '<td><div>' . e($oldLines[$i]) . '</div></td></tr>';
+
+        }
+        $htmlLines[] = ' </tbody></table>';
+        return '<div class="diff-container space-y-1">' . implode("\n", $htmlLines) . '</div>';
     }
+
 
 
     public function render()
