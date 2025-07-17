@@ -58,7 +58,9 @@ class PostReversionDiff extends Component
     private function generateDiffHtml(string $oldContent, array $diffData): string
     {
         $service = new ReversionService();
-        $oldLines = $service->normalizeHtmlToLines($oldContent);
+        $baseLines = $service->normalizeHtmlToLines($oldContent);
+
+
 
         $htmlLines = [];
         $htmlLines[] = '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
@@ -71,88 +73,47 @@ class PostReversionDiff extends Component
   </thead>
   <tbody>';
 
-        $modByLine = $diffData['modifications'] ?? [];
-        usort($modByLine, fn($a, $b) => $a['line'] <=> $b['line']);
 
-        $deletions = $diffData['deletions'] ?? [];
-        usort($deletions, fn($a, $b) => $a['line'] <=> $b['line']);
+        foreach ($diffData as $entry) {
+            logger("reconstructModifiedFromDiff entry", $entry);
+            switch ($entry['type']) {
+                case 'inserted':
+                    $htmlLines[] = '<tr><td style="color: green;">' . $entry['relative_to'] . ' +</td>';
+                    $htmlLines[] = '<td></td>';
+                    $htmlLines[] = '<td style="background-color: #dcfce7;">' . e($entry['line']) . '</td></tr>';
 
-        $insertions = $diffData['insertions'] ?? [];
+                    break;
+                case 'modified':
+                    $htmlLines[] = '<tr><td style="color: orange;">' . $entry['baseline_lineno'] . ' c</td>';
+                    $htmlLines[] = '<td style="background-color: #fee2e2;">' . e($baseLines[$entry['baseline_lineno']])  . '</td>';
+                    $htmlLines[] = '<td style="background-color: #dcfce7;">' . e($entry['line']) . '</td></tr>';
 
-        usort($insertions, function ($a, $b) {
-            // Sort first by base line number
-            if ($a['line'] === $b['line']) {
-                // Then by original order in modified file
-                return $a['relative_position'] <=> $b['relative_position'];
-            }
-            return $a['line'] <=> $b['line'];
-        });
-   
+                    break;
 
-        $totalLines = count($oldLines);
-        $insertionIndex = 0;
+                case 'unchanged':
+                    if (isset($entry['base_lineno']) && isset($baseLines[$entry['base_lineno']])) {
+                        $htmlLines[] = '<tr><td>' . $entry['base_lineno'] . '</td>';
+                        $htmlLines[] = '<td>' . e($baseLines[$entry['base_lineno']]) . '</td>';
+                        $htmlLines[] = '<td>' . e($baseLines[$entry['base_lineno']]) . '</td></tr>';
 
-        for ($i = 1; $i <= $totalLines; $i++) {
-            // Insertions BEFORE this line
-            foreach ($insertions as $ins) {
-                if ($ins['line'] === $i) {
-                    while (
-                        $insertionIndex < count($insertions) &&
-                        $insertions[$insertionIndex]['line'] === $i
-                    ) {
-                        $ins = $insertions[$insertionIndex];
-                        $htmlLines[] = '<tr><td style="color: green;">' . $i . ' +</td>';
-                        $htmlLines[] = '<td></td>';
-                        $htmlLines[] = '<td style="background-color: #dcfce7;">' . e($ins['content']) . '</td></tr>';
-                        $insertionIndex++;
+                    } else {
+                        logger()->error("Invalid base_lineno in diff", $entry);
                     }
                     break;
-                }
-            }
-            $matched = false;
 
-            // Modifications take priority
-            foreach ($modByLine as $mod) {
-                if ($mod['line'] === $i) {
-                    $htmlLines[] = '<tr><td style="color: orange;">' . $i . ' c</td>';
-                    $htmlLines[] = '<td style="background-color: #fee2e2;">' . e($mod['base']) . '</td>';
-                    $htmlLines[] = '<td style="background-color: #dcfce7;">' . e($mod['modified']) . '</td></tr>';
-                    $matched = true;
+                // Optional: for robustness
+                case 'deleted':
+                    $htmlLines[] = '<tr><td style="color: red;">' . $entry['base_lineno'] . ' -</td>';
+                    $htmlLines[] = '<td style="background-color: #fee2e2;">' . e($baseLines[$entry['base_lineno']]) . '</td>';
+                    $htmlLines[] = '<td></td></tr>';
+
                     break;
-                }
-            }
 
-            // If not modified, check for deletion
-            if (!$matched) {
-                foreach ($deletions as $del) {
-                    if ($del['line'] === $i) {
-                        $htmlLines[] = '<tr><td style="color: red;">' . $i . ' -</td>';
-                        $htmlLines[] = '<td style="background-color: #fee2e2;">' . e($del['content']) . '</td>';
-                        $htmlLines[] = '<td></td></tr>';
-                        $matched = true;
-                        break;
-                    }
-                }
-            }
-
-            // If not matched, unchanged
-            if (!$matched) {
-                $htmlLines[] = '<tr><td>' . $i . '</td>';
-                $htmlLines[] = '<td>' . e($oldLines[$i - 1]) . '</td>';
-                $htmlLines[] = '<td>' . e($oldLines[$i - 1]) . '</td></tr>';
+                default:
+                    logger()->warning("Unknown diff entry type: " . $entry['type']);
             }
         }
 
-        // Insertions AFTER the last line
-        while ($insertionIndex < count($insertions)) {
-            $ins = $insertions[$insertionIndex];
-            if ($ins['line'] > $totalLines) {
-                $htmlLines[] = '<tr><td style="color: green;">' . ($totalLines + 1) . ' +</td>';
-                $htmlLines[] = '<td></td>';
-                $htmlLines[] = '<td style="background-color: #dcfce7;">' . e($ins['content']) . '</td></tr>';
-            }
-            $insertionIndex++;
-        }
 
         $htmlLines[] = '</tbody></table>';
         return '<div class="diff-container space-y-1">' . implode("\n", $htmlLines) . '</div>';

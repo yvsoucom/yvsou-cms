@@ -541,7 +541,9 @@ class PostController extends Controller
                 if ($reconstruct != $content) {
                     DB::rollBack();
                     $errorno = '5';
-                    Log::error('Post reconstruct error: ' . $reconstruct);
+                    logger("new Content:", [$content]);
+
+                    logger('Post reconstruct error: ' , [$reconstruct]);
                     return redirect()->route('error.attachedfile', compact(['errorno']));
 
                 }
