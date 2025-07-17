@@ -35,15 +35,18 @@ class MessageController extends Controller
     {
 
         $lang = (new LocaleService)->getCurLang();
-        $castMessages = [];
+        $castMessages = collect([]);
+        $userMessages = collect([]);
+        $groupcastMessages = collect([]);
+      
+
         $castMessages = DB::table('domain_msg_casts')
             ->where('msg_handled', 0)
             ->where('lang', $lang)
             ->orderByDesc('dtime')
             ->get();
 
-        $userMessages = [];
-        $groupcastMessages = [];
+
         $lastReadTime = null;
 
         if (Auth::check()) {
