@@ -59,11 +59,7 @@ return [
   'domaintitle' => 'ドメインタイトル',
   'domaindescription' => 'ドメインの説明',
   'submit' => '送信',
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> dev
+ 
   'updatedomaintitledescription' => 'ドメインのタイトルと説明を編集',
 
   'User ID' => 'ユーザーID',
@@ -71,18 +67,6 @@ return [
   'Email' => 'メールアドレス',
   'Submit Selected' => '選択項目を送信',
   'New Message to users' => '新しいユーザー向けメッセージ',
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 76ee78d (translation, post action  update)
-=======
-=======
->>>>>>> 48305c3 (translation)
-=======
->>>>>>> 48305c325ff70bc4af5a3119cf26f84c4cc4a393
->>>>>>> 76ee78d (translation, post action  update)
-=======
->>>>>>> dev
+ 
 ];
 

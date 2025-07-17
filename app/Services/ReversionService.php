@@ -82,21 +82,21 @@ class ReversionService
 
         // Extract all <p>...</p> blocks
         preg_match_all('/<p.*?>(.*?)<\/p>/is', $html, $matches);
+        
+                foreach ($matches[1] as $pContent) {
+                    // Remove leading/trailing spaces
+                    $pContent = trim($pContent);
 
-        foreach ($matches[1] as $pContent) {
-            // Remove leading/trailing spaces
-            $pContent = trim($pContent);
+                    // Handle <br> inside paragraphs
+                    $subLines = preg_split('/<br\s*\/?>/i', $pContent);
 
-            // Handle <br> inside paragraphs
-            $subLines = preg_split('/<br\s*\/?>/i', $pContent);
-
-            foreach ($subLines as $subLine) {
-                $line = trim(strip_tags($subLine));
-                // If it was empty <p></p> or just <br>, keep as empty line
-                $lines[] = $line;
-            }
-        }
-
+                    foreach ($subLines as $subLine) {
+                        $line = trim(strip_tags($subLine));
+                        // If it was empty <p></p> or just <br>, keep as empty line
+                        $lines[] = $line;
+                    }
+                }
+       
         return $lines;
     }
 

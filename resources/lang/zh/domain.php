@@ -59,29 +59,13 @@ return [
   'domaintitle' => '域标题',
   'domaindescription' => '域描述',
   'submit' => '提交',
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> dev
+ 
   'updatedomaintitledescription' => '编辑域标题与描述',
 
   'User ID' => '用户ID',
   'Name' => '姓名',
   'Email' => '邮箱',
   'Submit Selected' => '提交所选',
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 76ee78d (translation, post action  update)
-=======
-=======
->>>>>>> 48305c3 (translation)
-=======
->>>>>>> 48305c325ff70bc4af5a3119cf26f84c4cc4a393
->>>>>>> 76ee78d (translation, post action  update)
-=======
->>>>>>> dev
+ 
 ];
 

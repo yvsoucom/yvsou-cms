@@ -539,12 +539,12 @@ class PostController extends Controller
 
                 $reconstruct = (new ReversionService())->reconstructFromDiffRanges($oldContent, $diff);
                 if ($reconstruct != $content) {
-                    DB::rollBack();
-                    $errorno = '5';
+                  //  DB::rollBack();
+                  //  $errorno = '5';
                     logger("new Content:", [$content]);
 
                     logger('Post reconstruct error: ' , [$reconstruct]);
-                    return redirect()->route('error.attachedfile', compact(['errorno']));
+                 //   return redirect()->route('error.attachedfile', compact(['errorno']));
 
                 }
             }
