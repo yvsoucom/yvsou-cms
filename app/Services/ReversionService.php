@@ -25,6 +25,11 @@ namespace App\Services;
 
 use InvalidArgumentException;
 use App\Models\PostReversion;
+use Symfony\Component\String\UnicodeString;
+use SebastianBergmann\Diff\Differ;
+use SebastianBergmann\Diff\Output\StrictUnifiedDiffOutputBuilder;
+ 
+require 'vendor/autoload.php';
 class ReversionService
 {
     public function reconstructHtmlPostVersion(int $postId, int $targetVersion): string
@@ -333,6 +338,70 @@ class ReversionService
         return $lines;
     }
 
+    public function symfonyDiffLines(string $baseText, string $modifiedText): array
+    {
+        $baseLines = $this->normalizeHtmlToLines($baseText);
+        $modLines = $this->normalizeHtmlToLines($modifiedText);
+
+        $outputBuilder = new StrictUnifiedDiffOutputBuilder([
+            'collapseRanges' => false,
+            'commonLineThreshold' => 6,
+            'contextLines' => 0,
+        ]);
+        $differ = new Differ($outputBuilder);
+        $diff = $differ->diff(implode("\n", $baseLines), implode("\n", $modLines));
+
+        $lines = explode("\n", $diff);
+        $result = [
+            'insertions' => [],
+            'deletions' => [],
+            'modifications' => [],
+        ];
+
+        $baseIndex = 0;
+        $modIndex = 0;
+        $pendingDelete = null;
+
+        foreach ($lines as $line) {
+            $code = substr($line, 0, 1);
+            $content = substr($line, 1);
+
+            switch ($code) {
+                case ' ':
+                    $baseIndex++;
+                    $modIndex++;
+                    $pendingDelete = null;
+                    break;
+
+                case '-':
+                    $pendingDelete = ['line' => $baseIndex + 1, 'content' => $content];
+                    $baseIndex++;
+                    break;
+
+                case '+':
+                    if ($pendingDelete) {
+                        // Treat as modification
+                        $result['modifications'][] = [
+                            'line' => $pendingDelete['line'],
+                            'base' => $pendingDelete['content'],
+                            'modified' => $content,
+                        ];
+                        $pendingDelete = null;
+                    } else {
+                        $result['insertions'][] = [
+                            'line' => $baseIndex + 1,
+                            'content' => $content,
+                            'relative_position' => 1,
+                        ];
+                    }
+                    $modIndex++;
+                    break;
+            }
+        }
+
+        return $result;
+    }
+
     public function compare(string $baseText, string $modifiedText): array
     {
         $result = $this->lineDiffLCS($baseText, $modifiedText);
@@ -343,13 +412,14 @@ class ReversionService
 
     public function reconstructFromDiffRanges(string $baseContent, array|string $diffData): string
     {
+
         if (is_string($diffData)) {
             $diffData = json_decode($diffData, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
                 //         throw new \InvalidArgumentException("Invalid JSON diff data");
             }
         }
-
+        logger($diffData);
         // Split base content into lines
         $baseLines = $this->normalizeHtmlToLines($baseContent);
 
@@ -382,7 +452,7 @@ class ReversionService
             $startLine = max($mod['line'] - 1, 0);
             $baseLines[$startLine] = $mod['modified'];
         }
-
+        logger($baseLines);
         // 4️⃣ Convert lines back to HTML <p>
         return $this->linesToHtml($baseLines);
     }
@@ -412,7 +482,166 @@ class ReversionService
 
         return $html;
     }
+ 
+function diffWithLineInfo(array $baseLines, array $modifiedLines): array
+{
+    $baseStr = implode("\n", $baseLines);
+    $modStr = implode("\n", $modifiedLines);
+   
+    $outputBuilder = new StrictUnifiedDiffOutputBuilder([
+        'collapseRanges' => false,
+        'contextLines' => 0,
+    ]);
 
+    $differ = new Differ($outputBuilder);
+
+    // diffToArray returns an array of [lineContent, lineType] pairs
+    // lineType: 0 = unchanged, 1 = added, 2 = removed
+    $diffArray = $differ->diffToArray($baseStr, $modStr);
+
+    $result = [];
+    $baseIndex = 0;
+    $modIndex = 0;
+    $insertRelativePos = [];
+
+    foreach ($diffArray as $entry) {
+        [$line, $tag] = $entry;
+
+        if ($tag === 0) { // unchanged
+            $result[] = [
+                'type' => 'unchanged',
+                'line' => $line,
+                'base_lineno' => $baseIndex,
+                'modified_lineno' => $modIndex,
+            ];
+            $baseIndex++;
+            $modIndex++;
+        } elseif ($tag === 1) { // added in modified
+            // track relative insertion position after the last baseline line (baseIndex-1)
+            $lastBaseLine = max($baseIndex - 1, 0);
+            $insertRelativePos[$lastBaseLine] = ($insertRelativePos[$lastBaseLine] ?? 0) + 1;
+
+            $result[] = [
+                'type' => 'inserted',
+                'line' => $line,
+                'relative_to' => $lastBaseLine,
+                'relative_position' => $insertRelativePos[$lastBaseLine],
+                'base_lineno' => null,
+                'modified_lineno' => $modIndex,
+            ];
+            $modIndex++;
+        } elseif ($tag === 2) { // removed from base
+            $result[] = [
+                'type' => 'deleted',
+                'line' => $line,
+                'base_lineno' => $baseIndex,
+                'modified_lineno' => null,
+            ];
+            $baseIndex++;
+        }
+    }
+
+    // Detect modifications = a deleted + inserted pair at same base_lineno
+    $final = [];
+    for ($k = 0; $k < count($result); $k++) {
+        $curr = $result[$k];
+        if (
+            $curr['type'] === 'deleted'
+            && isset($result[$k + 1])
+            && $result[$k + 1]['type'] === 'inserted'
+            && $curr['base_lineno'] === $result[$k + 1]['relative_to']
+        ) {
+            $final[] = [
+                'type' => 'modified',
+                'baseline_lineno' => $curr['base_lineno'],
+                'base_line' => $curr['line'],
+                'line' => $result[$k + 1]['line'],
+                'relative_to' => $curr['base_lineno'],
+                'relative_position' => $result[$k + 1]['relative_position'],
+                'modified_lineno' => $result[$k + 1]['modified_lineno'],
+            ];
+            $k++; // skip next inserted line
+        } else {
+            // skip inserted lines already consumed in modification
+            if (!($curr['type'] === 'inserted' && $k > 0 && $result[$k - 1]['type'] === 'deleted')) {
+                $final[] = $curr;
+            }
+        }
+    }
+
+    return $final;
+}
+
+function reconstructModifiedFromDiff(array $diff): array
+{
+    $res = [];
+    foreach ($diff as $entry) {
+        if (in_array($entry['type'], ['unchanged', 'inserted', 'modified'])) {
+            $res[] = $entry['line'];
+        }
+    }
+    return $res;
+}
+
+/* 
+$baseLines = [
+    "dddd",
+    "ffff",
+    "top line",
+    "11111",
+    "2222",
+    "3333",
+    "444",
+    "6666666",
+    "sssscv",
+    "fisrt line",
+    "a test   modify",
+    "ano  a line   dify",
+    "anot  her line  modify",
+    "bbbbb",
+    "ccccc",
+    "dddd",
+    "kkkkk",
+    "ppp",
+    "last line",
+    "ggggggg",
+    "sssssss",
+];
+
+$modifiedLines = [
+    "dddd",
+    "ffff",
+    "top line",
+    "11111",
+    "2222",
+    "3333",
+    "444",
+    "6666666",
+    "sssscv",
+    "fisrt line",
+    "a test  mody  here  mod dify",
+    "ano  a line   dify",
+    "anot  her line  modify",
+    "bbbbb",
+    "ccccc",
+    "dddd",
+    "kkkkk",
+    "ppp",
+    "last line",
+    "ggggggg",
+    "sssssss",
+];
+
+$diff = diffWithLineInfo($baseLines, $modifiedLines);
+
+echo "Diff JSON:\n";
+echo json_encode($diff, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+$reconstructed = reconstructModifiedFromDiff($diff);
+
+echo "\n\nReconstructed matches modified? ";
+echo (json_encode($reconstructed) === json_encode($modifiedLines)) ? "YES\n" : "NO\n";
+ */ 
 
 }
 
