@@ -87,10 +87,11 @@
                                             class="block px-4 py-2 hover:bg-gray-100">{{ __('post.copy2group') }}</a></li>
                                     <li><a href="{{ route('post.movelang', ['groupid' => $groupid, 'pid' => $pid]) }}"
                                             class="block px-4 py-2 hover:bg-gray-100">{{ __('post.movelang') }}</a></li>
+
+                                    <li><button onclick="window.reversionModalInstance?.open({{ $pid }})"
+                                            class="w-full text-left px-4 py-2 hover:bg-gray-100">{{ __('post.history') }}
+                                        </button></li>
                                 @endif
-                                <li><button onclick="window.reversionModalInstance?.open({{ $pid }})"
-                                        class="w-full text-left px-4 py-2 hover:bg-gray-100">{{ __('post.history') }}
-                                    </button></li>
                             </ul>
 
                             <ul class="text-sm text-red-600">

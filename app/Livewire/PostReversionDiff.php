@@ -21,54 +21,105 @@
  * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
  */
 
-
 namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\PostReversion;
-use Jfcherng\Diff\DiffHelper;
 use App\Services\ReversionService;
 
 class PostReversionDiff extends Component
 {
     public $reversionId;
     public $reversion;
-    public $baseContent;
     public $diffHtml;
- 
-    function styleHtmlDiff(string $html): string
-    {
-        return str_replace(
-            ['<ins>', '<del>'],
-            [
-                '<ins class="bg-green-100 text-green-800 no-underline transition hover:bg-green-200 hover:text-green-900">',
-                '<del class="bg-red-100 text-red-800 line-through transition hover:bg-red-200 hover:text-red-900">'
-            ],
-            $html
-        );
-    }
+
     public function mount($reversionId)
     {
         $this->reversionId = $reversionId;
         $this->reversion = PostReversion::findOrFail($reversionId);
-        if ($this->reversion->version <= 0) {
-            $old = (new ReversionService())->reconstructHtmlPostVersion($this->reversion->postid, 0);
-            $new = (new ReversionService())->reconstructHtmlPostVersion($this->reversion->postid, 0);
-            $old = html_entity_decode($old, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $new = html_entity_decode($new, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $this->diffHtml = DiffHelper::calculate($old, $new, 'SideBySide', ['context' => 3]);
 
-        } else {
-            $old = (new ReversionService())->reconstructHtmlPostVersion($this->reversion->postid, $this->reversion->version - 1);
-            $new = (new ReversionService())->reconstructHtmlPostVersion($this->reversion->postid, $this->reversion->version);
-            $old = html_entity_decode($old, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $new = html_entity_decode($new, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $this->diffHtml = DiffHelper::calculate($old, $new, 'SideBySide', ['context' => 3]);
+        $service = new ReversionService();
 
-        }
-        //   $this->diffHtml = $this->styleHtmlDiff($this->diffHtml);
+        $oldContent = $service->reconstructHtmlPostVersion(
+            $this->reversion->postid,
+            max(0, $this->reversion->version - 1)
+        );
 
+        $newContent = $service->reconstructHtmlPostVersion(
+            $this->reversion->postid,
+            $this->reversion->version
+        );
+
+        $diffData = $service->compare($oldContent, $newContent);
+
+        $this->diffHtml = $this->generateDiffHtml($oldContent, $diffData);
     }
+
+    private function generateDiffHtml(string $oldContent, array $diffData): string
+    {
+        $service = new ReversionService();
+        $baseLines = $service->normalizeHtmlToLines($oldContent);
+
+
+
+        $htmlLines = [];
+        $htmlLines[] = '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+  <thead>
+    <tr>
+      <th style="width: 5%;">Type</th>
+      <th style="width: 45%;">Old Content</th>
+      <th style="width: 50%;">New Content</th>
+    </tr>
+  </thead>
+  <tbody>';
+
+
+        foreach ($diffData as $entry) {
+            logger("reconstructModifiedFromDiff entry", $entry);
+            switch ($entry['type']) {
+                case 'inserted':
+                    $htmlLines[] = '<tr><td style="color: green;">' . $entry['relative_to'] . ' +</td>';
+                    $htmlLines[] = '<td></td>';
+                    $htmlLines[] = '<td style="background-color: #dcfce7;">' . e($entry['line']) . '</td></tr>';
+
+                    break;
+                case 'modified':
+                    $htmlLines[] = '<tr><td style="color: orange;">' . $entry['baseline_lineno'] . ' c</td>';
+                    $htmlLines[] = '<td style="background-color: #fee2e2;">' . e($baseLines[$entry['baseline_lineno']])  . '</td>';
+                    $htmlLines[] = '<td style="background-color: #dcfce7;">' . e($entry['line']) . '</td></tr>';
+
+                    break;
+
+                case 'unchanged':
+                    if (isset($entry['base_lineno']) && isset($baseLines[$entry['base_lineno']])) {
+                        $htmlLines[] = '<tr><td>' . $entry['base_lineno'] . '</td>';
+                        $htmlLines[] = '<td>' . e($baseLines[$entry['base_lineno']]) . '</td>';
+                        $htmlLines[] = '<td>' . e($baseLines[$entry['base_lineno']]) . '</td></tr>';
+
+                    } else {
+                        logger()->error("Invalid base_lineno in diff", $entry);
+                    }
+                    break;
+
+                // Optional: for robustness
+                case 'deleted':
+                    $htmlLines[] = '<tr><td style="color: red;">' . $entry['base_lineno'] . ' -</td>';
+                    $htmlLines[] = '<td style="background-color: #fee2e2;">' . e($baseLines[$entry['base_lineno']]) . '</td>';
+                    $htmlLines[] = '<td></td></tr>';
+
+                    break;
+
+                default:
+                    logger()->warning("Unknown diff entry type: " . $entry['type']);
+            }
+        }
+
+
+        $htmlLines[] = '</tbody></table>';
+        return '<div class="diff-container space-y-1">' . implode("\n", $htmlLines) . '</div>';
+    }
+
+
 
     public function render()
     {

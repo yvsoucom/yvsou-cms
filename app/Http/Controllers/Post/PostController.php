@@ -52,12 +52,13 @@ use Illuminate\Support\Facades\DB;
 use HTMLPurifier;
 use HTMLPurifier_Config;
 
-use Jfcherng\Diff\DiffHelper;
+//use Jfcherng\Diff\DiffHelper;
 // use SebastianBergmann\Diff\Differ;
 //use SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder;
 
 use Illuminate\Support\Str;
 use App\Services\ReversionService;
+use Illuminate\Support\Facades\Log;
 
 //use Jfcherng\Diff\Factory\ParserFactory;
 
@@ -243,7 +244,11 @@ class PostController extends Controller
             }
             $content = nl2br($post->post_content);
             $content = $this->convertToMigrateRelative($content);
+            logger("create post content migration");
+            logger($content);
             $content = $this->convertToProtectedUrls($content, $groupid, $pid);
+            logger($content);
+            logger("create post content prptecturl");
             if ($content === "-1")
                 return redirect()->route('error.attachedfile', compact('errorno'));
             $content = do_shortcode($content);
@@ -291,7 +296,7 @@ class PostController extends Controller
 
         }
 
-        return view('post.index', compact('post','pid', 'groupid', 'post_title', 'content', 'author_by', 'domain_links', 'comments'));
+        return view('post.index', compact('post', 'pid', 'groupid', 'post_title', 'content', 'author_by', 'domain_links', 'comments'));
     }
 
     public function postview($groupid, $srec = 0)
@@ -303,7 +308,7 @@ class PostController extends Controller
         // logger('posts', $posts);
         $postallnumbers = (new PostService())->getPostCounts($groupid, 1);
         $postnumbers = (new PostService())->getPostCounts($groupid, 0);
-        logger("postnumbers",[$postnumbers]);
+        logger("postnumbers", [$postnumbers]);
         $alist = json_decode(Cookie::get('alist'), true) ?? ConstantService::$alist;
         //  $alist = json_decode(Cookie::get('alist'), true) ?? ConstantService::$alist;
 
@@ -362,19 +367,7 @@ class PostController extends Controller
                 'post_version' => $lastVersion,
             ]);
 
-            // logger('Logging comment submission', ['request_data' => $request->all()]);
 
-            /*
-                        // Log
-                        UserLog::create([
-                            'user_login' => $user->name,
-                            'log_type' => 'publish_comment',
-                            'log_date' => now(),
-                            'ip' => $ip,
-                            'blog_id' => app()->getLocale(), // or another way to represent current blog/lang
-                            'content' => $request->comment_content
-                        ]);
-            */
             // Notifications
             $route = "route('post.index', compact('groupid', 'pid'))";
             Notification::route('mail', $user->email)
@@ -432,6 +425,7 @@ class PostController extends Controller
         DB::beginTransaction();
         try {
             $curtime = now();
+            logger("create post store before");
             $post = DomainPost::create([
                 'post_title' => $title,
                 'post_content' => $content,
@@ -441,7 +435,9 @@ class PostController extends Controller
                 'post_status' => $pubstatus,
                 'md5code' => $md5code,
             ]);
+            logger("create post store after");
             $pid = $post->id;
+            logger($pid);
             $insertSuccess = DB::table('domain_post_ids')->insert([
                 'postid' => $pid,
                 'groupid' => $groupid,
@@ -466,6 +462,7 @@ class PostController extends Controller
             DB::rollBack();
             //      return back()->withErrors(['msg' => 'Insert to domain_postIds failed. Possibly duplicate or constraint violation.']);
             $errorno = '1';
+            Log::error('Post create error: ' . $e->getMessage());
             return redirect()->route('error.attachedfile', compact(['errorno']));
 
         }
@@ -513,13 +510,10 @@ class PostController extends Controller
 
             $oldTitle = $post->post_title;
             $diff = null;
-            //    logger("here1", ["1"]);
             if ($oldContent === $content && $oldTitle === $title) {
                 return back()->with('info', 'No changes detected.');
             }
-            logger("old new Content 1", [$oldContent, $content]);
             $lastVersion = PostReversion::where('postid', $post->id)->max('version') ?? 0;
-            logger("old new Content 2", [$oldContent, $content]);
             if ($lastVersion === 0) {
                 PostReversion::create([
                     'postid' => $post->id,
@@ -527,48 +521,43 @@ class PostController extends Controller
                     'userid' => $post->post_author,
                     'version' => 0,
                     'base_content' => $post->post_content,
-                    //   'updated_at' => $post->updated_at,
                     'md5code' => $post->md5code,
                     'diff' => null,
                     'ip' => $post->ip,
                 ]);
             }
 
-            logger("old new Content", [$oldContent, $content]);
-            // Calculate diff in machine-readable format
             if ($oldContent !== $content) {
 
-                /*
-                $oldContent = (string) $oldContent;
-                $content = (string) $content;
-                */
-                logger("old new Content", [$oldContent, $content]);
-                $diff = DiffHelper::calculate(
+                logger("old and new Content:", [$oldContent, $content]);
+
+                $diff = (new ReversionService())->generateCompareJson(
                     $oldContent,
                     $content,
-                    'Json',
-                    ['context' => 0] // optional
                 );
+                logger($diff);
 
+                $reconstruct = (new ReversionService())->reconstructFromDiffRanges($oldContent, $diff);
+                if ($reconstruct != $content) {
+                    DB::rollBack();
+                    $errorno = '5';
+                    logger("new Content:", [$content]);
+
+                    logger('Post reconstruct error: ' , [$reconstruct]);
+                    return redirect()->route('error.attachedfile', compact(['errorno']));
+
+                }
             }
 
-            // Get current max version number
+
             $lastVersion = PostReversion::where('postid', $post->id)->max('version') ?? 0;
 
-            //       logger("herefirst", [$diff]);
-            // Save reversion with diff only
             if (!$diff) {
-                PostReversion::create([
-                    'postid' => $post->id,
-                    'userid' => auth()->id(),
-                    'post_title' => $title,
-                    'version' => $lastVersion + 1,
-                    'base_content' => null,
-                    'diff' => null,
-                    'ip' => $ip,
-                    'updated_at' => $curtime,
-                    'md5code' => $md5code,
-                ]);
+                DB::rollBack();
+                $errorno = '3';
+                Log::error('Post create error: no diff ');
+                return redirect()->route('error.attachedfile', compact(['errorno']));
+
             } else {
                 //           logger("herein sidefirst", [json_encode($diff)]);
                 PostReversion::create([
@@ -577,7 +566,6 @@ class PostController extends Controller
                     'post_title' => $title,
                     'version' => $lastVersion + 1,
                     'base_content' => null,
-                    //   'diff' => json_encode(value: $diff),
                     'diff' => $diff,
                     'ip' => $ip,
                     'updated_at' => $curtime,
@@ -586,7 +574,6 @@ class PostController extends Controller
             }
             //    logger("here", [$diff]);
 
-            // Update main post
             $post->update([
                 'post_title' => $title,
                 'post_content' => $content,
@@ -598,8 +585,9 @@ class PostController extends Controller
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
-            //      return back()->withErrors(['msg' => 'Insert to domain_postIds failed. Possibly duplicate or constraint violation.']);
             $errorno = '2';
+            Log::error('Post create error: ' . $e->getMessage());
+
             return redirect()->route('error.attachedfile', compact(['errorno']));
 
         }
@@ -650,10 +638,14 @@ class PostController extends Controller
 
             $content = (new ReversionService())->reconstructHtmlPostVersion($reversion->postid, $reversion->version);
 
-            $tiff = DiffHelper::calculate($oldContent, $content, 'SideBySide', ['context' => 0]);
+            // $tiff = DiffHelper::calculate($oldContent, $content, 'SideBySide', ['context' => 0]);
 
+            // $tiff = DiffHelper::calculate($oldContent, $content, 'SideBySide', ['context' => 0]);
 
-
+            $tiff = (new ReversionService())->generateCompareJson(
+                $oldContent,
+                $content,
+            );
             PostReversion::create([
                 'postid' => $post->id,
                 'userid' => auth()->id(),
@@ -679,6 +671,8 @@ class PostController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             $errorno = '2';
+            Log::error('Post create error: ' . $e->getMessage());
+
             return redirect()->route('error.attachedfile', compact(['errorno']));
 
         }
@@ -736,7 +730,7 @@ class PostController extends Controller
             ->exists();
 
         if ($exists) {
-    
+
             DB::table('domain_posts')
                 ->where('id', $pid)
                 ->update(['post_status' => 0]);
