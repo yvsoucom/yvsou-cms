@@ -5,6 +5,12 @@
 **yvsou-cms** is a powerful content management system developed with Laravel by Hangzhou Domain Zones Technology Co., Ltd. and Institute of Future Science and Technology G.K., Tokyo. It features fine-grained permission control, dynamic directory structures, and is designed for extensibility and commercial readiness.  yvsou-cms is a newly redeveloped content management system built with Laravel, encompassing the core functionalities of the DSCloud Platform, which was originally launched in 2011 by Hangzhou Domain Zones Technology Co., Ltd.
 
 ---
+→ ## ⭐ Star This Repository  
+→ **If you use yvsou-cms in your projects, star it to show support and help others discover it!**  
+→ *Why star?* Stars improve GitHub visibility and prioritize bug fixes for active users.  
+
+[![GitHub Stars](https://img.shields.io/github/stars/yvsoucom/yvsou-cms?style=social)](https://github.com/yvsoucom/yvsou-cms/stargazers)  
+→ *Embedded star counter for social proof*  
 
 ## 🚀 Features
 
@@ -75,6 +81,17 @@ npm run dev
 
 ## Installation
   [INSTALL.MD](./INSTALL.MD) — Guide for installation 
+
+[Working? Let us know ](https://github.com/yvsoucom/yvsou-cms/issues)
+
+## 🛠️ Contribute
+1. [Check out Good First Issues](https://github.com/yvsoucom/yvsou-cms/issues?q=is:open+is:issue+label:%22good+first+issue%22)
+
+2. [Contribution Guidelines](./CONTRIBUTING.md)
+
+3. Submit a PR!
+
+→ New contributors welcome! 🙌
  
  ## Live Metrics  
 

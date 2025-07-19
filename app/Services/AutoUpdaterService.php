@@ -31,7 +31,8 @@ use Illuminate\Support\Facades\File;
 
 use Illuminate\Support\Facades\Log;
 use PhpZip\ZipFile;
-
+use RuntimeException;
+use Throwable; 
 class AutoUpdaterService
 {
     protected string $repo;
@@ -268,15 +269,17 @@ class AutoUpdaterService
 
     public function overwriteWithExtract(string $extractPath): bool
     {
-        $this->recursiveCopy($extractPath, base_path());
-        File::deleteDirectory($extractPath);
-
-        Log::info("Overwrite complete.");
-        return true;
+        if ($this->recursiveCopy($extractPath, base_path())) {
+            File::deleteDirectory($extractPath);
+            Log::info("Overwrite complete.");
+            return true;
+        }
+        Log::info("Overwrite fail.");
+        return false;
     }
 
 
-    public function runPostUpdate(): void
+    public function runPostUpdate(): bool
     {
         // exec('composer install --no-dev --optimize-autoloader');
         try {
@@ -285,9 +288,11 @@ class AutoUpdaterService
             \Artisan::call('view:cache');
 
             Log::info("Post-update complete.");
+            return true;
         } catch (\Exception $e) {
             Log::error("❌ Post-update failed: " . $e->getMessage());
         }
+        return false;
 
     }
 
@@ -319,34 +324,118 @@ class AutoUpdaterService
 
         $overwriteResult = $this->overwriteWithExtract($extractPath);
         Log::info("[Updater] Overwrite result: " . ($overwriteResult ? 'success' : 'failed'));
+        if ($overwriteResult) {
+            if ($this->runPostUpdate()) {
+                Log::info('[Updater] Post update commands executed.');
+                Log::info('[Updater] Update process completed successfully.');
+                return true;
+            } else {
+                Log::info('[Updater] Post update commands executed.');
+                Log::info('[Updater] Update process fail.');
+                return false;
+            }
 
-        $this->runPostUpdate();
-        Log::info('[Updater] Post update commands executed.');
+        }
 
-        Log::info('[Updater] Update process completed successfully.');
-
-        return true;
+        return false;
     }
 
 
-
-    protected function recursiveCopy($src, $dst)
+    /**
+     * Recursively copies files with proper path handling and error checking
+     */
+    protected function recursiveCopy(string $source, string $destination): bool
     {
-        $dir = opendir($src);
-        @mkdir($dst, 0755, true);
+        try {
+            // Normalize paths
+            $source = rtrim($source, DIRECTORY_SEPARATOR);
+            $destination = rtrim($destination, DIRECTORY_SEPARATOR);
 
-        while (false !== ($file = readdir($dir))) {
-            if (($file !== '.') && ($file !== '..')) {
-                $srcPath = $src . '/' . $file;
-                $dstPath = $dst . '/' . $file;
+            // Check if source exists
+            if (!file_exists($source)) {
+                throw new RuntimeException("Source directory does not exist: {$source}");
+            }
 
-                if (is_dir($srcPath)) {
-                    $this->recursiveCopy($srcPath, $dstPath);
-                } else {
-                    copy($srcPath, $dstPath);
+            // Handle the case where update package contains root folder
+            if (basename($source) === 'yvsou-cms') {
+                $destination = dirname($destination);
+                Log::debug("Adjusting destination path to prevent nesting: {$destination}");
+            }
+
+            // Create destination directory if needed
+            if (!is_dir($destination)) {
+                if (!mkdir($destination, 0755, true)) {
+                    throw new RuntimeException("Failed to create directory: {$destination}");
                 }
             }
+
+            $dir = opendir($source);
+            if ($dir === false) {
+                throw new RuntimeException("Failed to open source directory: {$source}");
+            }
+
+            while (($file = readdir($dir)) !== false) {
+                if ($file === '.' || $file === '..') {
+                    continue;
+                }
+
+                $srcPath = $source . DIRECTORY_SEPARATOR . $file;
+                $dstPath = $destination . DIRECTORY_SEPARATOR . $file;
+
+                if (is_dir($srcPath)) {
+                    if (!$this->recursiveCopy($srcPath, $dstPath)) {
+                        throw new RuntimeException("Failed to copy directory: {$srcPath}");
+                    }
+                } else {
+                    if (!copy($srcPath, $dstPath)) {
+                        throw new RuntimeException("Failed to copy file: {$srcPath}");
+                    }
+                    // Maintain original file permissions
+                    chmod($dstPath, fileperms($srcPath));
+                }
+            }
+
+            closedir($dir);
+            return true;
+
+        } catch (Throwable $e) {
+            Log::error("Recursive copy failed: " . $e->getMessage());
+            return false;
         }
-        closedir($dir);
     }
+    /*  protected function recursiveCopy($src, $dst)
+      {
+            // Normalize paths
+          $src = rtrim($src, '/');
+          $dst = rtrim($dst, '/');
+
+          // Check if source exists
+          if (!is_dir($src)) {
+              throw new \RuntimeException("Source directory not found: {$src}");
+          }
+
+          // Handle package root directory
+          $srcBasename = basename($src);
+          if ($srcBasename === 'yvsou-cms') {
+              $dst = dirname($dst); // Move contents up one level
+          }
+
+          $dir = opendir($src);
+          @mkdir($dst, 0755, true);
+          logger("recursiveCopy",[$src,$dst]) ;
+          while (false !== ($file = readdir($dir))) {
+              if (($file !== '.') && ($file !== '..')) {
+                  $srcPath = $src . '/' . $file;
+                  $dstPath = $dst . '/' . $file;
+
+                  if (is_dir($srcPath)) {
+                      $this->recursiveCopy($srcPath, $dstPath);
+                  } else {
+                      copy($srcPath, $dstPath);
+                  }
+              }
+          }
+          closedir($dir);
+      }
+          */
 }

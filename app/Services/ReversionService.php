@@ -168,7 +168,7 @@ class ReversionService
             if ($tag === 0) { // unchanged
                 $result[] = [
                     'type' => 'unchanged',
-                    'line' => $line,
+                    'line' => null,
                     'base_lineno' => $baseIndex,
                     'modified_lineno' => $modIndex,
                 ];
@@ -191,7 +191,7 @@ class ReversionService
             } elseif ($tag === 2) { // removed from base
                 $result[] = [
                     'type' => 'deleted',
-                    'line' => $line,
+                    'line' => null,
                     'base_lineno' => $baseIndex,
                     'modified_lineno' => null,
                 ];
@@ -212,7 +212,7 @@ class ReversionService
                 $final[] = [
                     'type' => 'modified',
                     'baseline_lineno' => $curr['base_lineno'],
-                    'base_line' => $curr['line'],
+                    'base_line' => null,
                     'line' => $result[$k + 1]['line'],
                     'relative_to' => $curr['base_lineno'],
                     'relative_position' => $result[$k + 1]['relative_position'],

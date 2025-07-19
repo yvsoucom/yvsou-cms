@@ -33,9 +33,7 @@ class UploadController extends Controller
 {
     public function upload(Request $request)
     {
-
         // Validate file existence
-
         $request->validate([
             'file' => 'required|mimes:jpeg,png,jpg,gif,webp,pdf,doc,docx,zip|max:5120' // up to 5MB
         ]);
