@@ -20,17 +20,18 @@
 * Contact: yvsoucom@gmail.com
 * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
 --}}
+ 
 
 <form method="POST" action="{{ route('search.search') }}"
-    class="max-w-md mx-auto space-y-6 bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+    class="max-w-md mx-auto space-y-6 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
     @csrf
-
+ 
     <!-- Keyword Row -->
     <div class="space-y-2">
-        <label for="keyword" class="block text-sm font-medium text-gray-600">{{ __('search.keywordsearch') }}</label>
+        <label for="keyword" class="block text-sm font-medium text-gray-600 dark:text-gray-300">{{ __('search.keywordsearch') }}</label>
         <div class="flex flex-wrap items-center gap-2">
             <input type="text" name="keyword" id="keyword" placeholder="{{ __('search.inputkeyword') }}"
-                class="flex-1 w-full p-3 border-2 border-gray-200 rounded-lg focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200">
+                class="flex-1 w-full p-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200">
             <button type="submit" name="action" value="keyword"
                 class="px-5 py-3 w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -47,10 +48,10 @@
         <!-- My Keyword Row -->
         <div class="space-y-2">
             <label for="mykeyword"
-                class="block text-sm font-medium text-gray-600">{{ __('search.personalkeyword') }}</label>
+                class="block text-sm font-medium text-gray-600 dark:text-gray-300">{{ __('search.personalkeyword') }}</label>
             <div class="flex flex-wrap items-center gap-2">
                 <input type="text" name="mykeyword" id="mykeyword" placeholder="{{ __('search.inputpersonalkeyword') }}"
-                    class="flex-1 w-full p-3 border-2 border-gray-200 rounded-lg focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all duration-200">
+                    class="flex-1 w-full p-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:ring-4 focus:ring-green-100 dark:focus:ring-green-900/30 focus:border-green-500 dark:focus:border-green-400 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200">
                 <button type="submit" name="action" value="mykeyword"
                     class="px-5 py-3 w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -65,10 +66,10 @@
 
     <!-- Directory Row -->
     <div class="space-y-2">
-        <label for="dir" class="block text-sm font-medium text-gray-600">{{ __('search.directorysearch') }}</label>
+        <label for="dir" class="block text-sm font-medium text-gray-600 dark:text-gray-300">{{ __('search.directorysearch') }}</label>
         <div class="flex flex-wrap items-center gap-2">
             <input type="text" name="dir" id="dir" placeholder="{{ __('search.inputdirectory') }}"
-                class="flex-1 w-full p-3 border-2 border-gray-200 rounded-lg focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-200">
+                class="flex-1 w-full p-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:ring-4 focus:ring-purple-100 dark:focus:ring-purple-900/30 focus:border-purple-500 dark:focus:border-purple-400 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200">
             <button type="submit" name="action" value="dir"
                 class="px-5 py-3 w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -102,3 +103,4 @@
         </div>
     @endauth
 </form>
+ 

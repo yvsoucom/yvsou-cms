@@ -137,8 +137,8 @@
 
   <!-- Mobile Nav -->
   <nav id="mobile-menu"
-       class="md:hidden hidden flex flex-col space-y-2 px-4 pt-2 pb-4 bg-white dark:bg-gray-900 border-t shadow-inner">
-    @foreach ($getlangSet as $code => $language)
+     class="flex md:hidden flex-col space-y-2 px-4 pt-2 pb-4 bg-white dark:bg-gray-900 border-t shadow-inner"
+       @foreach ($getlangSet as $code => $language)
       <a href="{{ route('lang.setLang', $code) }}"
          class="block px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 {{ app()->getLocale() === $code ? 'font-bold text-blue-600' : '' }}"
          @click="document.getElementById('mobile-menu').classList.add('hidden')">

@@ -26,7 +26,7 @@
 @section('content')
 
     <div class="text-left mt-12">
-        <p class="text-lg text-gray-700">{{ $aboutText }}</p>
+        <p class="text-lg text-gray-700  dark:text-gray-300 transition-colors duration-200">{{ $aboutText }}</p>
     </div>
 
 @endsection

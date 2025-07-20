@@ -25,16 +25,20 @@
 @php
     $items = app(\App\Services\PagelineService::class)->showNewPosts();
 @endphp
-
-<div>
-    <h2 class="text-xl font-semibold mb-3"> {{ __('headline.newposts')}}</h2>
+ 
+ 
+<div class="bg-white dark:bg-gray-800">
+    <h2 class="text-xl font-semibold mb-3 dark:text-gray-100">
+        {{ __('headline.newposts')}}
+    </h2>
 
     <!-- Scrollable container -->
-    <div class="max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-3 bg-white shadow-sm">
+    <div class="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 shadow-sm dark:shadow-gray-700/50">
         <ul class="space-y-2">
             @foreach ($items as $item)
                 <li>
-                    <a href="{{ $item['url'] }}" class="text-blue-600 hover:underline">
+                    <a href="{{ $item['url'] }}" 
+                       class="text-blue-600 dark:text-blue-400 hover:underline transition-colors">
                         {{ $item['title'] }}
                     </a>
                 </li>
@@ -42,4 +46,3 @@
         </ul>
     </div>
 </div>
- 

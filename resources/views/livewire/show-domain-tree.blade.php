@@ -21,7 +21,8 @@
 * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
 */
 --}}
-<div>
+ 
+<div class="bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 p-4 rounded">
     @if ($domain)
         <ul>
             @include('livewire.partials.domain_node', [
@@ -31,6 +32,6 @@
             ])
         </ul>
     @else
-        <p>{{__('livewire.norootdomain')}}</p>
+        <p>{{ __('livewire.norootdomain') }}</p>
     @endif
 </div>
