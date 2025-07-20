@@ -1,7 +1,7 @@
 {{--
-  @copyright (c) 2025  Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo
-  @author Lican Huang
-  @created 2025-06-17
+@copyright (c) 2025 Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo
+@author Lican Huang
+@created 2025-06-17
 * License: Dual Licensed – GPLv3 or Commercial
 *
 * This program is free software: you can redistribute it and/or modify
@@ -23,12 +23,12 @@
 --}}
 
 @extends('layouts.app')
- 
+
 
 @section('content')
-        <div class="space-y-8"> 
-        @include('post.page')
-        @include('comment.comment')
-        @include('post.history')
-        </div>
+  <div class="space-y-8  dark:bg-gray-900 dark:text-gray-200 min-h-screen pt-16 pb-8">
+    @include('post.page')
+    @include('comment.comment')
+    @include('post.history')
+  </div>
 @endsection
