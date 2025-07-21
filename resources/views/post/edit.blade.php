@@ -25,13 +25,12 @@
 @extends('layouts.app')
 
 @section('content')
-
-  <div class="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
-    <div class="w-full max-w-3xl bg-white p-6 rounded-2xl shadow-lg">
-    <h1 class="text-center text-2xl md:text-3xl font-bold text-gray-800 mb-6">
-      {{ __('post.Edit Post') }}  
+ 
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4 py-8">
+    <div class="w-full max-w-3xl bg-white dark:bg-gray-400 p-6 rounded-2xl shadow-lg transition-colors duration-200">
+    <h1 class="text-center text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-800 mb-6">
+      {{ __('post.Edit Post') }}
     </h1>
-
     <form method="POST" action="{{ route('post.update') }}" enctype="multipart/form-data" class="space-y-5">
       @csrf
       <input type="hidden" name="groupid" value="{{ $groupid }}">

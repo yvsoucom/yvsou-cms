@@ -60,53 +60,55 @@ class PostReversionDiff extends Component
         $service = new ReversionService();
         $baseLines = $service->normalizeHtmlToLines($oldContent);
 
-
-
         $htmlLines = [];
-        $htmlLines[] = '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr>
-      <th style="width: 5%;">Type</th>
-      <th style="width: 45%;">Old Content</th>
-      <th style="width: 50%;">New Content</th>
-    </tr>
-  </thead>
-  <tbody>';
-
+        $htmlLines[] = '<div class="overflow-x-auto">';
+        $htmlLines[] = '<table class="w-full border-collapse border dark:border-gray-600">';
+        $htmlLines[] = '  <thead>';
+        $htmlLines[] = '    <tr class="bg-gray-100 dark:bg-gray-700">';
+        $htmlLines[] = '      <th class="w-1/12 p-2 text-left border dark:border-gray-600">Type</th>';
+        $htmlLines[] = '      <th class="w-5/12 p-2 text-left border dark:border-gray-600">Old Content</th>';
+        $htmlLines[] = '      <th class="w-6/12 p-2 text-left border dark:border-gray-600">New Content</th>';
+        $htmlLines[] = '    </tr>';
+        $htmlLines[] = '  </thead>';
+        $htmlLines[] = '  <tbody class="bg-white dark:bg-gray-800">';
 
         foreach ($diffData as $entry) {
             logger("reconstructModifiedFromDiff entry", $entry);
             switch ($entry['type']) {
                 case 'inserted':
-                    $htmlLines[] = '<tr><td style="color: green;">' . $entry['relative_to'] . ' +</td>';
-                    $htmlLines[] = '<td></td>';
-                    $htmlLines[] = '<td style="background-color: #dcfce7;">' . e($entry['line']) . '</td></tr>';
-
+                    $htmlLines[] = '<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">';
+                    $htmlLines[] = '<td class="p-2 border dark:border-gray-600 text-green-600 dark:text-green-400">' . $entry['relative_to'] . ' +</td>';
+                    $htmlLines[] = '<td class="p-2 border dark:border-gray-600"></td>';
+                    $htmlLines[] = '<td class="p-2 border dark:border-gray-600 bg-green-50 dark:bg-green-900/30">' . e($entry['line']) . '</td>';
+                    $htmlLines[] = '</tr>';
                     break;
-                case 'modified':
-                    $htmlLines[] = '<tr><td style="color: orange;">' . $entry['baseline_lineno'] . ' c</td>';
-                    $htmlLines[] = '<td style="background-color: #fee2e2;">' . e($baseLines[$entry['baseline_lineno']])  . '</td>';
-                    $htmlLines[] = '<td style="background-color: #dcfce7;">' . e($entry['line']) . '</td></tr>';
 
+                case 'modified':
+                    $htmlLines[] = '<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">';
+                    $htmlLines[] = '<td class="p-2 border dark:border-gray-600 text-yellow-600 dark:text-yellow-400">' . $entry['baseline_lineno'] . ' c</td>';
+                    $htmlLines[] = '<td class="p-2 border dark:border-gray-600 bg-green-50 dark:bg-green-900/30">' . e($baseLines[$entry['baseline_lineno']]) . '</td>';
+                    $htmlLines[] = '<td class="p-2 border dark:border-gray-600 bg-green-50 dark:bg-green-900/30">' . e($entry['line']) . '</td>';
+                    $htmlLines[] = '</tr>';
                     break;
 
                 case 'unchanged':
                     if (isset($entry['base_lineno']) && isset($baseLines[$entry['base_lineno']])) {
-                        $htmlLines[] = '<tr><td>' . $entry['base_lineno'] . '</td>';
-                        $htmlLines[] = '<td>' . e($baseLines[$entry['base_lineno']]) . '</td>';
-                        $htmlLines[] = '<td>' . e($baseLines[$entry['base_lineno']]) . '</td></tr>';
-
+                        $htmlLines[] = '<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">';
+                        $htmlLines[] = '<td class="p-2 border dark:border-gray-600 text-gray-500 dark:text-gray-400">' . $entry['base_lineno'] . '</td>';
+                        $htmlLines[] = '<td class="p-2 border dark:border-gray-600  text-gray-500 dark:text-gray-400">' . e($baseLines[$entry['base_lineno']]) . '</td>';
+                        $htmlLines[] = '<td class="p-2 border dark:border-gray-600 text-gray-500 dark:text-gray-400">' . e($baseLines[$entry['base_lineno']]) . '</td>';
+                        $htmlLines[] = '</tr>';
                     } else {
                         logger()->error("Invalid base_lineno in diff", $entry);
                     }
                     break;
 
-                // Optional: for robustness
                 case 'deleted':
-                    $htmlLines[] = '<tr><td style="color: red;">' . $entry['base_lineno'] . ' -</td>';
-                    $htmlLines[] = '<td style="background-color: #fee2e2;">' . e($baseLines[$entry['base_lineno']]) . '</td>';
-                    $htmlLines[] = '<td></td></tr>';
-
+                    $htmlLines[] = '<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">';
+                    $htmlLines[] = '<td class="p-2 border dark:border-gray-600 text-red-600 dark:text-red-400">' . $entry['base_lineno'] . ' -</td>';
+                    $htmlLines[] = '<td class="p-2 border dark:border-gray-600 bg-green-50 dark:bg-green-900/30">' . e($baseLines[$entry['base_lineno']]) . '</td>';
+                    $htmlLines[] = '<td class="p-2 border dark:border-gray-600"></td>';
+                    $htmlLines[] = '</tr>';
                     break;
 
                 default:
@@ -114,15 +116,15 @@ class PostReversionDiff extends Component
             }
         }
 
+        $htmlLines[] = '  </tbody>';
+        $htmlLines[] = '</table>';
+        $htmlLines[] = '</div>';
 
-        $htmlLines[] = '</tbody></table>';
-        return '<div class="diff-container space-y-1">' . implode("\n", $htmlLines) . '</div>';
+        return implode("\n", $htmlLines);
     }
-
-
 
     public function render()
     {
         return view('livewire.post-reversion-diff')->layout('layouts.app');
     }
-}
+} 

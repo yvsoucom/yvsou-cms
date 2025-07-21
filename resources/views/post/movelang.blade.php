@@ -25,7 +25,7 @@
 @section('content')
 <div class="max-w-xl mx-auto mt-10 px-4 sm:px-6 lg:px-8">
     <form id="copypostlink" method="POST" action="{{ route('post.movelangupdate', compact('groupid', 'pid')) }}"
-          class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow dark:shadow-gray-700/50 space-y-6">
+          class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md dark:shadow-gray-900/50 space-y-6 transition-colors duration-200">
         @csrf
         @method('PATCH')
 
@@ -34,13 +34,13 @@
 
         <!-- Language Dropdown -->
         <div>
-            <label for="language" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label for="language" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 {{ __('post.select_lang') }}
             </label>
             <select name="language" id="language"
-                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200">
+                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 hover:cursor-pointer">
                 @foreach ($langIdSet as $item)
-                    <option value="{{ $item['langid'] }}" class="text-gray-900 dark:text-gray-200">
+                    <option value="{{ $item['langid'] }}" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
                         {{ $item['language'] }}
                     </option>
                 @endforeach
@@ -48,12 +48,12 @@
         </div>
 
         <!-- Submit Button -->
-        <div class="flex justify-end">
+        <div class="flex justify-end space-x-3">
             <button type="submit"
-                    class="inline-flex items-center px-6 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 rounded-md shadow hover:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                    class="inline-flex items-center px-6 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 rounded-md shadow hover:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 transition-colors duration-200">
                 {{ __('post.move_targetlang') }}
             </button>
         </div>
     </form>
 </div>
-@endsection  
+@endsection 
