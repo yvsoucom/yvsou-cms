@@ -102,3 +102,8 @@ You can access the live Metrics here:
 [https://cms.yvsou.com/]  migration from dscloud platform  (https://cms.yvsou.com/)     
 [https://cms-test.yvsou.com/]   test yvsou-cms site  (https://cms-test.yvsou.com/)
 
+## References
+[Lican Huang, Authorization Policies and Co-Operating Strategies of DSCloud Platform
+](https://arxiv.org/pdf/1801.02147)
+[Lican Huang, Directory Service Provided by DSCloud Platform
+](https://arxiv.org/pdf/1710.08101)
