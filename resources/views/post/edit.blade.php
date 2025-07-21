@@ -29,7 +29,7 @@
   <div class="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
     <div class="w-full max-w-3xl bg-white p-6 rounded-2xl shadow-lg">
     <h1 class="text-center text-2xl md:text-3xl font-bold text-gray-800 mb-6">
-      Edit Post
+      {{ __('post.Edit Post') }}  
     </h1>
 
     <form method="POST" action="{{ route('post.update') }}" enctype="multipart/form-data" class="space-y-5">
