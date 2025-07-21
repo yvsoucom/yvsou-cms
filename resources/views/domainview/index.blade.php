@@ -78,6 +78,49 @@
                         class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">✏️
                         {{ __('domain.createsub') }}</a>
                     <!-- Other menu items with same dark mode classes -->
+                    <a href="{{ route('domainview.editdomain', ['groupid' => $groupid]) }}"
+                       class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">✏️ {{ __('domain.editdomain') }}</a>
+
+
+                    <form method="GET" action="{{ route('domainview.rights.show', compact('groupid')) }}">
+                        @csrf
+                        <input type="hidden" name="groupid" value="{{ $groupid }}">
+                        <button type="submit"
+                            class="w-full text-left px-4 py-2 text-sm text-yellow-600 hover:bg-yellow-100">🛡️{{ __('domain.editrights') }}</button>
+                    </form>
+                    {{--
+                    <form method="POST" action="{{ route('domainview.auditcheck', compact('groupid')) }}">
+                        @csrf @method('PATCH')
+                        <button type="submit"
+                            class="w-full text-left px-4 py-2 text-sm text-yellow-600 hover:bg-yellow-100">✔️
+                            {{ __('domain.auditcheck') }} </button>
+                    </form>
+                    <form method="POST" action="{{ route('domainview.audituncheck', compact('groupid')) }}">
+                        @csrf @method('PATCH')
+                        <button type="submit"
+                            class="w-full text-left px-4 py-2 text-sm text-yellow-600 hover:bg-yellow-100">❌
+                            {{ __('domain.audituncheck') }} </button>
+                    </form>
+                    <form method="POST" action="{{ route('domainview.trash', compact('groupid')) }}"
+                        onsubmit="return confirm({{ __('domain.comfirmtrash') }});">
+                        @csrf @method('PATCH')
+                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">🗑️
+                            {{ __('domain.trashdomain') }} </button>
+                    </form>
+                    <form method="POST" action="{{ route('domainview.untrash', compact('groupid')) }}">
+                        @csrf @method('PATCH')
+                        <button type="submit"
+                            class="w-full text-left px-4 py-2 text-sm text-green-600 hover:bg-green-100">♻️
+                            {{ __('domain.restoredomain') }} </button>
+                    </form>
+                    <form method="POST" action="{{ route('domainview.destroy', compact('groupid')) }}"
+                        onsubmit="return confirm({{ __('domain.permanetdelete') }}  );">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-200">❌
+                            {{ __('domain.deletedomain') }} </button>
+                    </form>
+                    --}}
+
                 </div>
             </div>
         </div>
@@ -94,19 +137,19 @@
                             clip-rule="evenodd" />
                     </svg>
                 </button>
-        @php
-        $groupActions = [
-            ['route' => 'groupmessage', 'label' => __('domain.broadcastmsg')],
-            ['route' => 'sendMessage2Users', 'label' => __('domain.sendMessage2Users')],
-            ['route' => 'approvegroup', 'label' => __("domain.approvegroup")],
-            /*
-            ['route' => 'invitegroup', 'label' => __("domain.invitegroup")],
-            ['route' => 'auditcheckgroup', 'label' => __("domain.auditcheckgroup")],
-            ['route' => 'unauditcheckgroup', 'label' => __("domain.audituncheckgroup")],
-            */
-        ];
+                @php
+                    $groupActions = [
+                        ['route' => 'groupmessage', 'label' => __('domain.broadcastmsg')],
+                        ['route' => 'sendMessage2Users', 'label' => __('domain.sendMessage2Users')],
+                        ['route' => 'approvegroup', 'label' => __("domain.approvegroup")],
+                        /*
+                        ['route' => 'invitegroup', 'label' => __("domain.invitegroup")],
+                        ['route' => 'auditcheckgroup', 'label' => __("domain.auditcheckgroup")],
+                        ['route' => 'unauditcheckgroup', 'label' => __("domain.audituncheckgroup")],
+                        */
+                    ];
 
-        @endphp
+                @endphp
                 <div x-show="open" x-transition x-cloak
                     class="absolute right-0 z-50 mt-2 w-48 origin-top-right bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700 rounded-md shadow-lg dark:shadow-gray-900/50">
                     @foreach ($groupActions as $action)
@@ -198,4 +241,3 @@
     <!-- #endregion -->
 
 @endsection
- 

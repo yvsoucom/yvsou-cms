@@ -49,23 +49,88 @@
                             <ul class="text-sm text-gray-700 dark:text-gray-300">
                                 @if (Auth::user() && Auth::user()->canManagePaper($pid))
                                     <li><a href="{{ route('post.edit', ['groupid' => $groupid, 'pid' => $pid]) }}"
-                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">{{ __('post.edit') }}</a></li>
-                                    <!-- Other menu items with same dark mode classes -->
+                                            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">{{ __('post.edit') }}</a>
+                                    </li>
+                                    <li><a href="{{ route('post.file-rights.show', ['groupid' => $groupid, 'pid' => $pid]) }}"
+                                            class="block px-4 py-2 hover:bg-gray-100">{{ __('post.showrights') }} </a></li>
+                                    <li><a href="{{ route('post.comment-rights.show', ['groupid' => $groupid, 'pid' => $pid]) }}"
+                                            class="block px-4 py-2 hover:bg-gray-100">{{ __('post.showcommentrights') }}
+                                        </a></li>
+
+                                    <li><a href="{{ route('post.movegroup', ['groupid' => $groupid, 'pid' => $pid]) }}"
+                                            class="block px-4 py-2 hover:bg-gray-100">{{ __('post.move2group') }}</a></li>
+                                    <li><a href="{{ route('post.copygroup', ['groupid' => $groupid, 'pid' => $pid]) }}"
+                                            class="block px-4 py-2 hover:bg-gray-100">{{ __('post.copy2group') }}</a></li>
+                                    <li><a href="{{ route('post.movelang', ['groupid' => $groupid, 'pid' => $pid]) }}"
+                                            class="block px-4 py-2 hover:bg-gray-100">{{ __('post.movelang') }}</a></li>
+
+                                    <li><button onclick="window.reversionModalInstance?.open({{ $pid }})"
+                                            class="w-full text-left px-4 py-2 hover:bg-gray-100">{{ __('post.history') }}
+                                        </button></li>
+
                                 @endif
                             </ul>
 
                             <ul class="text-sm text-red-600 dark:text-red-400">
                                 @if (Auth::user() && Auth::user()->canManagePaper($pid))
                                     <!-- Red menu items with dark mode hover states -->
-                                    <li>
-                                        <form method="POST"
-                                            action="{{ route('post.auditcheck', compact('groupid', 'pid')) }}">
-                                            @csrf @method('PATCH')
-                                            <button type="submit"
-                                                class="w-full text-left px-4 py-2 hover:bg-red-100 dark:hover:bg-red-900/30">{{ __('post.auditcheck') }}</button>
-                                        </form>
-                                    </li>
-                                    <!-- Other red menu items -->
+                                   
+
+                                    @if ($post->post_status == 0)
+                                        <li>
+                                            <form method="POST"
+                                                action="{{ route('post.auditcheck', compact('groupid', 'pid')) }}">
+                                                @csrf @method('PATCH')
+                                                <button type="submit"
+                                                    class="w-full text-left px-4 py-2 hover:bg-red-100 dark:hover:bg-red-900/30">{{ __('post.auditcheck') }}
+                                                </button>
+                                            </form>
+                                        </li>
+                                    @else
+                                        <li>
+                                            <form method="POST"
+                                                action="{{ route('post.audituncheck', compact('groupid', 'pid')) }}">
+                                                @csrf @method('PATCH')
+                                                <button type="submit"
+                                                    class="w-full text-left px-4 py-2 hover:bg-red-100 dark:hover:bg-red-900/30">{{ __('post.uncheck') }}
+                                                </button>
+                                            </form>
+                                        </li>
+                                    @endif
+
+                                    @if (!\App\Models\DomainPostId::isTrashedFor($pid, $groupid))
+                                        <li>
+                                            <form method="POST" action="{{ route('post.trash', compact('groupid', 'pid')) }}"
+                                                onsubmit="return confirm('{{ __('post.comfirmtrash') }}');">
+
+                                                @csrf @method('PATCH')
+                                                <button type="submit"
+                                                    class="w-full text-left px-4 py-2 hover:bg-red-100 dark:hover:bg-red-900/30">{{ __('post.trash') }}
+                                                </button>
+                                            </form>
+                                        </li>
+                                    @else
+                                        <li>
+                                            <form method="POST" action="{{ route('post.untrash', compact('groupid', 'pid')) }}">
+                                                @csrf @method('PATCH')
+                                                <button type="submit"
+                                                    class="w-full text-left px-4 py-2 hover:bg-red-100 dark:hover:bg-red-900/30">{{ __('post.restorewithicon') }}
+                                                </button>
+                                            </form>
+                                        </li>
+                                    @endif
+                                    @if ($post->post_status == 2)
+                                        <li>
+                                            <form method="POST" action="{{ route('post.destroy', compact('groupid', 'pid')) }}"
+                                                onsubmit="return confirm('{{ __('post.comfirmdelete') }}');">
+
+                                                @csrf @method('DELETE')
+                                                <button type="submit"
+                                                    class="w-full text-left px-4 py-2 hover:bg-red-100 dark:hover:bg-red-900/30">{{ __('post.deletepermanent') }}</button>
+                                            </form>
+                                        </li>
+                                    @endif
+
                                 @endif
                             </ul>
                         </div>
@@ -75,7 +140,8 @@
 
             {{-- Author Row --}}
             <tr>
-                <td colspan="2" class="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">👤 Author: {{ $author_by }}</td>
+                <td colspan="2" class="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">👤 Author: {{ $author_by }}
+                </td>
             </tr>
         </tbody>
     </table>
@@ -84,4 +150,3 @@
     <div class="prose max-w-none dark:prose-invert dark:text-gray-300">{!! $content !!}</div>
 
 </div>
- 
