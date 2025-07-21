@@ -125,6 +125,6 @@ class PostReversionDiff extends Component
 
     public function render()
     {
-        return view('livewire.post-reversion-diff')->layout('layouts.app');
+        return view('livewire.post-reversion-diff');
     }
 } 

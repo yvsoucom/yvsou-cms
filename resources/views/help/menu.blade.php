@@ -22,13 +22,16 @@
 */
 --}}
 @extends('layouts.app')
-
 @section('content')
 
     <div class="text-left mt-12">
-        <main class="prose mx-auto p-8">
+        <main class="prose dark:prose-invert 
+                        max-w-3xl mx-auto p-8
+                        bg-white dark:bg-gray-900
+                        text-gray-800 dark:text-gray-200
+                        rounded-lg shadow
+                        transition-colors duration-200">
             {!! Str::markdown($menuMd) !!}
         </main>
     </div>
-
 @endsection

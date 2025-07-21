@@ -22,21 +22,23 @@
 */
 --}}
 @extends('layouts.app')
-
 @section('content')
+    <div class="space-y-4">
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-3">Found my groups</h2>
 
-    <div>
-        <h2 class="text-xl font-semibold mb-3">Found my groups</h2>
+        {{-- Item count --}}
+        <p class="text-gray-600 dark:text-gray-400 mb-3">
+            Found {{ count($dirlines) }} items
+        </p>
 
-        {{-- Display count outside of scroll box --}}
-        <p class="mb-2 text-gray-600">Found {{ count($dirlines) }} items</p>
-
-        <!-- Scrollable container for the list only -->
-        <div class="max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-3 bg-white shadow-sm">
-            <ul class="space-y-2">
+        <!-- Scrollable container -->
+        <div
+            class="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-gray-800 shadow-sm dark:shadow-gray-900/30 transition-colors duration-200">
+            <ul class="space-y-2.5">
                 @foreach ($dirlines as $item)
-                    <li>
-                        <a href="{{ $item['url'] }}" class="text-blue-600 hover:underline">
+                    <li class="hover:bg-gray-50 dark:hover:bg-gray-700/40 px-2 py-1.5 rounded-md transition-colors">
+                        <a href="{{ $item['url'] }}"
+                            class="text-blue-600 dark:text-blue-400 hover:underline hover:text-blue-800 dark:hover:text-blue-300">
                             {{ $item['title'] }}
                         </a>
                     </li>
@@ -44,5 +46,4 @@
             </ul>
         </div>
     </div>
-
 @endsection

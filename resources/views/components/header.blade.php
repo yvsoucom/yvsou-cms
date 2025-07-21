@@ -73,7 +73,7 @@
           <button @click="open = !open"
                   aria-haspopup="true"
                   :aria-expanded="open"
-                  class="px-3 py-2 flex items-center select-none">
+                  class="px-3 py-2 flex items-center   text-sm border border-transparent rounded hover:border-gray-300 dark:hover:border-gray-600 dark:text-gray-100 transition select-none">
             {{ __('header.help') }}
             <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
               <path d="M5.25 7L10 11.75 14.75 7z" />
