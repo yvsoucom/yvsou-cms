@@ -26,7 +26,7 @@ jobs:
       - name: Detect License and validate GPL-3.0
         run: |
           echo "🔍 Running license detection with licensee"
-          LICENSE=$(licensee detect . --quiet --json | jq -r '.license.spdx_id')
+          LICENSE=$(licensee detect . --json | jq -r '.license.spdx_id')
           echo "📄 Detected license: $LICENSE"
 
           if [[ "$LICENSE" != "GPL-3.0" && "$LICENSE" != "GPL-3.0-or-later" ]]; then
