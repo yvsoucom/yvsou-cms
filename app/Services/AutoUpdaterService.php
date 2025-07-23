@@ -32,7 +32,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use PhpZip\ZipFile;
 use RuntimeException;
-use Throwable; 
+use Throwable;
 class AutoUpdaterService
 {
     protected string $repo;
@@ -269,6 +269,7 @@ class AutoUpdaterService
 
     public function overwriteWithExtract(string $extractPath): bool
     {
+
         if ($this->recursiveCopy($extractPath, base_path())) {
             File::deleteDirectory($extractPath);
             Log::info("Overwrite complete.");
@@ -387,11 +388,16 @@ class AutoUpdaterService
                         throw new RuntimeException("Failed to copy directory: {$srcPath}");
                     }
                 } else {
-                    if (!copy($srcPath, $dstPath)) {
-                        throw new RuntimeException("Failed to copy file: {$srcPath}");
+                    if (chmod($dstPath, 0777)) {
+                        echo "Permissions changed temp 777 successfully";
+
+                        if (!copy($srcPath, $dstPath)) {
+                            chmod($dstPath, 0755);
+                            throw new RuntimeException("Failed to copy file: {$srcPath}");
+                        }
+                        // Maintain original file permissions
+                        chmod($dstPath, 0755);
                     }
-                    // Maintain original file permissions
-                    chmod($dstPath, fileperms($srcPath));
                 }
             }
 
