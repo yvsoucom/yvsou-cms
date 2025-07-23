@@ -21,17 +21,16 @@
 * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
 */
 --}}
-
 <x-guest-layout>
-    <div class="flex h-screen items-center justify-center bg-gray-50">
-        <div class="w-full max-w-md p-6 bg-white rounded shadow">
+    <div class="flex h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div class="w-full max-w-md p-6 bg-white dark:bg-gray-800 rounded shadow">
 
-            <div class="mb-4 text-sm text-gray-600">
+            <div class="mb-4 text-sm text-gray-600 dark:text-gray-300">
                 {{ __('auth.verifyemail') }}
             </div>
 
             @if (session('status') == 'verification-link-sent')
-                <div class="mb-4 font-medium text-sm text-green-600">
+                <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
                     {{ __('auth.verifyemaillink') }}
                 </div>
             @endif
@@ -41,7 +40,7 @@
                     @csrf
 
                     <div>
-                        <x-primary-button>
+                        <x-primary-button class="dark:bg-indigo-600 dark:hover:bg-indigo-700">
                             {{ __('auth.resendverifyemail') }}
                         </x-primary-button>
                     </div>
@@ -51,7 +50,7 @@
                     @csrf
 
                     <button type="submit"
-                        class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-indigo-600">
                         {{ __('auth.logout') }}
                     </button>
                 </form>
