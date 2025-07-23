@@ -28,25 +28,34 @@
     @can('admin')
         @include('version.version-banner')
     @endcan
-    <div class="min-h-screen flex items-center justify-center">
+    <div class="min-h-screen flex bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
 
-        <div class="w-64 p-6 bg-white shadow rounded text-center">
-            <h2 class="text-xl font-bold mb-4">{{ __('dashboard.dashboard') }}</h2>
+        <div class="w-64 p-6 bg-white dark:bg-gray-800 shadow rounded-lg text-center transition-colors duration-200">
+            <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">{{ __('dashboard.dashboard') }}</h2>
             <nav class="space-y-3">
-                <a href="/admin/users" class="block text-gray-800 hover:font-semibold">{{ __('dashboard.usercenter') }}</a>
+                <a href="{{ route('admin.usercenter.index') }}" 
+                   class="block text-gray-800 dark:text-gray-300 hover:font-semibold hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-150">
+                   {{ __('dashboard.usercenter') }}
+                </a>
                 @can('admin')
-                    <a href="/admin/plugins" class="block text-gray-800 hover:font-semibold">{{ __('dashboard.plugins') }}</a>
-                    <a href="{{ route('admin.setmail.edit') }}" class="block text-gray-800 hover:font-semibold">
-                        {{ __('dashboard.mailsettings') }}
+                    <a href="{{ route('admin.plugins.index') }}" 
+                       class="block text-gray-800 dark:text-gray-300 hover:font-semibold hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-150">
+                       {{ __('dashboard.plugins') }}
                     </a>
-                    <a href="{{ route('admin.setcustomconfig.edit') }}" class="block text-gray-800 hover:font-semibold">
-                        {{ __('dashboard.custompagesettings') }}
+                    <a href="{{ route('admin.setmail.edit') }}" 
+                       class="block text-gray-800 dark:text-gray-300 hover:font-semibold hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-150">
+                       {{ __('dashboard.mailsettings') }}
                     </a>
-                     <a href="{{ route('admin.castmsg.edit') }}" class="block text-gray-800 hover:font-semibold">
-                        {{ __('dashboard.castmsg') }}
+                    <a href="{{ route('admin.setcustomconfig.edit') }}" 
+                       class="block text-gray-800 dark:text-gray-300 hover:font-semibold hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-150">
+                       {{ __('dashboard.custompagesettings') }}
+                    </a>
+                    <a href="{{ route('admin.castmsg.edit') }}" 
+                       class="block text-gray-800 dark:text-gray-300 hover:font-semibold hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-150">
+                       {{ __('dashboard.castmsg') }}
                     </a>
                 @endcan
             </nav>
         </div>
     </div>
-@endsection
+@endsection 

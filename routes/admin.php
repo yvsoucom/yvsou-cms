@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\PluginController;
 use App\Http\Controllers\Admin\MailSettingsController;
 use App\Http\Controllers\Admin\CastMsgController;
 use App\Http\Controllers\Admin\CustomConfigSettingsController;
+use App\Http\Controllers\Admin\UserCenterController;
 use App\Http\Controllers\ProfileController;
 
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
@@ -51,7 +52,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     // ... existing routes ...
-
+    Route::prefix('usercenter')->name('usercenter.')->group(function () {
+        Route::get('/', [UserCenterController::class, 'index'])->name('index');
+    });
     Route::prefix('plugins')->name('plugins.')->group(function () {
         Route::get('/', [PluginController::class, 'index'])->name('index');
         Route::post('/upload', [PluginController::class, 'upload'])->name('upload');
