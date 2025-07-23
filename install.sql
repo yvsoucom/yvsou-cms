@@ -1,4 +1,8 @@
--- SQL Version: sql-v1.1.0
+/*
+-- @copyright (c) 2025 Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo
+-- * License: Dual Licensed – GPLv3 or Commercial
+*/
+-- SQL Version: sql-v1.2.0
 -- Generated on: Tue Jul 15 12:49:43 UTC 2025-- MySQL dump 10.13  Distrib 8.4.5, for macos15.2 (arm64)
 --
 -- Host: localhost    Database: yvsou
