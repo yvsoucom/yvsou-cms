@@ -1,0 +1,91 @@
+name: License Check and SPDX Injection
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check-license:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Ruby (for licensee)
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Install licensee and jq
+        run: |
+          gem install licensee
+          sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Detect License and validate GPL-3.0
+        run: |
+          echo "🔍 Running license detection with licensee"
+          LICENSE=$(licensee detect . --quiet --json | jq -r '.license.spdx_id')
+          echo "📄 Detected license: $LICENSE"
+
+          if [[ "$LICENSE" != "GPL-3.0" && "$LICENSE" != "GPL-3.0-or-later" ]]; then
+            echo "❌ License is not GPL-3.0 or GPL-3.0-or-later. Found: $LICENSE"
+            exit 1
+          fi
+
+  add-spdx-headers:
+    runs-on: ubuntu-latest
+    needs: check-license
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Add SPDX headers and generate report
+        run: |
+          LICENSE_ID="GPL-3.0-or-later"
+          REPORT="headers-added.txt"
+          > $REPORT
+
+          # PHP & Blade
+          find . -type f \( -name "*.php" -o -name "*.blade.php" \) | while read -r file; do
+            if ! grep -q "SPDX-License-Identifier" "$file"; then
+              sed -i '1i<?php\n/**\n * SPDX-License-Identifier: '"$LICENSE_ID"'\n */\n' "$file"
+              echo "$file" >> $REPORT
+            fi
+          done
+
+          # JS
+          find . -type f -name "*.js" | while read -r file; do
+            if ! grep -q "SPDX-License-Identifier" "$file"; then
+              sed -i '1i// SPDX-License-Identifier: '"$LICENSE_ID"'' "$file"
+              echo "$file" >> $REPORT
+            fi
+          done
+
+          # CSS
+          find . -type f -name "*.css" | while read -r file; do
+            if ! grep -q "SPDX-License-Identifier" "$file"; then
+              sed -i '1i/* SPDX-License-Identifier: '"$LICENSE_ID"' */' "$file"
+              echo "$file" >> $REPORT
+            fi
+          done
+
+          # HTML & Vue
+          find . -type f \( -name "*.html" -o -name "*.vue" \) | while read -r file; do
+            if ! grep -q "SPDX-License-Identifier" "$file"; then
+              sed -i '1i<!-- SPDX-License-Identifier: '"$LICENSE_ID"' -->' "$file"
+              echo "$file" >> $REPORT
+            fi
+          done
+
+          echo "✅ SPDX headers added to files:"
+          cat $REPORT
+
+      - name: Upload SPDX headers report
+        uses: actions/upload-artifact@v3
+        with:
+          name: spdx-headers-report
+          path: headers-added.txt
+ 
