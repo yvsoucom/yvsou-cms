@@ -3,7 +3,7 @@
  * © 2025 Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo   All rights reserved.
  * Author: Lican Huang
  * 
- * SPDX-License-Identifier: GPL-3.0-or-later
+ * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary
  * License: Dual Licensed – GPLv3 or Commercial
  *
  * This program is free software: you can redistribute it and/or modify
@@ -418,7 +418,7 @@ class PostController extends Controller
         $purifier = new HTMLPurifier($config);
 
         $title = $purifier->purify($request->title);
-        $content = $purifier->purify($request->content);
+        $content = $purifier->purify($request->input('content'));
         $content = $this->replaceWithRelativeUrls($content);
         $md5code = md5($content);
 
@@ -495,7 +495,7 @@ class PostController extends Controller
         $config = HTMLPurifier_Config::createDefault();
         $purifier = new HTMLPurifier($config);
         $title = $purifier->purify($request->title);
-        $content = $purifier->purify($request->content);
+        $content = $purifier->purify($request->input('content'));
         $content = $this->replaceWithRelativeUrls($content);
         $md5code = md5($content);
 

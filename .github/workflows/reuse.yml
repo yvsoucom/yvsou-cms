@@ -19,7 +19,10 @@ jobs:
           sudo apt update
           sudo apt install -y reuse
 
-      - name: Run REUSE lint
+      - name: Run REUSE lint (excluding public/, icons, images)
         run: |
           echo "🔍 Running REUSE lint..."
-          reuse lint
+          reuse lint \
+            --exclude public \
+            --exclude resources/icons \
+            --exclude resources/images

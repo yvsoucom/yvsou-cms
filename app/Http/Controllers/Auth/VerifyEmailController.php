@@ -4,7 +4,7 @@
  * @author Lican Huang
  * @created 2025-07-24
  *
- * SPDX-License-Identifier: GPL-3.0-or-later
+ * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary
  * License: Dual Licensed – GPLv3 or Commercial
  *
  * This program is free software: you can redistribute it and/or modify
