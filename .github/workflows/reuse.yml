@@ -19,16 +19,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y reuse
-
-      - name: 📝 Create .reuse/ignore file
-        run: |
-          mkdir -p .reuse
-          echo "public/" > .reuse/ignore
-          echo "resources/icons/" >> .reuse/ignore
-          echo "resources/images/" >> .reuse/ignore
-          echo "storage/" >> .reuse/ignore
-          echo "bootstrap/cache/.gitignore" >> .reuse/ignore
-
+     
       - name: 🧪 Run REUSE lint
         run: |
           echo "🔍 Running REUSE lint on main branch..."
