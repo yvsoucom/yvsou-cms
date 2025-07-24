@@ -47,7 +47,7 @@ jobs:
 
       - name: Add SPDX headers and generate report
         run: |
-          LICENSE_ID="GPL-3.0-or-later"
+          LICENSE_ID="GPL-3.0-or-later OR LicenseRef-Proprietary"
           REPORT="headers-added.txt"
           > "$REPORT"
 
