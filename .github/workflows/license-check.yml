@@ -1,4 +1,4 @@
-name: License Check and SPDX Injection
+name: License Check Only
 
 on:
   push:
@@ -21,76 +21,28 @@ jobs:
       - name: Install licensee and jq
         run: |
           gem install licensee
-          sudo apt-get update && sudo apt-get install -y jq
+          sudo apt-get update && sudo apt-get install -y jq rsync
 
-      - name: Detect License (excluding vendor/)
+      - name: Detect License (excluding vendor/, storage/, etc.)
         run: |
           echo "🔍 Running license detection with licensee"
           TMP_DIR=$(mktemp -d)
-          rsync -a --exclude vendor --exclude node_modules --exclude public --exclude storage ./ "$TMP_DIR"
+          rsync -a ./ "$TMP_DIR" \
+            --exclude vendor \
+            --exclude node_modules \
+            --exclude public \
+            --exclude storage \
+            --exclude bootstrap/cache \
+            --exclude .git \
+            --exclude .github
+
           LICENSE=$(licensee detect "$TMP_DIR" --json | jq -r '.license.spdx_id')
           echo "📄 Detected license: $LICENSE"
           rm -rf "$TMP_DIR"
 
-          if [[ "$LICENSE" != "GPL-3.0" && "$LICENSE" != "GPL-3.0-or-later" ]]; then
-            echo "❌ License is not GPL-3.0 or GPL-3.0-or-later. Found: $LICENSE"
+          if [[ "$LICENSE" != "GPL-3.0" && "$LICENSE" != "GPL-3.0-or-later" && "$LICENSE" != "LicenseRef-Proprietary" ]]; then
+            echo "❌ License is not allowed. Found: $LICENSE"
             exit 1
           fi
 
-  add-spdx-headers:
-    runs-on: ubuntu-latest
-    needs: check-license
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Add SPDX headers and generate report
-        run: |
-          LICENSE_ID="GPL-3.0-or-later OR LicenseRef-Proprietary"
-          REPORT="headers-added.txt"
-          > "$REPORT"
-
-          EXCLUDE_DIRS="vendor|node_modules|storage|public|.git|.github"
-          # Skip files that already contain MIT or Apache-2.0 licenses
-          SKIP_LICENSES="MIT|Apache-2.0"
-
-          # Helper function to inject SPDX
-          add_spdx_header() {
-            ext=$1
-            comment_start=$2
-            comment_end=$3
-
-            find . -type f -name "*.${ext}" \
-              | grep -Ev "$EXCLUDE_DIRS" \
-              | while read -r file; do
-                  # Skip if SPDX already present or if under MIT/Apache
-                  if grep -q "SPDX-License-Identifier" "$file"; then
-                    continue
-                  fi
-                  if grep -qE "SPDX-License-Identifier: ($SKIP_LICENSES)" "$file"; then
-                    continue
-                  fi
-
-                  # Add SPDX header
-                  sed -i "1i${comment_start} SPDX-License-Identifier: ${LICENSE_ID} ${comment_end}" "$file"
-                  echo "$file" >> "$REPORT"
-              done
-          }
-
-          add_spdx_header "php" "<?php\n/**" "\n */"
-          add_spdx_header "blade.php" "<?php\n/**" "\n */"
-          add_spdx_header "js" "//" ""
-          add_spdx_header "css" "/*" " */"
-          add_spdx_header "html" "<!--" " -->"
-          add_spdx_header "vue" "<!--" " -->"
-
-          echo "✅ SPDX headers added to files:"
-          cat "$REPORT"
-
-      - name: Upload SPDX report
-        uses: actions/upload-artifact@v3
-        with:
-          name: spdx-headers-report
-          path: headers-added.txt
  
