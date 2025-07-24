@@ -1,28 +1,27 @@
 <?php
 /**
-  @copyright (c) 2025  Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo
-  @author Lican Huang
-  @created 2025-07-10
-*
-* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary
-* License: Dual Licensed – GPLv3 or Commercial
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* As an alternative to GPLv3, commercial licensing is available for organizations
-* or individuals requiring proprietary usage, private modifications, or support.
-*
-* Contact: yvsoucom@gmail.com
-* GPL License: https://www.gnu.org/licenses/gpl-3.0.html
-*/
+ * © 2025 Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo   All rights reserved.
+ * Author: Lican Huang
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary
+ * License: Dual Licensed – GPLv3 or Commercial
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * As an alternative to GPLv3, commercial licensing is available for organizations
+ * or individuals requiring proprietary usage, private modifications, or support.
+ *
+ * Contact: yvsoucom@gmail.com
+ * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
+ */
 
 namespace App\Http\Controllers\Post;
 
@@ -48,33 +47,33 @@ class FileRightsController extends Controller
             [
                 'key' => 'owner_rights',
                 'label' => 'Owner',
-                'index' => 0 ,
+                'index' => 0,
                 'value' => $rightsArray[0],
             ],
 
             [
                 'key' => 'own_group_rights',
                 'label' => 'Own Group',
-                'index' => 1 ,
+                'index' => 1,
                 'value' => $rightsArray[1],
             ],
             [
                 'key' => 'grant_group_rights',
                 'label' => 'Grant Group',
-                'index' => 2 ,
+                'index' => 2,
                 'value' => $rightsArray[2],
             ],
 
             [
                 'key' => 'grant_user_rights',
                 'label' => 'Grant User',
-                'index' => 3 ,
+                'index' => 3,
                 'value' => $rightsArray[3],
             ],
             [
                 'key' => 'any_user_rights',
                 'label' => 'Any User',
-                'index' => 4 ,
+                'index' => 4,
                 'value' => $rightsArray[4],
             ],
         ];
@@ -112,7 +111,7 @@ class FileRightsController extends Controller
         $post->rights = implode('', $rightsArray);
         $post->save();
 
-        return redirect()->route('post.file-rights.show', compact('groupid','pid'))
+        return redirect()->route('post.file-rights.show', compact('groupid', 'pid'))
             ->with('success', 'Rights updated.');
     }
 
