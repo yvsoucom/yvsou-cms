@@ -1,0 +1,25 @@
+name: License Compliance Check (REUSE)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  reuse-lint:
+    name: Run REUSE Compliance Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install REUSE tool
+        run: |
+          sudo apt update
+          sudo apt install -y reuse
+
+      - name: Run REUSE lint
+        run: |
+          echo "🔍 Running REUSE lint..."
+          reuse lint
