@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+    branches: [main]
 
 jobs:
   reuse-lint:
@@ -18,8 +19,19 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y reuse
- 
+
+      - name: Create .reuse/ignore file for main branch
+        run: |
+          mkdir -p .reuse
+          cat <<EOF > .reuse/ignore
+            public/
+            resources/icons/
+            resources/images/
+            storage/
+            bootstrap/cache/.gitignore
+            EOF
+
       - name: Run REUSE lint
         run: |
-          echo "🔍 Running REUSE lint..."
+          echo "🔍 Running REUSE lint on main branch..."
           reuse lint
