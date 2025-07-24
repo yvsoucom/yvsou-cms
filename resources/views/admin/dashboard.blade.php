@@ -1,5 +1,5 @@
 {{--
-@copyright (c) 2025 Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo
+@2025 Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo
 @author Lican Huang
 @created 2025-06-15
 *
