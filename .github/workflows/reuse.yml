@@ -18,12 +18,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y reuse
-
-      - name: Set up REUSE ignore list
-        run: |
-          mkdir -p .reuse
-          echo -e "public/\nresources/icons/\nresources/images/" > .reuse/ignore
-
+ 
       - name: Run REUSE lint
         run: |
           echo "🔍 Running REUSE lint..."
