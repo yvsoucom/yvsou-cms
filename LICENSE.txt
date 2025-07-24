@@ -1,26 +1,3 @@
-yvsou-cms – Laravel CMS with powerful rights control and dynamic directories  
-Copyright (C) 2025  
-Hangzhou Domain Zones Technology Co., Ltd.  
-Institute of Future Science and Technology G.K., Tokyo  
-
-SPDX-License-Identifier: GPL-3.0-or-later
-
-This project is dual-licensed under the terms of:
-
-1. GNU General Public License v3.0 or later (GPL-3.0-or-later)  
-   You are free to use, modify, and redistribute the code under the terms of the GNU GPL.  
-   Full license text follows below. More info: https://www.gnu.org/licenses/gpl-3.0.html
-
-2. Commercial License  
-   For proprietary use cases (e.g., SaaS, internal tools, embedded systems),  
-   a commercial license is available. This license allows you to:  
-   - Use the software without the GPL’s copyleft obligations  
-   - Access premium features and support  
-   - Obtain legal assurances and warranties
-
-To inquire about the commercial license:  
-📧 yvsoucom@gmail.com
-
 
                      GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
