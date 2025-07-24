@@ -1,4 +1,4 @@
-name: License Check Only
+name: SPDX Header Compliance Check
 
 on:
   push:
@@ -6,43 +6,42 @@ on:
   pull_request:
 
 jobs:
-  check-license:
+  check-spdx-headers:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Ruby (for licensee)
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2'
-
-      - name: Install licensee and jq
+      - name: Check SPDX license headers in source files
         run: |
-          gem install licensee
-          sudo apt-get update && sudo apt-get install -y jq rsync
+          EXCLUDE_DIRS="vendor|node_modules|storage|bootstrap|public|\.git|\.github"
 
-      - name: Detect License (excluding vendor/, storage/, etc.)
-        run: |
-          echo "🔍 Running license detection with licensee"
-          TMP_DIR=$(mktemp -d)
-          rsync -a ./ "$TMP_DIR" \
-            --exclude vendor \
-            --exclude node_modules \
-            --exclude public \
-            --exclude storage \
-            --exclude bootstrap/cache \
-            --exclude .git \
-            --exclude .github
+          # File extensions to check for SPDX headers
+          EXTENSIONS="php js ts css scss vue blade.php html"
 
-          LICENSE=$(licensee detect "$TMP_DIR" --json | jq -r '.license.spdx_id')
-          echo "📄 Detected license: $LICENSE"
-          rm -rf "$TMP_DIR"
+          # SPDX license patterns allowed
+          SPDX_PATTERN="SPDX-License-Identifier:\s*(GPL-3.0(-or-later)?|LicenseRef-Proprietary)"
 
-          if [[ "$LICENSE" != "GPL-3.0" && "$LICENSE" != "GPL-3.0-or-later" && "$LICENSE" != "LicenseRef-Proprietary" ]]; then
-            echo "❌ License is not allowed. Found: $LICENSE"
+          # Temp file to hold missing files
+          MISSING_FILE_REPORT=missing_spdx_files.txt
+          > "$MISSING_FILE_REPORT"
+
+          # Find all files with matching extensions excluding excluded dirs
+          find . -type f \( $(printf -- "-iname '*.%s' -o " $EXTENSIONS) -false \) \
+            | grep -Ev "$EXCLUDE_DIRS" \
+            | while read -r file; do
+                if ! grep -qE "$SPDX_PATTERN" "$file"; then
+                  echo "$file" >> "$MISSING_FILE_REPORT"
+                fi
+              done
+
+          if [ -s "$MISSING_FILE_REPORT" ]; then
+            echo "❌ The following files are missing SPDX license headers:"
+            cat "$MISSING_FILE_REPORT"
             exit 1
+          else
+            echo "✅ All checked source files have valid SPDX license headers."
           fi
 
  
