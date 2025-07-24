@@ -1,7 +1,9 @@
 {{--
-  @copyright (c) 2025  Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo
-  @author Lican Huang
-  @created 2025-07-12
+@copyright (c) 2025 Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo
+@author Lican Huang
+@created 2025-07-12
+*
+* SPDX-License-Identifier: GPL-3.0-or-later
 * License: Dual Licensed – GPLv3 or Commercial
 *
 * This program is free software: you can redistribute it and/or modify
@@ -22,17 +24,19 @@
 */
 --}}
 
+
 @extends('layouts.app')
 
 @section('content')
     <form action="{{ route('admin.castmsg.update') }}" method="POST"
         class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow space-y-4">
         @csrf
-    <!-- #region -->      <h2 class="text-2xl font-bold text-gray-800 mb-4">💬 {{__('message.newplatformcast')}}</h2>
+        <!-- #region -->
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">💬 {{__('message.newplatformcast')}}</h2>
 
         <div>
             <label for="message" class="block text-sm font-medium text-gray-700 mb-1">
-               
+
             </label>
             <textarea id="message" name="message" rows="5"
                 class="w-full border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200"

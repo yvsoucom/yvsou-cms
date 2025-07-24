@@ -23,11 +23,14 @@ jobs:
           gem install licensee
           sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Detect License and validate GPL-3.0
+      - name: Detect License (excluding vendor/)
         run: |
           echo "🔍 Running license detection with licensee"
-          LICENSE=$(licensee detect . --json | jq -r '.license.spdx_id')
+          TMP_DIR=$(mktemp -d)
+          rsync -a --exclude vendor --exclude node_modules --exclude public --exclude storage ./ "$TMP_DIR"
+          LICENSE=$(licensee detect "$TMP_DIR" --json | jq -r '.license.spdx_id')
           echo "📄 Detected license: $LICENSE"
+          rm -rf "$TMP_DIR"
 
           if [[ "$LICENSE" != "GPL-3.0" && "$LICENSE" != "GPL-3.0-or-later" ]]; then
             echo "❌ License is not GPL-3.0 or GPL-3.0-or-later. Found: $LICENSE"
@@ -46,44 +49,46 @@ jobs:
         run: |
           LICENSE_ID="GPL-3.0-or-later"
           REPORT="headers-added.txt"
-          > $REPORT
+          > "$REPORT"
 
-          # PHP & Blade
-          find . -type f \( -name "*.php" -o -name "*.blade.php" \) | while read -r file; do
-            if ! grep -q "SPDX-License-Identifier" "$file"; then
-              sed -i '1i<?php\n/**\n * SPDX-License-Identifier: '"$LICENSE_ID"'\n */\n' "$file"
-              echo "$file" >> $REPORT
-            fi
-          done
+          EXCLUDE_DIRS="vendor|node_modules|storage|public|.git|.github"
+          # Skip files that already contain MIT or Apache-2.0 licenses
+          SKIP_LICENSES="MIT|Apache-2.0"
 
-          # JS
-          find . -type f -name "*.js" | while read -r file; do
-            if ! grep -q "SPDX-License-Identifier" "$file"; then
-              sed -i '1i// SPDX-License-Identifier: '"$LICENSE_ID"'' "$file"
-              echo "$file" >> $REPORT
-            fi
-          done
+          # Helper function to inject SPDX
+          add_spdx_header() {
+            ext=$1
+            comment_start=$2
+            comment_end=$3
 
-          # CSS
-          find . -type f -name "*.css" | while read -r file; do
-            if ! grep -q "SPDX-License-Identifier" "$file"; then
-              sed -i '1i/* SPDX-License-Identifier: '"$LICENSE_ID"' */' "$file"
-              echo "$file" >> $REPORT
-            fi
-          done
+            find . -type f -name "*.${ext}" \
+              | grep -Ev "$EXCLUDE_DIRS" \
+              | while read -r file; do
+                  # Skip if SPDX already present or if under MIT/Apache
+                  if grep -q "SPDX-License-Identifier" "$file"; then
+                    continue
+                  fi
+                  if grep -qE "SPDX-License-Identifier: ($SKIP_LICENSES)" "$file"; then
+                    continue
+                  fi
 
-          # HTML & Vue
-          find . -type f \( -name "*.html" -o -name "*.vue" \) | while read -r file; do
-            if ! grep -q "SPDX-License-Identifier" "$file"; then
-              sed -i '1i<!-- SPDX-License-Identifier: '"$LICENSE_ID"' -->' "$file"
-              echo "$file" >> $REPORT
-            fi
-          done
+                  # Add SPDX header
+                  sed -i "1i${comment_start} SPDX-License-Identifier: ${LICENSE_ID} ${comment_end}" "$file"
+                  echo "$file" >> "$REPORT"
+              done
+          }
+
+          add_spdx_header "php" "<?php\n/**" "\n */"
+          add_spdx_header "blade.php" "<?php\n/**" "\n */"
+          add_spdx_header "js" "//" ""
+          add_spdx_header "css" "/*" " */"
+          add_spdx_header "html" "<!--" " -->"
+          add_spdx_header "vue" "<!--" " -->"
 
           echo "✅ SPDX headers added to files:"
-          cat $REPORT
+          cat "$REPORT"
 
-      - name: Upload SPDX headers report
+      - name: Upload SPDX report
         uses: actions/upload-artifact@v3
         with:
           name: spdx-headers-report

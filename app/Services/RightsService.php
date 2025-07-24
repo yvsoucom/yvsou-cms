@@ -2,6 +2,8 @@
 /**
  * © 2025 Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo   All rights reserved.
  * Author: Lican Huang
+ * 
+ * SPDX-License-Identifier: GPL-3.0-or-later
  * License: Dual Licensed – GPLv3 or Commercial
  *
  * This program is free software: you can redistribute it and/or modify
@@ -67,7 +69,7 @@ class RightsService
                 return true;
         }
         if ($type === 'SHOWDIR') {
-            if (( $right >> 0) & 1)
+            if (($right >> 0) & 1)
                 return true;
         }
         return false;
@@ -209,7 +211,7 @@ class RightsService
      */
     public function checkCommentRightPermission(int $postId, string $groupId, string $type): bool
     {
-         
+
         $post = DomainPost::find($postId);
 
         if (!$post) {
@@ -246,7 +248,7 @@ class RightsService
         }
 
         return false;
-        
+
     }
 
 
@@ -278,14 +280,13 @@ class RightsService
 
         if ($accesspermition === false) {
             if (!auth()->check()) {
-                return redirect()->guest(route('login', ['redirect' => url()->full()]));
+                return redirect()->guest(route('login', ['redirect' => request()->fullUrl()]));
             } else {
-                // Optionally, show join group URL or custom message
-                $joinUrl = url('/dc/setjoinleave.php', ['groupid' => $groupid, 'redirect' => url()->full()]);
+                $joinUrl = route('group.joingroup'  , ['groupid' => $groupid, 'redirect' => request()->fullUrl()]);
                 return response("Access denied. <a href=\"$joinUrl\">Join group</a>", 403);
             }
-
         }
+
         return true;
     }
 

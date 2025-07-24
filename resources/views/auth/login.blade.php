@@ -1,7 +1,9 @@
 {{--
-  @copyright (c) 2025  Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo
-  @author Lican Huang
-  @created 2025-06-26
+@copyright (c) 2025 Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo
+@author Lican Huang
+@created 2025-06-26
+*
+* SPDX-License-Identifier: GPL-3.0-or-later
 * License: Dual Licensed – GPLv3 or Commercial
 *
 * This program is free software: you can redistribute it and/or modify
@@ -33,42 +35,27 @@
                 <!-- Email Address -->
                 <div>
                     <x-input-label for="email" :value="__('auth.email')" class="dark:text-gray-300" />
-                    <x-text-input 
-                        id="email" 
-                        class="block mt-1 w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500" 
-                        type="email" 
-                        name="email" 
-                        :value="old('email')"
-                        required 
-                        autofocus 
-                        autocomplete="username" 
-                    />
+                    <x-text-input id="email"
+                        class="block mt-1 w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500"
+                        type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
                     <x-input-error :messages="$errors->get('email')" class="mt-2 text-red-600 dark:text-red-400" />
                 </div>
 
                 <!-- Password -->
                 <div class="mt-4">
                     <x-input-label for="password" :value="__('auth.password')" class="dark:text-gray-300" />
-                    <x-text-input 
-                        id="password" 
-                        class="block mt-1 w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500" 
-                        type="password" 
-                        name="password" 
-                        required
-                        autocomplete="current-password" 
-                    />
+                    <x-text-input id="password"
+                        class="block mt-1 w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500"
+                        type="password" name="password" required autocomplete="current-password" />
                     <x-input-error :messages="$errors->get('password')" class="mt-2 text-red-600 dark:text-red-400" />
                 </div>
 
                 <!-- Remember Me -->
                 <div class="block mt-4">
                     <label for="remember_me" class="inline-flex items-center">
-                        <input 
-                            id="remember_me" 
-                            type="checkbox"
+                        <input id="remember_me" type="checkbox"
                             class="rounded border-gray-300 dark:border-gray-600 text-indigo-600 dark:text-indigo-400 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 bg-white dark:bg-gray-700"
-                            name="remember"
-                        >
+                            name="remember">
                         <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('auth.remember_me') }}</span>
                     </label>
                 </div>
@@ -88,4 +75,4 @@
             </form>
         </div>
     </div>
-</x-guest-layout> 
+</x-guest-layout>
