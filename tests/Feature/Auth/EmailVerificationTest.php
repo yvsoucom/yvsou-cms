@@ -1,3 +1,7 @@
+<?php
+// SPDX-FileCopyrightText: Laravel auto generate
+//
+// SPDX-License-Identifier: MIT
  
 namespace Tests\Feature\Auth;
 

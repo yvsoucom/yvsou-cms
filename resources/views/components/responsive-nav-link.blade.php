@@ -1,4 +1,8 @@
- 
+<?php
+// SPDX-FileCopyrightText: Laravel auto generate
+//
+// SPDX-License-Identifier: MIT
+?>  
 
 @props(['active'])
 

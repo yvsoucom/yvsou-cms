@@ -1,4 +1,8 @@
- 
+<?php
+// SPDX-FileCopyrightText: Laravel auto generate
+//
+// SPDX-License-Identifier: MIT
+?>  
 @props(['align' => 'right', 'width' => '48', 'contentClasses' => 'py-1 bg-white'])
 
 @php

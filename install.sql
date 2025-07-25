@@ -1,6 +1,8 @@
 /*
--- @copyright (c) 2025 Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo
--- * License: Dual Licensed – GPLv3 or Commercial
+-- SPDX-FileCopyrightText: 2025 Hangzhou Domain Zones Technology Co., Ltd.
+-- SPDX-FileCopyrightText: 2025 Institute of Future Science and Technology G.K., Tokyo
+-- SPDX-FileContributor: Lican Huang
+-- SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary
 */
 -- SQL Version: sql-v1.2.0
 -- Generated on: Tue Jul 15 12:49:43 UTC 2025-- MySQL dump 10.13  Distrib 8.4.5, for macos15.2 (arm64)

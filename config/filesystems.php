@@ -1,7 +1,7 @@
 <?php
-/*
- * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary
- */
+// SPDX-FileCopyrightText: Laravel auto generate
+//
+// SPDX-License-Identifier: MIT
 
 return [
 
