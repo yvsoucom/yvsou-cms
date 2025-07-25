@@ -1,18 +1,5 @@
-version = 5
-
+version =3
 [[exclude]]
-pattern = "config/*.php"
-reason = "generated"
-
-[[exclude]]
-pattern = "bootstrap/*.php"
-reason = "generated"
-
-[[exclude]]
-pattern = "app/View/Components/Install/Input.php"
-reason = "generated"
-
-[[exclude]]
-pattern = "public/*.*"
-reason = "others"
+pattern = ".editorconfig"
+reason = "non-copyrightable"
 
