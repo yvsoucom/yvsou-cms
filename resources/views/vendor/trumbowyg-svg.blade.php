@@ -10,4 +10,4 @@
  * For commercial use, contact: yvsoucom@gmail.com
  */
 ?>
-{!! file_get_contents(public_path('icons/trumbowyg/icons.svg')) !!}
+{!! file_get_contents(public_path('build/icons/vendor/trumbowyg/icons.svg')) !!}

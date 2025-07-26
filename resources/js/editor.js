@@ -26,15 +26,15 @@ function initEditor() {
         if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(ext)) {
             preview = `<img src="${file.url}" alt="${file.name}" style="height:60px; max-width:100px; object-fit:contain;" title="${file.name}">`;
         } else if (ext === 'pdf') {
-            preview = `<img src="/icons/pdf.svg" alt="PDF icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
+            preview = `<img src="/build/icons/app/pdf.svg" alt="PDF icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
         } else if (['doc', 'docx'].includes(ext)) {
-            preview = `<img src="/icons/doc.svg" alt="DOC icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
+            preview = `<img src="/build/icons/app/doc.svg" alt="DOC icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
         } else if (['xls', 'xlsx'].includes(ext)) {
-            preview = `<img src="/icons/xls.png" alt="XLS icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
+            preview = `<img src="/build/icons/app/xls.png" alt="XLS icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
         } else if (['zip', 'rar'].includes(ext)) {
-            preview = `<img src="/icons/zip.png" alt="ZIP icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
+            preview = `<img src="/build/icons/app/zip.png" alt="ZIP icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
         } else {
-            preview = `<img src="/icons/other.png" alt="File icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
+            preview = `<img src="/build/icons/app/other.png" alt="File icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
         }
 
         return `

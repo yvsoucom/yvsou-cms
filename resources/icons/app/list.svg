@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="120" height="140" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+  <rect x="10" y="10" width="100" height="120" rx="10" ry="10" fill="#f9f9f9" stroke="#444" stroke-width="2"/>
+  <circle cx="25" cy="40" r="4" fill="#333"/>
+  <line x1="35" y1="40" x2="95" y2="40" stroke="#333" stroke-width="2"/>
+  <circle cx="25" cy="60" r="4" fill="#333"/>
+  <line x1="35" y1="60" x2="95" y2="60" stroke="#333" stroke-width="2"/>
+  <circle cx="25" cy="80" r="4" fill="#333"/>
+  <line x1="35" y1="80" x2="95" y2="80" stroke="#333" stroke-width="2"/>
+  <circle cx="25" cy="100" r="4" fill="#333"/>
+  <line x1="35" y1="100" x2="95" y2="100" stroke="#333" stroke-width="2"/>
+  <text x="60" y="130" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#444">LIST</text>
+</svg>

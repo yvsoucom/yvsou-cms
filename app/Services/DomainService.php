@@ -168,14 +168,10 @@ class DomainService
             $url = route('domainview.index', ['groupid' => $groupname]);
             $urlpostview = route('post.postview', ['groupid' => $groupname]);
 
-            // Generate HTML using real URLs
-
-            //    $rtntitle .= '<a href="' . $url . '">' . $rtitle . '</a>';
-            //     $rtntitle .= '<a href="' . $urlpostview . '"><img src="/images/list.png" alt="" width="20" height="20" /></a>';
             $rtntitle .= '<span style="display: inline-flex; align-items: center;">';
             $rtntitle .= '<a href="' . e($url) . '">' . e($rtitle) . '</a>';
             $rtntitle .= '<a href="' . e($urlpostview) . '">'
-                . '<img src="/images/list.png" alt="" width="20" height="20" style="vertical-align: middle;" /></a>';
+                . '<img src="/build/icons/app/list.svg" alt="" width="20" height="20" style="vertical-align: middle;" /></a>';
             $rtntitle .= '</span>';
             $rtntitle .= ' &gt; ';
 
@@ -200,7 +196,7 @@ class DomainService
         $rtntitle = '<div style="display: flex; align-items: center; gap: 4px;">';
         $rtntitle .= '<a href="' . e($url) . '">' . e($rtitle) . '</a>';
         $rtntitle .= '<a href="' . e($urlpostview) . '">'
-            . '<img src="/images/list.png" alt="" class="w-5 h-3" /></a>';
+            . '<img src="/build/icons/app/list.svg" alt="" class="w-5 h-3" /></a>';
         $rtntitle .= '</div>';
         return $rtntitle;
     }

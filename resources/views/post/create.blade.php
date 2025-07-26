@@ -75,7 +75,7 @@
 @endpush
 @push('scripts')
   <script>
-    window.trumbowygSvgPath = "{{asset('build/icons/trumbowyg/icons.svg') }}";
+    window.trumbowygSvgPath = "{{asset('build/icons/vendor/trumbowyg/icons.svg') }}";
     window.shouldLoadEditor = true;
   </script>
   @vite('resources/js/editor.js')

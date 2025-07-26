@@ -37,12 +37,12 @@
                 <div class="mb-4">
                     <label class="block font-medium mb-1">Drag the key into the lock:</label>
                     <div class="flex items-center space-x-6">
-                        <img id="draggable" src="images/key.png" draggable="true"
+                        <img id="draggable" src="/build/images/app/key.png" draggable="true"
                             class="w-12 cursor-move transition-transform duration-700 ease-in-out transform-origin-left">
 
                         <div id="lock-wrapper"
                             class="relative w-24 h-24 border border-gray-400 p-2 rounded flex items-center justify-center">
-                            <img id="target" src="images/lock.png" class="w-full h-full object-contain pointer-events-none">
+                            <img id="target" src="/build/images/app/lock.png" class="w-full h-full object-contain pointer-events-none">
                         </div>
                     </div>
                     <input type="hidden" name="drag_verified" id="drag_verified" value="0">
@@ -84,7 +84,7 @@
                     draggable.style.transformOrigin = 'left center';
                     draggable.style.transform = 'rotate(90deg)';
 
-                    lockImage.src = 'images/unlock.png';
+                    lockImage.src = '/build/images/app/unlock.png';
                     dragVerified.value = 1;
 
                     lockWrapper.classList.remove('border-gray-400');
