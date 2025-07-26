@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: Laravel contributors
+// SPDX-License-Identifier: MIT  
 
 import axios from 'axios';
 window.axios = axios;
