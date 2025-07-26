@@ -17,7 +17,7 @@
       <div class="flex-shrink-0">
         <a href="{{ route('home') }}">
           <img class="h-8 w-auto"
-            src="{{ app()->isLocal() ? asset('images/yvsoulogo.svg') : Vite::asset('images/yvsoulogo.svg') }}"
+            src="{{ app()->isLocal() ? asset('images/app/yvsoulogo.svg') : Vite::asset('images/app/yvsoulogo.svg') }}"
             alt="Logo">
         </a>
       </div>
