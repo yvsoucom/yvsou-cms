@@ -20,7 +20,7 @@
                         text-gray-800 dark:text-gray-200
                         rounded-lg shadow
                         transition-colors duration-200">
-            {!! Str::markdown($menuMd) !!}
+            {!!  $menuHtml  !!}
         </main>
     </div>
 @endsection

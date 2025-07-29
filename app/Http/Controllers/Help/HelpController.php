@@ -25,14 +25,9 @@
  */
 namespace App\Http\Controllers\Help;
 
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Http\Request;
-use Dotenv\Dotenv;
-use Illuminate\Support\Facades\App;
 use App\Services\LocaleService;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 
 
 class HelpController extends Controller
@@ -51,8 +46,8 @@ class HelpController extends Controller
         } else {
             $aboutMd = '# Content not found';
         }
-
-        return view('help.about', compact('aboutMd'));
+        $aboutMdHtml = Str::markdown($aboutMd);
+        return view('help.about', compact('aboutMdHtml'));
     }
 
     public function menu()
@@ -68,8 +63,8 @@ class HelpController extends Controller
         } else {
             $menuMd = '# Content not found';
         }
-
-        return view('help.menu', compact('menuMd'));
+        $menuHtml = Str::markdown($menuMd);
+        return view('help.menu', compact('menuHtml'));
 
     }
 

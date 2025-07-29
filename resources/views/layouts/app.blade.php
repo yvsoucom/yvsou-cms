@@ -13,7 +13,7 @@
 
 <!DOCTYPE html>
 <!-- #endregion -->
- 
+
 <html lang="{{ str_replace('_', '-', App::getLocale()) }}">
 
 <head>
@@ -53,7 +53,7 @@
     @include('components.header')
     <div class="mt-8"></div> {{-- Adds 2rem (32px) of vertical space --}}
 
-    <div class="min-h-[200px]">
+    <div class="min-h-[200px] bg-white text-black dark:bg-gray-800 dark:text-white p-4">
         @if(config('yvsou_config.BLOCKBOT'))
             @if(session('human_verified') || Auth::check())
                 @yield('content')
