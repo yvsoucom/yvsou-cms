@@ -30,11 +30,13 @@ function initEditor() {
         } else if (['doc', 'docx'].includes(ext)) {
             preview = `<img src="/build/icons/app/doc.svg" alt="DOC icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
         } else if (['xls', 'xlsx'].includes(ext)) {
-            preview = `<img src="/build/icons/app/xls.png" alt="XLS icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
+            preview = `<img src="/build/icons/app/xls.svg" alt="XLS icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
         } else if (['zip', 'rar'].includes(ext)) {
-            preview = `<img src="/build/icons/app/zip.png" alt="ZIP icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
+            preview = `<img src="/build/icons/app/zip.svg" alt="ZIP icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
+        } else if (['ppt', 'pptx'].includes(ext)) {
+            preview = `<img src="/build/icons/app/ppt.svg" alt="ZIP icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
         } else {
-            preview = `<img src="/build/icons/app/other.png" alt="File icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
+            preview = `<img src="/build/icons/app/other.svg" alt="File icon" style="width:${iconSize}; height:${iconSize};" title="${file.name}">`;
         }
 
         return `
@@ -122,7 +124,15 @@ function initEditor() {
                 init: function (trumbowyg) {
                     trumbowyg.addBtnDef('insertLibraryFile', {
                         fn: function () {
+                            
+                            savedRange = trumbowyg.range;
+                            
                             openLibraryModal((file) => {
+                               
+                                trumbowyg.range = savedRange;
+                                trumbowyg.selection = savedRange;
+                                trumbowyg.restoreRange();
+                               
                                 const extension = file.name.split('.').pop().toLowerCase();
                                 const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
                                 const isImage = imageExtensions.includes(extension);
@@ -140,6 +150,8 @@ function initEditor() {
             }
         }
     });
+
+    let savedRange = null;
 
     $('#ys_editor').trumbowyg({
         btns: [

@@ -66,6 +66,9 @@ return [
     'updatepost' => 'Mettre à jour le post',
     'publish' => 'Publier',
     'close' => 'Fermer',
+    'Edit Post' => 'Modifier l’article',
+    'Cancel' => 'Annuler',
+
 
     // comments
     'plslogin' => 'Veuillez vous connecter pour répondre.',

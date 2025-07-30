@@ -67,6 +67,9 @@ return [
     'updatepost' => '投稿を更新',
     'publish' => '公開',
     'close' => '閉じる',
+    'Edit Post' => '投稿を編集',
+    'Cancel' => 'キャンセル',
+
 
     // comments
     'plslogin' => '返信するにはログインしてください。',

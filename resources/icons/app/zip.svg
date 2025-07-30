@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="120" height="140" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="zipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#b3e5fc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <rect x="10" y="10" width="100" height="120" rx="10" ry="10" fill="url(#zipGrad)" stroke="#0288d1" stroke-width="2"/>
+  <polyline points="90,10 110,30 90,30" fill="#e1f5fe" stroke="#0288d1" stroke-width="2"/>
+
+  <rect x="55" y="40" width="10" height="60" fill="#0288d1"/>
+  <line x1="60" y1="40" x2="60" y2="100" stroke="#ffffff" stroke-width="2" stroke-dasharray="4,4"/>
+
+  <text x="60" y="115" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" fill="#0288d1" font-weight="bold">ZIP</text>
+</svg>

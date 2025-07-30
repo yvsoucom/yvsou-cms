@@ -31,8 +31,9 @@ SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary
 |---------------------|---------------------------------------------|
 | `composer.json`     | Laravel dependencies and package config     |
 | `env.example`       | Sample environment configuration file       |
+| `env.install`       | Sample install configuration file           |
 | `routes/web.php`    | Web routes for frontend/backend             |
-
+| `install.sql`       | mysql schema scripts                        |
 ---
 
 
@@ -97,16 +98,21 @@ npm run dev
 
 → New contributors welcome! 🙌
  
- ## Live Metrics  
+## Live Metrics  
 
 You can access the live Metrics here:
 
 [https://yvsoucom.github.io/metrics-dashboard/](https://yvsoucom.github.io/metrics-dashboard/)
 
+## Demo migration site  from dscloud platform
+
 [https://cms.yvsou.com/]  migration from dscloud platform  (https://cms.yvsou.com/)     
+
+## Demo test web site
+
 [https://cms-test.yvsou.com/]   test yvsou-cms site  (https://cms-test.yvsou.com/)
 
-## References
+## Publish Paper References
 [Lican Huang, Authorization Policies and Co-Operating Strategies of DSCloud Platform
 ](https://arxiv.org/pdf/1801.02147)
 [Lican Huang, Directory Service Provided by DSCloud Platform

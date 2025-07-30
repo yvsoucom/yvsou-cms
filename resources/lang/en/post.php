@@ -66,6 +66,8 @@ return [
     'updatepost' => 'Update Post',
     'publish' => 'Publish',
     'close' => 'Close',
+    'Edit Post' => 'Edit Post',
+    'Cancel' => 'Cancel',
 
     //comments
     'plslogin' => 'Please login to reply.',

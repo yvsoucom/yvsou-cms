@@ -66,6 +66,9 @@ return [
     'updatepost' => '更新帖子',
     'publish' => '发布',
     'close' => '关闭',
+    'Edit Post' => '编辑文章',
+    'Cancel' => '取消',
+
 
     // comments
     'plslogin' => '请登录后回复。',
