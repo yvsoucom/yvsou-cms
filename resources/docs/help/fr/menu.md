@@ -7,154 +7,210 @@
 --> 
 # 🧭 Menu Principal
 
-Le menu principal apparaît sur chaque page et inclut les éléments suivants :
+Ce menu apparaît sur chaque page et inclut :
 
-- [Accueil (Logo)](#home-page-sections)
-- [Sélecteur de langue](#language)
-- [Outil de domaine racine](#root-domain)
-- [Aide](#help)
+- [🏠 Accueil (Logo)](#sections-de-la-page-daccueil)
+- [🌐 Sélecteur de langue](#langue)
+- [🛠️ Outil de domaine racine](#outil-de-domaine-racine)
+- [❓ Aide](#aide)
+- [📬 Messages](#messages)
 
-### 🔐 Utilisateurs Invités
-- [Connexion](#login)
-- [Inscription](#register)
+### 🔐 Utilisateurs invités
+- [🔐 Connexion](#connexion)
+- [📝 Inscription](#inscription)
 
-### 🙍 Utilisateurs Connectés
-- [Profil Utilisateur](#user)
-- [Messages](#messages)
-
-- [Pied de page](#footer)
+### 🙍 Utilisateurs connectés
+- [👤 Profil utilisateur](#profil-utilisateur)
 
 ---
 
-# 🏠 Sections de la Page d'Accueil
+# ⚙️ Vue de domaine
 
-## 1. 🔍 Section de Recherche
+Utilisé pour gérer les répertoires de domaine, l’état des groupes et la création de contenu.
 
-Permet aux utilisateurs de rechercher des publications et des répertoires.
+Fonctionnalités principales :
 
-- a) Rechercher dans les publications → liste des publications correspondantes.
-- b) Rechercher dans les répertoires → liste des répertoires correspondants.
-- c) Rechercher dans les publications de l’utilisateur → liste des publications correspondantes.
-- d) Lister tous les répertoires de l’utilisateur.
-- e) Lister tous les groupes rejoints par l’utilisateur.
+- Affichage de tous les articles du domaine  
+- Navigation entre sous-domaines  
+- Gestion de l’adhésion aux groupes  
+- Gestion des droits et de la structure des répertoires
 
-## 2. 🌲 Arborescence de Domaines
+Voir [Outil de domaine racine](#outil-de-domaine-racine) pour les options avancées.
 
-Affiche les répertoires de domaine sous forme hiérarchique.
+---
 
-## 3. 🆕 Nouvelles Publications
+# 📝 Article
 
-Affiche la liste des publications récemment créées.
+Actions disponibles :
 
-### Actions sur les publications
-- ✏️ Modifier
-- 🔐 Voir les droits
-- 💬 Voir les droits de commentaire
-- 📂 Déplacer vers un groupe
-- 📄 Copier dans un groupe
-- 🌐 Changer de langue
-- 📜 Historique
-- ✅ Vérification d’audit
-- 🗑️ Supprimer
+- ✏️ Modifier le contenu  
+- 📜 Voir l’historique des révisions  
+- 🌐 Changer la langue de l’article  
+- 📂 Déplacer ou 📄 copier l’article vers un groupe  
+- 🔐 Gérer les droits et 💬 autorisations de commentaires  
+- ✅ Soumettre à l’audit  
+- 🗑️ Mettre à la corbeille  
+- ♻️ Restaurer depuis la corbeille  
+- ❌ Supprimer définitivement  
 
-## 4. 📁 Nouveaux Répertoires
+---
 
-Affiche la liste des répertoires récemment créés.
+# 💬 Commentaire
 
-### Vue des publications
-- Voir toutes les publications dans le domaine.
+Chaque article supporte un système de commentaire personnalisable. Les utilisateurs connectés peuvent :
+
+- Lire, publier et modérer des commentaires  
+- Recevoir des notifications en cas de réponse  
+
+---
+
+# 👁️ Vue des articles
+
+Affiche tous les articles du domaine ou répertoire sélectionné.
+
+Inclut :
+
+- Métadonnées (auteur, date, statut)  
+- Outils interactifs (édition, commentaire, audit, etc.)  
+- Navigation entre articles et domaines  
+
+---
+
+# 📊 Tableau de bord
+
+Accessible aux utilisateurs authentifiés pour gérer la plateforme.
+
+Fonctionnalités :
+
+- Vérification de la version système  
+- Gestion des plugins et extensions  
+- Paramètres de messagerie et notifications  
+- Personnalisation de pages  
+- Messagerie globale de la plateforme  
+
+---
+
+# 🏠 Sections de la page d’accueil
+
+## 🔍 1. Zone de recherche
+
+Fonctionnalité de recherche étendue :
+
+- a) Mots-clés dans les articles  
+- b) Mots-clés dans les répertoires  
+- c) Rechercher ses propres articles  
+- d) Répertoires appartenant à l’utilisateur  
+- e) Groupes rejoints  
+
+## 🌲 2. Arbre de domaines
+
+Vue hiérarchique dynamique de tous les répertoires de domaine.
+
+## 🆕 3. Nouveaux articles
+
+Flux des articles récemment publiés avec actions rapides.  
+(Voir [Article](#article))
+
+## 📁 4. Nouveaux répertoires
+
+Liste des nouveaux répertoires créés.  
+(Utiliser [Vue des articles](#vue-des-articles) pour consulter le contenu)
 
 ---
 
 # 🌐 Langue
 
-Changer la langue par défaut de l’interface.
+Changer la langue de l’interface.
 
 ---
 
-# 🛠️ Outil de Domaine Racine
+# 🛠️ Outil de domaine racine
 
-Accéder et gérer les répertoires de domaine de niveau racine.
+Permet la gestion des domaines racines, des groupes et du contenu.
 
-### Fonctionnalités de la Vue de Domaine
+### Fonctionnalités principales
 
-1. **Voir les publications du domaine** – liste de toutes les publications.
-2. **Créer une nouvelle publication** – ajouter du contenu au répertoire.
-3. **État des groupes** :
-   - 👤 Rejoints : nombre d’utilisateurs dans le groupe
-   - ⏳ En attente : utilisateurs en attente de validation (groupe privé)
-   - 🚫 Bloqués : utilisateurs bloqués
-4. **Rejoindre un groupe de domaine**
-5. **Basculer entre groupe privé/public**
-6. **Navigation hiérarchique** – chemin du répertoire racine jusqu’à l’actuel.
-7. **Sous-domaines** – liste de tous les sous-répertoires.
-8. **Gestion des répertoires** :
-   - a) Créer un sous-répertoire
-   - b) Modifier un sous-répertoire
-   - c) Modifier les droits d’accès
-9. **Gestion des groupes** :
-   - a) Diffuser un message au groupe
-   - b) Envoyer un message à des utilisateurs
-   - c) Approuver les demandes d’adhésion
+1. **Afficher les articles du domaine**  
+2. **Créer un nouvel article**  
+3. **Statut du groupe :**  
+   - 👤 Membres actuels  
+   - ⏳ En attente d’approbation  
+   - 🚫 Utilisateurs bloqués  
+4. **Rejoindre le groupe du domaine**  
+5. **Changer la confidentialité du groupe**  
+6. **Fil d’Ariane** – chemin de navigation  
+7. **Sous-domaines** – gestion des répertoires imbriqués  
+8. **Gestion des répertoires :**  
+   - Créer un sous-répertoire  
+   - Modifier les métadonnées  
+   - Ajuster les droits d’accès  
+9. **Gestion du groupe :**  
+   - Envoyer un message à tous  
+   - Message à un utilisateur spécifique  
+   - Approuver ou refuser les demandes  
 
 ---
 
 # ❓ Aide
 
-Guide d'utilisation de `yvsou-cms`.
+Guide d’utilisation et documentation de la plateforme `yvsou-cms`.
 
 ---
 
 # 🔐 Connexion
 
-1. Se connecter à son compte.
-2. Récupérer le mot de passe si oublié.
+1. Connectez-vous avec vos identifiants  
+2. Utilisez "Mot de passe oublié" si nécessaire  
 
 ---
 
 # 📝 Inscription
 
-1. Créer un compte :
-   - **Nom** (doit être unique)
-   - **Email** (doit être unique)
-   - **Mot de passe**
-2. **Vérification Email** :
-   - Un lien de confirmation est envoyé.
-   - Cliquez pour activer le compte.
+1. Remplissez le formulaire :
+   - **Nom** (doit être unique)  
+   - **Email** (doit être unique)  
+   - **Mot de passe**  
+2. **Vérification d’email :**
+   - Un lien de confirmation sera envoyé  
+   - Cliquez pour activer le compte  
 
 ---
 
-# 👤 Profil Utilisateur
+# 👤 Profil utilisateur
 
-## Paramètres du Profil
+## Paramètres de profil
 
-- a) Modifier le pseudonyme (doit être unique)
-- b) Mettre à jour le mot de passe
+- Changer de pseudo (doit être unique)  
+- Mettre à jour le mot de passe  
 
-## Accès au Tableau de Bord
+## Outils du tableau de bord
 
-- Vérifier la version et les mises à jour
-- Accéder à :
-  - Centre utilisateur
-  - Plugins
-  - Paramètres des emails
-  - Pages personnalisées
-  - Message global à la plateforme
+- Centre utilisateur  
+- Gestion des plugins  
+- Paramètres email  
+- Pages personnalisées  
+- Messagerie globale  
 
 ---
 
 # 📬 Messages
 
-Voir les messages reçus.
+Voir les messages reçus du système ou d’autres utilisateurs.
+
+Inclut :
+
+- Liste des messages  
+- État lu / non lu  
+- Options de réponse et d’archivage  
 
 ---
 
-# ⚓ Pied de Page
+# ⚓ Pied de page
 
-Contient :
+Visible sur chaque page, inclut :
 
-- Droit d’auteur
-- À propos
-- Contact
-- Conditions d’utilisation
+- © Droits d’auteur  
+- À propos  
+- Contact  
+- Conditions d’utilisation  
 - Politique de confidentialité
