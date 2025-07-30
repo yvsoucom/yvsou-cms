@@ -389,16 +389,18 @@ class AutoUpdaterService
                         throw new RuntimeException("Failed to copy directory: {$srcPath}");
                     }
                 } else {
-                    if (chmod($dstPath, 0777)) {
+                    if (file_exists($dstPath)) {
+                        chmod($dstPath, 0777);
                         echo "Permissions changed temp 777 successfully";
-
-                        if (!copy($srcPath, $dstPath)) {
-                            chmod($dstPath, 0755);
-                            throw new RuntimeException("Failed to copy file: {$srcPath}");
-                        }
-                        // Maintain original file permissions
-                        chmod($dstPath, 0755);
                     }
+
+                    if (!copy($srcPath, $dstPath)) {
+                        chmod($dstPath, 0755);
+                        throw new RuntimeException("Failed to copy file: {$srcPath}");
+                    }
+                    // Maintain original file permissions
+                    chmod($dstPath, 0755);
+
                 }
             }
 
