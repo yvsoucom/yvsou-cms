@@ -1,0 +1,60 @@
+name: Laravel Versioned Changelog
+on:
+  push:
+    branches: [main]
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for git tag history
+
+      - name: Get Laravel version
+        id: current-version
+        run: |
+          CURRENT_VERSION=$(php artisan --version | awk '{print $3}')
+          echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
+          echo "LATEST_VERSION=${CURRENT_VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Get previous version
+        id: previous-version
+        run: |
+          # Get the second-to-last tag (previous release)
+          PREV_TAG=$(git tag -l --sort=-v:refname | head -n 2 | tail -n 1 || echo "v0.0.0")
+          echo "PREV_VERSION=${PREV_TAG#v}" >> $GITHUB_ENV
+          echo "previous_version=${PREV_TAG#v}" >> $GITHUB_OUTPUT
+          echo "Found previous version: ${PREV_TAG#v}"
+
+      - name: Generate changelog
+        uses: heinrichreimer/github-changelog-generator-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          user: ${{ github.repository_owner }}
+          project: ${{ github.event.repository.name }}
+          output: CHANGELOG.md
+          since-tag: v${{ env.PREV_VERSION }}
+          future-release: v${{ env.CURRENT_VERSION }}
+          header-label: "## v${{ env.PREV_VERSION }} → v${{ env.CURRENT_VERSION }} Changes"
+
+      - name: Add version comparison
+        run: |
+          echo "" >> CHANGELOG.md
+          echo "### Version Comparison" >> CHANGELOG.md
+          echo "- **Previous**: \`v${{ env.PREV_VERSION }}\`" >> CHANGELOG.md
+          echo "- **Current**: \`v${{ env.CURRENT_VERSION }}\`" >> CHANGELOG.md
+          echo "- **Commits**: $(git rev-list v${{ env.PREV_VERSION }}..HEAD --count)" >> CHANGELOG.md
+          echo "- **Files Changed**: $(git diff --name-only v${{ env.PREV_VERSION }}..HEAD | wc -l)" >> CHANGELOG.md
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add CHANGELOG.md
+          git commit -m "📜 Changelog: v${{ env.PREV_VERSION }} → v${{ env.CURRENT_VERSION }} [skip ci]"
+          git push
