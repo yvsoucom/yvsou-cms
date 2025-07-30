@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText:  Auto generated
+# SPDX-License-Identifier: MIT
+
 # File: update-changelog.sh
 # Usage: ./update-changelog.sh [since_tag]
 
