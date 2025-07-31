@@ -13,7 +13,7 @@
  
 
 <form method="POST" action="{{ route('search.search') }}"
-    class="max-w-md mx-auto space-y-6 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
+    class="max-w-md mx-auto space-y-4 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
     @csrf
  
     <!-- Keyword Row -->

@@ -16,11 +16,11 @@
 @extends('layouts.app')
  
 @section('content')
-    <div class="p-4 md:p-8 text-gray-900 dark:text-gray-200">
+    <div class="p-2 md:p-8 text-gray-900 dark:text-gray-200">
        
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             {{-- Left panel: scrollable on desktop --}}
-            <div class="space-y-4 md:col-span-1 md:h-[calc(100vh-6rem)] md:overflow-y-auto md:sticky md:top-16">
+            <div class="space-y-2 md:col-span-1 md:h-[calc(100vh-6rem)] md:overflow-y-auto md:sticky md:top-16">
                 {{-- Search Box --}}
                 <div class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-700/50 rounded-2xl p-4">
                     @include('search.search')

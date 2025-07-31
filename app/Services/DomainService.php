@@ -154,7 +154,10 @@ class DomainService
         $rtntitle = '';
         $groupname = '';
         $lang = (new LocaleService())->getcurlang();
+        $total = count($ids);
+        $index = 0;
         foreach ($ids as $id) {
+            $index++;
             $id = trim($id);
             if ($groupname === '')
                 $groupname = $id;
@@ -173,8 +176,9 @@ class DomainService
             $rtntitle .= '<a href="' . e($urlpostview) . '">'
                 . '<img src="/build/icons/app/list.svg" alt="" width="20" height="20" style="vertical-align: middle;" /></a>';
             $rtntitle .= '</span>';
-            $rtntitle .= ' &gt; ';
-
+            if ($index !== $total) {
+                $rtntitle .= ' &gt; ';
+            }
 
         }
 

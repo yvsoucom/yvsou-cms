@@ -17,7 +17,11 @@
 @section('content')
     <main class="min-h-screen py-6 mt-6 dark:bg-gray-900 dark:text-gray-200">
 
-        <h1 class="text-2xl font-bold dark:text-gray-100">{{ $domaintitle }} ({{ $groupid }})</h1>
+        <h1 class="text-2xl font-bold dark:text-gray-100 break-words max-w-full overflow-hidden">
+            {{ $domaintitle }} ({{ $groupid }})
+        </h1>
+
+
         <p class="dark:text-gray-300">{{ $domaindescription }}</p>
 
         @if (session('message'))
@@ -68,7 +72,8 @@
                         {{ __('domain.createsub') }}</a>
                     <!-- Other menu items with same dark mode classes -->
                     <a href="{{ route('domainview.editdomain', ['groupid' => $groupid]) }}"
-                       class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">✏️ {{ __('domain.editdomain') }}</a>
+                        class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">✏️
+                        {{ __('domain.editdomain') }}</a>
 
 
                     <form method="GET" action="{{ route('domainview.rights.show', compact('groupid')) }}">
@@ -205,11 +210,18 @@
             @endif
         @endif
 
-        {{-- Breadcrumb --}}
-        <div class="whitespace-nowrap inline-flex items-center space-x-2 mt-4 dark:text-gray-300">
-            {!! $domainlinks !!}
-            <span>({{ $groupid }})</span>
+
+        <!-- Wrapping breadcrumb layout -->
+
+        <div class="mt-4 dark:text-gray-300 w-full">
+            <div class="flex flex-wrap gap-x-1 gap-y-1 break-all">
+                {!! $domainlinks !!}
+                <span>||{{ $groupid }}</span>
+            </div>
         </div>
+
+
+
 
         {{-- Subdomains --}}
         <h3 class="text-xl font-bold mt-6 dark:text-gray-100">{{ __("domain.subdomains") }} ({{ count($subdomain) }})</h3>
