@@ -10,8 +10,8 @@
  * For commercial use, contact: yvsoucom@gmail.com
  */
 ?>
-<header class="w-full bg-white dark:bg-gray-900 border-b shadow-sm fixed top-0 z-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<header class="bg-white dark:bg-gray-900 border-b shadow-sm flex items-center top-0 z-50 ">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
     <div class="flex justify-between items-center h-16">
       <!-- Logo -->
       <div class="flex-shrink-0">
@@ -139,7 +139,7 @@
 
   <!-- Mobile Nav -->
   <nav id="mobile-menu"
-    class="flex md:hidden flex-col space-y-2 px-4 pt-2 pb-4 bg-white dark:bg-gray-900 border-t shadow-inner" @foreach ($getlangSet as $code => $language) <a href="{{ route('lang.setLang', $code) }}"
+    class="hidden md:hidden flex-col space-y-2 px-4 pt-2 pb-4 bg-white dark:bg-gray-900 border-t shadow-inner" @foreach ($getlangSet as $code => $language) <a href="{{ route('lang.setLang', $code) }}"
     class="block px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 {{ app()->getLocale() === $code ? 'font-bold text-blue-600' : '' }}"
     @click="document.getElementById('mobile-menu').classList.add('hidden')">
     {{ $language }}
