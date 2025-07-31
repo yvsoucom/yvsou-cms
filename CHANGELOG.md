@@ -7,6 +7,13 @@
 
 # Changelog
 
+## 2025-08-01
+
+- version 1.0.0.2 (90510e1)
+- fix domain outside screen view (3ec278d)
+- fix Mobile Hamburger (d93dd50)
+
+
 
  
 -## [1.0.0-beta.6] - 2025-07-10
