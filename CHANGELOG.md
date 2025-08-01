@@ -7,6 +7,12 @@
 
 # Changelog
 
+## 2025-08-02
+
+- version 1.0.0.0.3 (5e5e96a)
+- fix postview, post  outside screen view (d9e10d9)
+
+
 ## 2025-08-01
 
 - version 1.0.0.2 (90510e1)
