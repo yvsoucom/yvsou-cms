@@ -10,10 +10,16 @@
  * For commercial use, contact: yvsoucom@gmail.com
  */
 ?>
-<div class="mt-4 space-y-6 dark:text-gray-200">
+<div class="mt-4 space-y-2 dark:text-gray-200">
 
     {{-- Domain Links --}}
-    <div class="dark:text-gray-300">{!! $domain_links !!}</div>
+   
+    <div class=" dark:text-gray-300 w-full">
+        <div class="flex flex-wrap gap-x-1 gap-y-1 break-all">
+            {!! $domain_links !!}
+        </div>
+    </div>
+
 
     {{-- Post Info Table --}}
     <table class="w-full table-auto border-separate border-spacing-y-2">
@@ -63,7 +69,7 @@
                             <ul class="text-sm text-red-600 dark:text-red-400">
                                 @if (Auth::user() && Auth::user()->canManagePaper($pid))
                                     <!-- Red menu items with dark mode hover states -->
-                                   
+
 
                                     @if ($post->post_status == 0)
                                         <li>

@@ -15,7 +15,7 @@
 
 
 @section('content')
-  <div class="space-y-8  dark:bg-gray-900 dark:text-gray-200 min-h-screen pt-16 pb-8">
+  <div class="space-y-4  dark:bg-gray-900 dark:text-gray-200 min-h-screen pt-4 pb-4">
     @include('post.page')
     @include('comment.comment')
     @include('post.history')
