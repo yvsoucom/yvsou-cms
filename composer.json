@@ -17,6 +17,7 @@
         "livewire/livewire": "^3.6",
         "mews/captcha": "^3.4",
         "nelexa/zip": "^4.0",
+        "nmred/kafka-php": "^0.1.6",
         "sebastian/diff": "^6.0"
     },
     "require-dev": {

@@ -24,6 +24,8 @@
     },
     "dependencies": {
         "feather-icons": "^4.29.2",
-        "jquery": "^3.7.1"
+        "jquery": "^3.7.1",
+        "laravel-echo": "^2.1.7",
+        "socket.io-client": "^4.8.1"
     }
 }
