@@ -59,7 +59,7 @@
                                     class="text-blue-600 dark:text-blue-400 hover:underline mr-2">
                                     {{ $plugin['enabled'] ? 'Disable' : 'Enable' }}
                                 </a>
-                                <a href="{{ route('admin.plugins.delete', $plugin['name']) }}"
+                                <a href="{{ route('admin.plugins.destroy', $plugin['name']) }}"
                                     class="text-red-600 dark:text-red-400 hover:underline">
                                     {{ __('plugin.Delete') }} 
                                 </a>
