@@ -1,3 +1,6 @@
 [submodule "plugins/money-plugin"]
 	path = plugins/money-plugin
 	url = https://github.com/yourusername/money-plugin.git
+[submodule "plugins/MoneyPlugin"]
+	path = plugins/MoneyPlugin
+	url = https://github.com/yourusername/money-plugin.git
