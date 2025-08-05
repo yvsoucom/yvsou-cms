@@ -37,7 +37,8 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
-            "App\\Console\\": "app/Console/"
+            "App\\Console\\": "app/Console/",
+            "Plugins\\": "plugins/"
         },
         "files": [
             "app/helpers.php"
