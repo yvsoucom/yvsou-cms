@@ -58,4 +58,26 @@ if (!function_exists('db_server_version')) {
     }
 }
 
+function get_all_plugins()
+{
+    $pluginPath = base_path('plugins');
+    $plugins = [];
+
+    foreach (glob("$pluginPath/*/plugin.json") as $jsonPath) {
+        $json = json_decode(file_get_contents($jsonPath), true);
+
+        $slug = basename(dirname($jsonPath));
+        $enabled = file_exists(dirname($jsonPath) . '/enabled.flag');
+
+        $plugins[] = [
+            'slug' => $slug,
+            'name' => $json['name'] ?? ['en' => $slug],
+            'shortcodes' => $json['shortcodes'] ?? [],
+            'enabled' => $enabled,
+            'version' => $json['version'] ?? '1.0.0',
+        ];
+    }
+
+    return $plugins;
+}
 
