@@ -33,7 +33,7 @@ class PluginServiceProvider extends ServiceProvider
     {
         $pluginPath = base_path('plugins');
 
-        foreach (glob("$pluginPath/*/PluginServiceProvider.php") as $providerPath) {
+        foreach (glob("$pluginPath/*/src/*ServiceProvider.php") as $providerPath) {
             require_once $providerPath;
 
             $class = $this->getClassFromPath($providerPath);
