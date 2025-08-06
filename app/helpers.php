@@ -73,6 +73,7 @@ function get_all_plugins()
             'slug' => $slug,
             'name' => $json['name'] ?? ['en' => $slug],
             'shortcodes' => $json['shortcodes'] ?? [],
+            'menus' => $json['menus'] ?? [],
             'enabled' => $enabled,
             'version' => $json['version'] ?? '1.0.0',
         ];
@@ -81,3 +82,34 @@ function get_all_plugins()
     return $plugins;
 }
 
+function get_plugin_menus_by_slug($slug)
+{
+    $pluginPath = base_path("plugins/$slug");
+    $jsonPath = "$pluginPath/plugin.json";
+    $enabledFlag = "$pluginPath/enabled.flag";
+
+    if (!file_exists($jsonPath) || !file_exists($enabledFlag)) {
+        return []; // Plugin not enabled or missing
+    }
+
+    $json = json_decode(file_get_contents($jsonPath), true);
+    $locale = app()->getLocale();
+    $menus = [];
+
+    foreach ($json as $key => $entry) {
+        if (str_ends_with($key, 'menu') && is_array($entry)) {
+            if (!($entry['visible'] ?? false))
+                continue;
+
+            $menus[$key] = [
+                'slot' => $key,
+                'name' => $entry['name'][$locale] ?? $entry['name']['en'] ?? $key,
+                'route' => $entry['route'] ?? '/',
+                'icon' => $entry['icon'] ?? '🧩',
+                'role' => $entry['role'] ?? null,
+            ];
+        }
+    }
+
+    return $menus;
+}
