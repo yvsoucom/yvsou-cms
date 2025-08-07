@@ -43,8 +43,18 @@ class PluginServiceProvider extends ServiceProvider
             } else {
                 logger()->warning("Plugin class [$class] not found in [$providerPath]");
             }
+
+            // 🔽 Load translations dynamically
+            $pluginRoot = dirname(dirname($providerPath)); // e.g., plugins/MoneyPlugin
+            $langPath = $pluginRoot . '/resources/lang';
+            $pluginName = basename($pluginRoot);
+
+            if (is_dir($langPath)) {
+                $this->loadTranslationsFrom($langPath, $pluginName);
+            }
         }
     }
+
 
     private function getClassFromPath(string $path): string
     {

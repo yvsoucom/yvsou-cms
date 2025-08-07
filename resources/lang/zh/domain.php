@@ -68,5 +68,7 @@ return [
   'Email' => '邮箱',
   'Submit Selected' => '提交所选',
 
+  'applications' => '应用程序'
+
 ];
 

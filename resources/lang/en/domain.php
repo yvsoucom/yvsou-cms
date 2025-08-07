@@ -66,5 +66,7 @@ return [
   'Email' => 'Email',
   'Submit Selected' => 'Submit Selected',
 
+  'applications' => 'Applications',
+
 ];
 

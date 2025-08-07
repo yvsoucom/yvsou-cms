@@ -210,32 +210,29 @@
             @endif
         @endif
 
+        <h1 class="text-xl font-bold mt-6 dark:text-gray-100">{{ __('domain.applications') }}</h1>
         @php
             $locale = app()->getLocale(); // 'en', 'zh', 'ja', etc.
         @endphp
 
         @foreach (get_all_plugins() as $plugin)
             <div class="card p-4 rounded shadow">
-                <h3 class="text-xl font-bold">
-                    {{ $plugin['name'][$locale] ?? $plugin['name']['en'] ?? $plugin['slug'] }}
-                </h3>
 
-                <p>Slug: {{ $plugin['slug'] }}</p>
-                <p>Version: {{ $plugin['version'] }}</p>
-                <p>Status:
-                    @if ($plugin['enabled'])
-                        <span class="text-green-500">Enabled</span>
-                    @else
-                        <span class="text-red-500">Disabled</span>
-                    @endif
-                </p>
+                @if (!empty($plugin['menus']))
+                    @php
+                        $menu = $plugin['menus'];
 
-                <p class="mt-2">Shortcodes:</p>
-                <ul class="list-disc list-inside">
-                    @foreach ($plugin['shortcodes'] as $tag => $fn)
-                        <li><code>[{{ $tag }}]</code> → <code>{{ $fn }}</code></li>
-                    @endforeach
-                </ul>
+                        $icon = $menu['icon'] ?? '🧩';
+                       // $name = $menu['name'] ?? '🧩';
+                
+                        $name = __($plugin['slug'] . '::menu.' . $menu['name']);
+
+                        $route = "plugins." . $plugin['slug'] . ".index";
+                        $url = route($route);
+                        echo "<li>$icon <a href='{$url}'><strong>" . htmlspecialchars($name) . "</strong></a> — <code>/</code></li>";
+                    @endphp
+                @endif
+
             </div>
         @endforeach
 
