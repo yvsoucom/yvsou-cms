@@ -28,17 +28,7 @@
                     <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">
                         {{ $plugin['name'][$locale] ?? $plugin['name']['en'] ?? $plugin['slug'] }}
                     </h3>
-                    @php
-                        $menus = get_plugin_menus_by_slug($plugin['slug']);
-                        foreach ($menus as $menu) {
-                            $route = $menu['route'] ?? '#';
-                            $name = $menu['name'] ?? 'Unnamed';
-                            $icon = $menu['icon'] ?? '🧩';
-                            echo "<li>$icon <a href='/$route'><strong>$name</strong></a> — <code>/$route</code></li>";
-                        }
 
-
-                    @endphp
                     <button class="text-sm text-blue-500 hover:underline">
                         <span x-show="!open">Show</span>
                         <span x-show="open">Hide</span>
@@ -69,21 +59,13 @@
                     @if (!empty($plugin['menus']))
                         <p class="mt-2"><strong>menus:</strong></p>
                         @php
-                            foreach ($menus as $menu) {
-                                $route = $menu['route'] ?? '#';
+                            $menu = $plugin['menus'];
 
-                                // If name is array, get localized string; otherwise fallback to string
-                                if (is_array($menu['name'])) {
-                                    $name = $menu['name'][$locale] ?? $menu['name']['en'] ?? 'Unnamed';
-                                } else {
-                                    $name = $menu['name'];
-                                }
-
-                                $icon = $menu['icon'] ?? '🧩';
-
-                                echo "<li>$icon <a href='/$route'><strong>" . htmlspecialchars($name) . "</strong></a> —
-                                                <code>/$route</code></li>";
-                            }
+                            $icon = $menu['icon'] ?? '🧩';
+                            $name = $menu['name'] ?? '🧩';
+                            $route = "plugins." . $plugin['slug']. ".index";
+                            $url = route($route);
+                            echo "<li>$icon <a href='{$url}'><strong>" . htmlspecialchars($name) . "</strong></a> — <code>/</code></li>";
                         @endphp
                     @endif
                 </div>

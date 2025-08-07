@@ -23,6 +23,8 @@
  * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
  */
 
+use App\Helpers\FilterManager;
+
 // app/helpers.php
 if (!function_exists('do_shortcode')) {
     function do_shortcode($content)
@@ -81,35 +83,15 @@ function get_all_plugins()
 
     return $plugins;
 }
+ 
 
-function get_plugin_menus_by_slug($slug)
+
+function add_filter($tag, $callback, $priority = 10)
 {
-    $pluginPath = base_path("plugins/$slug");
-    $jsonPath = "$pluginPath/plugin.json";
-    $enabledFlag = "$pluginPath/enabled.flag";
+    FilterManager::addFilter($tag, $callback, $priority);
+}
 
-    if (!file_exists($jsonPath) || !file_exists($enabledFlag)) {
-        return []; // Plugin not enabled or missing
-    }
-
-    $json = json_decode(file_get_contents($jsonPath), true);
-    $locale = app()->getLocale();
-    $menus = [];
-
-    foreach ($json as $key => $entry) {
-        if (str_ends_with($key, 'menu') && is_array($entry)) {
-            if (!($entry['visible'] ?? false))
-                continue;
-
-            $menus[$key] = [
-                'slot' => $key,
-                'name' => $entry['name'][$locale] ?? $entry['name']['en'] ?? $key,
-                'route' => $entry['route'] ?? '/',
-                'icon' => $entry['icon'] ?? '🧩',
-                'role' => $entry['role'] ?? null,
-            ];
-        }
-    }
-
-    return $menus;
+function apply_filters($tag, $value, ...$args)
+{
+    return FilterManager::applyFilters($tag, $value, ...$args);
 }
