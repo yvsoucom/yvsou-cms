@@ -3,4 +3,4 @@
 	url = https://github.com/yourusername/money-plugin.git
 [submodule "plugins/MoneyPlugin"]
 	path = plugins/MoneyPlugin
-	url = https://github.com/yourusername/money-plugin.git
+url=https://github.com/yvsoucom/MoneyPlugin.git
