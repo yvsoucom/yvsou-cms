@@ -1,3 +1,6 @@
 [submodule "plugins/MoneyPlugin"]
 	path = plugins/MoneyPlugin
 	url = git@github.com:yvsoucom/MoneyPlugin.git
+[submodule "resources/themes/PurityTheme"]
+	path = resources/themes/PurityTheme
+	url = git@github.com:yvsoucom/PurityTheme.git
