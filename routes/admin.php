@@ -53,6 +53,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
         Route::post('/upload', [PluginController::class, 'upload'])->name('upload');
         Route::get('/toggle/{plugin}', [PluginController::class, 'toggle'])->name('toggle');
         Route::get('/delete/{plugin}', [PluginController::class, 'destroy'])->name('destroy');
+        Route::post('/switch', [PluginController::class, 'switch'])->name('switch');
+
+
+
     });
 
     Route::prefix('setcustomconfig')->name('setcustomconfig.')->group(function () {
@@ -70,14 +74,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
         Route::post('update', [CastMsgController::class, 'update'])->name('update');
 
     });
-    
-    Route::prefix('themes')->name('themes.')->group(function () {
-
-        Route::get('/', [ThemeController::class, 'index'])->name('index');
-        Route::post('/switch', [ThemeController::class, 'switch'])->name('switch');
-        Route::post('/upload', [ThemeController::class, 'upload'])->name('upload');
-
-    });
+ 
 });
 
 

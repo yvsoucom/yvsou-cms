@@ -23,24 +23,46 @@ class PluginController extends Controller
 {
     public function index()
     {
-        $plugins = collect(File::directories(base_path('plugins')))->map(function ($dir) {
-            $meta = @json_decode(@file_get_contents($dir . '/plugin.json'), true);
-            return [
-                'name' => basename($dir),
-                'enabled' => file_exists($dir . '/enabled.flag'),
-                'version' => $meta['version'] ?? 'unknown',
-                'dependencies' => $meta['require'] ?? [],
-            ];
-        });
+        $activeTheme = config('theme.active');
+
+        $plugins = collect(File::directories(base_path('plugins')))
+            ->map(function ($dir) use ($activeTheme) { // pass activeTheme into closure
+                $meta = @json_decode(@file_get_contents($dir . '/plugin.json'), true);
+
+                return [
+                    'name' => basename($dir),
+                    'enabled' => file_exists($dir . '/enabled.flag'),
+                    'activated' => ($activeTheme == basename($dir)),
+                    'version' => $meta['version'] ?? 'unknown',
+                    'type' => $meta['type'] ?? 'unknown',
+                    'dependencies' => $meta['require'] ?? [],
+                ];
+            });
 
         return view('admin.plugins.index', compact('plugins'));
     }
+
 
     public function toggle($plugin)
     {
         $flag = base_path("plugins/{$plugin}/enabled.flag");
         file_exists($flag) ? unlink($flag) : touch($flag);
         return back();
+    }
+
+    public function switch(Request $request)
+    {
+        $theme = $request->input('theme');
+        // Save to config file or database
+        file_put_contents(
+            config_path('theme.php'),
+            "<?php return ['active' => '{$theme}'];"
+        );
+        \Artisan::call('config:clear');
+        \Artisan::call('view:clear');
+
+        return redirect()->route('admin.plugins.index')
+            ->with('success', 'Theme switched to ' . $theme);
     }
 
     public function destroy($plugin)

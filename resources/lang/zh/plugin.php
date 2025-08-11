@@ -33,4 +33,5 @@ return [
   'Upload Plugin' => '上传插件',
   'Plugin ZIP File' => '插件ZIP文件',
   'Upload ZIP' => '上传ZIP',
+  'type' => '类型',
 ];
