@@ -33,4 +33,5 @@ return [
   'Upload Plugin' => 'プラグインをアップロード',
   'Plugin ZIP File' => 'プラグインZIPファイル',
   'Upload ZIP' => 'ZIPをアップロード',
+  'type' => 'タイプ',
 ];

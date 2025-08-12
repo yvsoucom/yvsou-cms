@@ -26,6 +26,7 @@
                     {{ __('dashboard.usercenter') }}
                 </a>
                 @can('admin')
+                     
                     <a href="{{ route('admin.plugins.index') }}"
                         class="block text-gray-800 dark:text-gray-300 hover:font-semibold hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-150">
                         {{ __('dashboard.plugins') }}

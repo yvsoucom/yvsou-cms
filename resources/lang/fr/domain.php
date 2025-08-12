@@ -69,5 +69,7 @@ return [
   'Submit Selected' => 'Soumettre la sélection',
   'New Message to users' => 'Nouveau message aux utilisateurs',
 
+  'applications' => 'Applications'
+
 ];
 

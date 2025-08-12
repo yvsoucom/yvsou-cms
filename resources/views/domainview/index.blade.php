@@ -210,6 +210,33 @@
             @endif
         @endif
 
+        <h1 class="text-xl font-bold mt-6 dark:text-gray-100">{{ __('domain.applications') }}</h1>
+        @php
+            $locale = app()->getLocale(); // 'en', 'zh', 'ja', etc.
+        @endphp
+
+        @foreach (get_all_plugins() as $plugin)
+            <div class="card p-4 rounded shadow">
+
+                @if (!empty($plugin['menus']))
+                    @php
+                        $menu = $plugin['menus'];
+
+                        $icon = $menu['icon'] ?? '🧩';
+                       // $name = $menu['name'] ?? '🧩';
+                
+                        $name = __($plugin['slug'] . '::menu.' . $menu['name']);
+
+                        $route = "plugins." . $plugin['slug'] . ".index";
+                        $url = route($route);
+                        echo "<li>$icon <a href='{$url}'><strong>" . htmlspecialchars($name) . "</strong></a> — <code>/</code></li>";
+                    @endphp
+                @endif
+
+            </div>
+        @endforeach
+
+
 
         <!-- Wrapping breadcrumb layout -->
 

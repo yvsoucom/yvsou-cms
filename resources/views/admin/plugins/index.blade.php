@@ -25,6 +25,10 @@
                             {{ __('plugin.Name') }}</th>
                         <th
                             class="p-3 text-left text-gray-800 dark:text-gray-300 border-b border-gray-300 dark:border-gray-600">
+                            {{ __('plugin.type') }}</th>    
+                            
+                        <th
+                            class="p-3 text-left text-gray-800 dark:text-gray-300 border-b border-gray-300 dark:border-gray-600">
                             {{ __('plugin.Version') }}</th>
                         <th
                             class="p-3 text-left text-gray-800 dark:text-gray-300 border-b border-gray-300 dark:border-gray-600">
@@ -43,26 +47,55 @@
                             <td class="p-3 text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
                                 {{ $plugin['name'] }}</td>
                             <td class="p-3 text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
+                                {{ $plugin['type'] }}</td>
+                            <td class="p-3 text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
                                 {{ $plugin['version'] }}</td>
                             <td class="p-3 border-b border-gray-200 dark:border-gray-700">
                                 <span
                                     class="{{ $plugin['enabled'] ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
                                     {{ $plugin['enabled'] ? 'Enabled' : 'Disabled' }}
                                 </span>
+                                  @if($plugin['type'] == "theme")
+                                  <span
+                                    class="{{ $plugin['activated'] ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
+                                    {{ $plugin['activated'] ? 'activated' : 'deactivated' }}
+                                </span>
+                                  @endif
+ 
                             </td>
                             <td class="p-3 border-b border-gray-200 dark:border-gray-700">
                                 <pre
                                     class="text-xs bg-gray-100 dark:bg-gray-800 p-2 rounded text-gray-700 dark:text-gray-300">{{ json_encode($plugin['dependencies'], JSON_PRETTY_PRINT) }}</pre>
                             </td>
                             <td class="p-3 border-b border-gray-200 dark:border-gray-700">
+                                @if( $plugin['name'] != "DefaultTheme")
                                 <a href="{{ route('admin.plugins.toggle', $plugin['name']) }}"
                                     class="text-blue-600 dark:text-blue-400 hover:underline mr-2">
                                     {{ $plugin['enabled'] ? 'Disable' : 'Enable' }}
                                 </a>
-                                <a href="{{ route('admin.plugins.delete', $plugin['name']) }}"
+                                @endif
+                                @if($plugin['enabled'])
+                                @if($plugin['type'] == "theme")
+                                @if(!$plugin['activated'])
+                                <form action="{{ route('admin.plugins.switch') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="theme" value="{{ $plugin['name'] }}">
+                                <button type="submit" class="text-blue-600 dark:text-blue-400 hover:underline mr-2">
+                                                {{ __('plugin.Activate') }}    
+                                 
+                                </button>
+                                </form>
+                                @endif
+                                @endif
+                                @endif
+                                @if( $plugin['name'] != "DefaultTheme")
+                                  @if(!$plugin['enabled'])
+                                <a href="{{ route('admin.plugins.destroy', $plugin['name']) }}"
                                     class="text-red-600 dark:text-red-400 hover:underline">
                                     {{ __('plugin.Delete') }} 
                                 </a>
+                                @endif
+                                @endif
                             </td>
                         </tr>
                     @endforeach

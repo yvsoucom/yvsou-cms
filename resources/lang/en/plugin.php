@@ -33,4 +33,5 @@ return [
   'Upload Plugin' => 'Upload Plugin',
   'Plugin ZIP File' => 'Plugin ZIP File',
   'Upload ZIP' => 'Upload ZIP',
+  'type' => 'Type',
 ];
