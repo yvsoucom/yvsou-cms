@@ -18,16 +18,8 @@
         "livewire/livewire": "^3.6",
         "mews/captcha": "^3.4",
         "nelexa/zip": "^4.0",
-<<<<<<< HEAD
         "sebastian/diff": "^6.0",
         "stripe/stripe-php": "^17.5"
-=======
-        "nmred/kafka-php": "^0.1.6",
-        "sebastian/diff": "^6.0",
-        "stripe/stripe-php": "^17.5",
-        "wechatpay/wechatpay": "^1.4",
-        "yansongda/laravel-pay": "^3.7"
->>>>>>> dev-v2
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
