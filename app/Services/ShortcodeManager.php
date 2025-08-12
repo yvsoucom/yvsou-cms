@@ -28,48 +28,55 @@ namespace App\Services;
 
 use App\Models\Shortcode;
 use Illuminate\Support\Facades\Schema;
+ 
+ 
+namespace App\Services;
 
 class ShortcodeManager
 {
-    protected $shortcodes = [];
+    protected array $shortcodes = [];
 
-    public function loadFromDatabase()
-    {
-        if (Schema::hasTable('shortcodes')) {
-            $shortcodes = Shortcode::all();
-            // your logic...
-        }
-
-        foreach (Shortcode::all() as $sc) {
-            $this->register($sc->tag, $sc->callback);
-        }
-    }
-
-    public function register($tag, $callback)
+    // Register a shortcode handler
+    public function register(string $tag, callable $callback): void
     {
         $this->shortcodes[$tag] = $callback;
     }
 
-    public function render($content)
+    // Process content replacing shortcodes with their output
+    public function process(string $content): string
     {
-        return preg_replace_callback('/\[(\w+)(.*?)\](?:((?:(?!\[\/\1\]).)*)\[\/\1\])?/s', function ($matches) {
+        if (empty($this->shortcodes)) {
+            return $content;
+        }
+
+        // Regex to match [tag attr="value" ...]
+        $pattern = '/\[([a-zA-Z0-9_-]+)([^\]]*)\]/';
+
+        return preg_replace_callback($pattern, function ($matches) {
             $tag = $matches[1];
-            $rawAttrs = trim($matches[2]);
-            $innerContent = $matches[3] ?? '';
+            $attrString = $matches[2] ?? '';
 
-            parse_str(str_replace(['=', '"'], ['=', '&quot;'], $rawAttrs), $attrs);
-            $attrs = array_map('trim', $attrs);
-
-            if (isset($this->shortcodes[$tag])) {
-                $callback = $this->shortcodes[$tag];
-                if (is_string($callback)) {
-                    return eval ($callback); // ⚠️ sanitize properly or use safer design
-                } elseif (is_callable($callback)) {
-                    return call_user_func($callback, $attrs, $innerContent);
-                }
+            if (!isset($this->shortcodes[$tag])) {
+                return $matches[0]; // no handler, return original
             }
 
-            return $matches[0]; // Return unprocessed if not found
+            $attrs = $this->parseAttributes($attrString);
+
+            $callback = $this->shortcodes[$tag];
+
+            return call_user_func($callback, $attrs);
         }, $content);
+    }
+
+    // Parse shortcode attributes key="value"
+    protected function parseAttributes(string $text): array
+    {
+        $attrs = [];
+        preg_match_all('/(\w+)="([^"]*)"/', $text, $matches, PREG_SET_ORDER);
+
+        foreach ($matches as $match) {
+            $attrs[$match[1]] = $match[2];
+        }
+        return $attrs;
     }
 }
