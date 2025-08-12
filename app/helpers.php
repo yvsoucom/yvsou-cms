@@ -86,12 +86,4 @@ function get_all_plugins()
  
 
 
-function add_filter($tag, $callback, $priority = 10)
-{
-    FilterManager::addFilter($tag, $callback, $priority);
-}
-
-function apply_filters($tag, $value, ...$args)
-{
-    return FilterManager::applyFilters($tag, $value, ...$args);
-}
+ 
