@@ -1,9 +1,11 @@
 <?php
 /**
- * © 2025 Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo   All rights reserved.
- * Author: Lican Huang
+ * SPDX-FileCopyrightText: (c) 2025  Hangzhou Domain Zones Technology Co., Ltd.
+ * SPDX-FileCopyrightText: Institute of Future Science and Technology G.K., Tokyo
+ * SPDX-FileContributor: Lican Huang
+ * @created 2025-08-13
  *
- * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary  
+ * SPDX-License-Identifier: GPL-3.0-or-later
  * License: Dual Licensed – GPLv3 or Commercial
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,11 +24,14 @@
  * Contact: yvsoucom@gmail.com
  * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
  */
-// config/version.php
-return [
-  'github_repo' => 'yvsoucom/yvsou-cms',
-  'app_version' => 'v2.0.0-beta.2',
-  'env_version' => 'env-v1.0.0',
-  'config_version' => 'config-v1.0.0',
-  'sql_version' => 'sql-v1.2.0',
-];
+
+use function App\Helpers\add_plugin_shortcode;
+
+
+$pluginName = 'DefaultTheme';
+
+// Register shortcode [myplugin_hello] scoped to DefaultTheme
+add_plugin_shortcode($pluginName, 'greeting', function ($attrs) use ($pluginName) {
+    $name = $attrs['name'] ?? 'Visitor';
+    return "Welcome, {$name}, {$pluginName}!";
+});

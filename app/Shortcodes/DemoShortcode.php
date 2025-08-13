@@ -25,19 +25,11 @@
 * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
 */
 
- 
-// app/Services/PluginFilterManager.php
-namespace App\Services;
 
-class PluginFilterManager
-{
-    protected array $managers = [];
+use function app\Helpers\add_shortcode;
 
-    public function getManager(string $pluginName): FilterManager
-    {
-        if (!isset($this->managers[$pluginName])) {
-            $this->managers[$pluginName] = new FilterManager();
-        }
-        return $this->managers[$pluginName];
-    }
-}
+// Register a global shortcode [hello]
+add_shortcode('greeting', function ($attrs) {
+    $name = $attrs['name'] ?? 'World';
+    return "Welcome, {$name}!";
+});

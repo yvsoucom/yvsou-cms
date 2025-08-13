@@ -3,7 +3,6 @@
 * SPDX-FileCopyrightText: (c) 2025  Hangzhou Domain Zones Technology Co., Ltd.
 * SPDX-FileCopyrightText: Institute of Future Science and Technology G.K., Tokyo
 * SPDX-FileContributor: Lican Huang
-* @created 2025-08-13
 *
 * SPDX-License-Identifier: GPL-3.0-or-later
 * License: Dual Licensed – GPLv3 or Commercial
@@ -25,7 +24,7 @@
 * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
 */
  
-// plugins/DefaultTheme/Filters/GreetingFilter.php
+
 
 use function App\Helpers\add_plugin_filter;
 
