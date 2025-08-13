@@ -61,6 +61,7 @@ use HTMLPurifier_Config;
 use Illuminate\Support\Str;
 use App\Services\ReversionService;
 use Illuminate\Support\Facades\Log;
+use function app\Helpers\apply_filters;
 
 //use Jfcherng\Diff\Factory\ParserFactory;
 
@@ -254,14 +255,30 @@ class PostController extends Controller
             if ($content === "-1")
                 return redirect()->route('error.attachedfile', compact('errorno'));
             $content = do_shortcode($content);
+            $content = do_plugin_shortcode($content);
             $lastVersion = PostReversion::where('postid', $post->id)->max('version') ?? 0;
-            $post_title = "$post->post_title   <ins>Version  $lastVersion </ins>";
+            $post_title = $post->post_title ;
+          
+            $post_title = apply_plugin_filters(
+                'DefaultTheme',
+                'post_version',
+                $post_title,          // base value
+                $lastVersion    // dynamic arg  
+            );
             $authorby = (new User())->getAliasNameByID($post->post_author);
             $lastauthorby = (new User())->getAliasNameByID($post->revised_author);
 
             $author_by = " by  $authorby   $post->post_date ";
+
             if ($lastauthorby) {
-                $author_by .= " last modified by  $lastauthorby    $post->updated_at    ";
+                //  apply_filters('author_by', $author_by, $post->post_date, $authorby);
+                $author_by = apply_filters(
+                    'modify_author_by',
+                    $author_by,          // base value
+                    $lastauthorby,       // dynamic arg 1
+                    $post->updated_at    // dynamic arg 2
+                );
+                //     $author_by .= " last modified by  $lastauthorby    $post->updated_at    ";
             }
             $domain_links = (new DomainService())->get_joinGroupLink_by_uniqid($groupid);
             $comments = $this->showComments($pid);
@@ -289,7 +306,9 @@ class PostController extends Controller
             $content = $this->convertToProtectedUrls($content, $groupid, $pid);
             if ($content === "-1")
                 return redirect()->route('error.attachedfile', compact('errorno'));
-            //    $content = do_shortcode($content);
+            $content = do_shortcode($content);
+            $content = do_plugin_shortcode($content);
+
             $post_title = "<del>$post->post_title  </del>";
             $author_by = $post->post_date . " by " . (new User())->getAliasNameByID($post->post_author);
             $domain_links = (new DomainService())->get_joinGroupLink_by_uniqid($groupid);
@@ -541,12 +560,12 @@ class PostController extends Controller
 
                 $reconstruct = (new ReversionService())->reconstructFromDiffRanges($oldContent, $diff);
                 if ($reconstruct != $content) {
-                  //  DB::rollBack();
-                  //  $errorno = '5';
+                    //  DB::rollBack();
+                    //  $errorno = '5';
                     logger("new Content:", [$content]);
 
-                    logger('Post reconstruct error: ' , [$reconstruct]);
-                 //   return redirect()->route('error.attachedfile', compact(['errorno']));
+                    logger('Post reconstruct error: ', [$reconstruct]);
+                    //   return redirect()->route('error.attachedfile', compact(['errorno']));
 
                 }
             }

@@ -16,6 +16,10 @@ class ShortcodeServiceProvider extends ServiceProvider
         $this->app->singleton(ShortcodeManager::class, function ($app) {
             return new ShortcodeManager();
         });
+
+        $this->app->singleton(PluginShortcodeManager::class, function ($app) {
+        return new PluginShortcodeManager();
+    });
     }
     public function boot(): void
     {

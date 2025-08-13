@@ -25,7 +25,7 @@
 * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
 */
  
-// app/Helpers/filter_helpers.php
+namespace app\Helpers ;
 
 use App\Services\FilterManager;
 use App\Services\PluginFilterManager;
@@ -52,10 +52,10 @@ function apply_filters(string $tag, $value, ...$args)
  * @param int $priority
  * @return void
  */
-function add_filter(string $tag, callable $callback, int $priority = 10)
+function add_filter(string $tag, callable $callback, int $priority = 10,$accepted_args = 1)
 {
     $manager = app(FilterManager::class);
-    $manager->addFilter($tag, $callback, $priority);
+    $manager->addFilter($tag, $callback, $priority, $accepted_args );
 }
 
 /**
@@ -83,9 +83,9 @@ function apply_plugin_filters(string $pluginName, string $tag, $value, ...$args)
  * @param int $priority
  * @return void
  */
-function add_plugin_filter(string $pluginName, string $tag, callable $callback, int $priority = 10)
+function add_plugin_filter(string $pluginName, string $tag, callable $callback, int $priority = 10,int $accepted_args = 1)
 {
     $pluginManagers = app(PluginFilterManager::class);
     $manager = $pluginManagers->getManager($pluginName);
-    $manager->addFilter($tag, $callback, $priority);
+    $manager->addFilter($tag, $callback, $priority,$accepted_args);
 }

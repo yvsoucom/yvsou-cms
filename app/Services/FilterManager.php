@@ -46,8 +46,9 @@ class FilterManager
      *
      * @throws InvalidArgumentException if callback is invalid.
      */
-    public static function addFilter(string $tag, callable $callback, int $priority = 10): void
+    public static function addFilter(string $tag, callable $callback, int $priority = 10, int $accepted_args = 1): void
     {
+        // Validate callback
         if (is_array($callback)) {
             // Class method callback
             $class = is_object($callback[0]) ? get_class($callback[0]) : $callback[0];
@@ -71,18 +72,13 @@ class FilterManager
             throw new InvalidArgumentException('Invalid filter callback. Must be Closure, global function, or class method.');
         }
 
-        self::$filters[$tag][$priority][] = $callback;
+        // Store callback along with accepted args
+        self::$filters[$tag][$priority][] = [
+            'callback' => $callback,
+            'accepted_args' => $accepted_args
+        ];
     }
 
-    /**
-     * Apply all filters for a tag to a value.
-     *
-     * @param string $tag   The filter tag name
-     * @param mixed  $value The initial value
-     * @param mixed  ...$args Additional arguments passed to callbacks
-     *
-     * @return mixed The filtered value
-     */
     public static function applyFilters(string $tag, $value, ...$args)
     {
         if (!isset(self::$filters[$tag])) {
@@ -92,11 +88,14 @@ class FilterManager
         ksort(self::$filters[$tag]);
 
         foreach (self::$filters[$tag] as $priority => $callbacks) {
-            foreach ($callbacks as $callback) {
-                $value = call_user_func($callback, $value, ...$args);
+            foreach ($callbacks as $item) {
+                $callback = $item['callback'];
+                $accepted = array_slice(array_merge([$value], $args), 0, $item['accepted_args']);
+                $value = call_user_func_array($callback, $accepted);
             }
         }
 
         return $value;
     }
+
 }

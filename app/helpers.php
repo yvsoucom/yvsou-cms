@@ -24,14 +24,35 @@
  */
 
 use App\Helpers\FilterManager;
-
+use App\Services\ShortcodeManager;
+use App\Services\PluginShortcodeManager;
+use Illuminate\Support\Facades\Log;
 // app/helpers.php
 if (!function_exists('do_shortcode')) {
     function do_shortcode($content)
     {
-        return app('shortcode')->render($content);
+        return app(ShortcodeManager::class)->render($content);
     }
 }
+
+
+if (!function_exists('do_plugin_shortcode')) {
+
+    function do_plugin_shortcode($content)
+    {
+        return app(PluginShortcodeManager::class)->render($content);
+    }
+}
+
+if (!function_exists('apply_plugin_filters')) {
+
+    function apply_plugin_filters(string $pluginName, string $tag, $value, ...$args)
+    {
+        return app\Helpers\apply_plugin_filters(  $pluginName,   $tag, $value, ...$args);
+
+    }
+}
+
 
 if (!function_exists('db_server_version')) {
     function db_server_version()
@@ -83,7 +104,6 @@ function get_all_plugins()
 
     return $plugins;
 }
- 
 
 
- 
+

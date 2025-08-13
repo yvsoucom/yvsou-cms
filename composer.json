@@ -42,7 +42,9 @@
             "Plugins\\": "plugins/"
         },
         "files": [
-            "app/helpers.php"
+            "app/helpers.php",
+            "app/Helpers/shortcode_helpers.php",
+             "app/Helpers/filter_helpers.php"
         ]
     },
     "autoload-dev": {

@@ -85,15 +85,17 @@ class AppServiceProvider extends ServiceProvider
             $view->with('getlangSet', $localeService->getlangSet(config('yvsou_config.LANGUAGESET')));
         });
         try {
+            /*
             if (Schema::hasTable('shortcodes')) {
                 $shortcodes = \App\Models\Shortcode::all();
                 $shortcodeManager = new \App\Services\ShortcodeManager();
-                $shortcodeManager->loadFromDatabase();
+
                 app()->instance('shortcode', $shortcodeManager);
             } else {
                 // Optional: log or use default mail config
                 logger('shortcodes table does not exist.');
-            }
+            }*/
+
         } catch (\Throwable $e) {
             logger()->error('Error shortcodes: ' . $e->getMessage());
             // Optional: fallback config

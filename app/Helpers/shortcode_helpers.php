@@ -26,7 +26,7 @@
 */
  
 // app/Helpers/shortcode_helpers.php
-
+namespace App\Helpers;
 use App\Services\ShortcodeManager;
 use App\Services\PluginShortcodeManager;
 

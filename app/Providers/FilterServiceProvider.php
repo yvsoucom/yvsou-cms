@@ -19,6 +19,11 @@ class FilterServiceProvider extends ServiceProvider
 
         // Optional alias so we can call `app('filter')`
         $this->app->alias(FilterManager::class, 'filter');
+        
+        $this->app->singleton(PluginFilterManager::class, function ($app): PluginFilterManager {
+            return new PluginFilterManager();
+        });
+
     }
     protected function loadFiltersFrom(string $dir, ?FilterManager $manager = null): void
     {

@@ -3,7 +3,7 @@
 * SPDX-FileCopyrightText: (c) 2025  Hangzhou Domain Zones Technology Co., Ltd.
 * SPDX-FileCopyrightText: Institute of Future Science and Technology G.K., Tokyo
 * SPDX-FileContributor: Lican Huang
-* @created 2025-08-12
+* @created 2025-08-13
 *
 * SPDX-License-Identifier: GPL-3.0-or-later
 * License: Dual Licensed – GPLv3 or Commercial
@@ -24,12 +24,14 @@
 * Contact: yvsoucom@gmail.com
 * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
 */
+ 
+// plugins/DefaultTheme/Filters/GreetingFilter.php
 
-// app/Shortcodes/hello.php
+use function App\Helpers\add_plugin_filter;
 
-return function ($manager) {
-    $manager->register('hello', function ($attrs) {
-        $name = $attrs['name'] ?? 'World';
-        return "Hello, {$name}!";
-    });
-};
+$pluginName = 'DefaultTheme';
+
+// Add a filter to modify greetings only for this plugin
+add_plugin_filter($pluginName, 'post_version', function ($title, $lastVersion) {
+    return $title . "<ins> Version {$lastVersion} </ins>";
+}, 10, 2); // 2 accepted arguments
