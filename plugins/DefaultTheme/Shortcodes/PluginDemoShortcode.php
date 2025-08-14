@@ -29,7 +29,7 @@ use function App\Helpers\add_plugin_shortcode;
 
 
 $pluginName = 'DefaultTheme';
-
+// usage example [DefaultTheme:greeting name="Alice"]
 // Register shortcode [myplugin_hello] scoped to DefaultTheme
 add_plugin_shortcode($pluginName, 'greeting', function ($attrs) use ($pluginName) {
     $name = $attrs['name'] ?? 'Visitor';
