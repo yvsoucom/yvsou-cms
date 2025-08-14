@@ -6,7 +6,9 @@ SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary
 ## About yvsou-cms
   
  
-**yvsou-cms** is a powerful content management system developed with Laravel by Hangzhou Domain Zones Technology Co., Ltd. and Institute of Future Science and Technology G.K., Tokyo. It features fine-grained permission control, dynamic directory structures, and is designed for extensibility and commercial readiness.  yvsou-cms is a newly redeveloped content management system built with Laravel, encompassing the core functionalities of the DSCloud Platform, which was originally launched in 2011 by Hangzhou Domain Zones Technology Co., Ltd.
+**yvsou-cms** is a powerful content management system developed with Laravel by Hangzhou Domain Zones Technology Co., Ltd. and Institute of Future Science and Technology G.K., Tokyo. It features fine-grained permission control, dynamic directory structures, and is designed for extensibility and commercial readiness. yvsou-cms also features dynamic thenes and plugins frameworks and shortcodes and filters simialar with wordpress. yvsou-cms is a newly redeveloped content management system built with Laravel, encompassing the core functionalities of the DSCloud Platform, which was originally launched in 2011 by Hangzhou Domain Zones Technology Co., Ltd.
+
+
 
 ---
 → ## ⭐ Star This Repository  
@@ -97,6 +99,14 @@ npm run dev
 3. Submit a PR!
 
 → New contributors welcome! 🙌
+
+## Plugins
+  MoneyPlugin , plugin supports several pay methods and accounting transactions  
+  [https://github.com/yvsoucom/MoneyPlugin] https://github.com/yvsoucom/MoneyPlugin
+
+## Themes
+  PurityTheme , simple theme demostrates dunamic theme support.
+  [https://github.com/yvsoucom/PurityTheme] https://github.com/yvsoucom/PurityTheme
  
 ## Live Metrics  
 
