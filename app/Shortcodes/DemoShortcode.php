@@ -27,7 +27,7 @@
 
 
 use function app\Helpers\add_shortcode;
-
+// usage example [greeting name="Alice"]
 // Register a global shortcode [hello]
 add_shortcode('greeting', function ($attrs) {
     $name = $attrs['name'] ?? 'World';

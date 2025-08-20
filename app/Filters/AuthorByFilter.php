@@ -32,6 +32,15 @@ use function app\Helpers\add_filter;
 // Add a filter to modify some output globally
 // Define $lastauthorby and $updated_at before using them in the closure
 
+/* usage example
+ $author_by = apply_filters(
+                    'modify_author_by',
+                    $author_by,          // base value
+                    $lastauthorby,       // dynamic arg 1
+                    $post->updated_at    // dynamic arg 2
+                );
+*/
+
 // Register filter with 3 args
 add_filter('modify_author_by', function ($author_by, $lastauthorby, $updated_at) {
     return $author_by . " last modified by {$lastauthorby} {$updated_at}";
