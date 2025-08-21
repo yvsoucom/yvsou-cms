@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use ZipArchive;
+use Illuminate\Support\Facades\Artisan;
 
 class PluginController extends Controller
 {
@@ -71,6 +72,30 @@ class PluginController extends Controller
         return back();
     }
 
+
+
+    function replaceMigrationPrefix(string $pluginName): void
+    {
+        $pluginPath = base_path("plugins/$pluginName");  // e.g., plugins/MoneyPlugin
+        $prefix = strtolower($pluginName) . '_';         // e.g., moneyplugin_
+
+        $migrationPath = $pluginPath . '/database/migrations';
+
+        if (!File::exists($migrationPath)) {
+            throw new \Exception("Migration path not found: $migrationPath");
+        }
+
+        $files = File::allFiles($migrationPath);
+
+        foreach ($files as $file) {
+            $content = File::get($file);
+            if (strpos($content, '{{prefix}}') !== false) {
+                $updatedContent = str_replace('{{prefix}}', $prefix, $content);
+                File::put($file, $updatedContent);
+            }
+        }
+    }
+
     public function upload(Request $request)
     {
         $request->validate(['plugin_zip' => 'required|mimes:zip']);
@@ -101,8 +126,24 @@ class PluginController extends Controller
 
             $zip->close();
         }
+        // ✅ Clear and cache configurations, routes, and views
+        Artisan::call('config:clear');
+        Artisan::call('config:cache');
+        Artisan::call('route:clear');
+        Artisan::call('route:cache');
+        Artisan::call('view:clear');
+        Artisan::call('view:cache');
 
-        return back();
+        $this->replaceMigrationPrefix($pluginName);
+
+        Artisan::call('migrate', [
+            '--path' => "plugins/{$pluginName}/database/migrations",
+            '--force' => true
+        ]);
+
+
+        return back()->with('success', 'Plugin uploaded and caches refreshed successfully!');
+
     }
 
 }

@@ -285,17 +285,82 @@ class AutoUpdaterService
     {
         // exec('composer install --no-dev --optimize-autoloader');
         try {
+            \Artisan::call('migrate', [
+                '--force' => true // run without confirmation in production
+            ]);
+        } catch (\Exception $e) {
+            Log::error("❌ Post-update migrate db fail: " . $e->getMessage());
+
+            return false;
+        }
+        try {
+
+            // Clear caches
+            \Artisan::call('config:clear');
+            \Artisan::call('cache:clear');
+            \Artisan::call('route:clear');
+            \Artisan::call('view:clear');
             \Artisan::call('config:cache');
             \Artisan::call('route:cache');
             \Artisan::call('view:cache');
-
             Log::info("Post-update complete.");
-            return true;
+
         } catch (\Exception $e) {
             Log::error("❌ Post-update failed: " . $e->getMessage());
+            return false;
         }
-        return false;
 
+
+        return true;
+
+    }
+
+    public function upgrade($zipFile)
+    {
+
+        $zipPath = storage_path('app/' . $zipFile);
+        $appDir = base_path();
+        $tmpDir = storage_path('framework/upgrade_' . time());
+
+        // Maintenance mode
+        \Artisan::call('down');
+
+        // Extract ZIP
+        $zip = new \ZipArchive;
+        $zip->open($zipPath);
+        $zip->extractTo($tmpDir);
+        $zip->close();
+
+        // Recursively delete old directories/files that exist in ZIP
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($tmpDir, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+        foreach ($iterator as $item) {
+            $relativePath = str_replace($tmpDir . DIRECTORY_SEPARATOR, '', $item->getPathname());
+            $targetPath = $appDir . DIRECTORY_SEPARATOR . $relativePath;
+            if (($relativePath === '.env' || strpos($relativePath, 'storage') === 0))
+                continue;
+            if (file_exists($targetPath)) {
+                $item->isDir() ? File::deleteDirectory($targetPath)
+                    : File::delete($targetPath);
+            }
+        }
+
+        // Copy files to a temporary staging folder first
+        $stagingDir = $appDir . '_new';
+        File::copyDirectory($tmpDir, $stagingDir);
+
+        // Now atomic swap (replace current Laravel root with staging)
+        rename($appDir, $appDir . '_old');
+        rename($stagingDir, $appDir);
+
+        $this->runPostUpdate();
+
+        // Bring app back up
+        \Artisan::call('up');
+
+        return true;
     }
 
 
@@ -310,36 +375,8 @@ class AutoUpdaterService
         }
         Log::info("[Updater] Downloaded update zip to: {$zipPath}");
 
-        $backupResult = $this->backupCurrentCopy();
-        if (!$backupResult) {
-            Log::warning('[Updater] Backup failed or not created.');
-        } else {
-            Log::info("[Updater] Backup created at: {$backupResult}");
-        }
-
-        $extractPath = $this->extractZip($zipPath);
-        if (!$extractPath) {
-            Log::error('[Updater] Extraction failed.');
-            return false;
-        }
-        Log::info("[Updater] Extracted update to: {$extractPath}");
-
-        $overwriteResult = $this->overwriteWithExtract($extractPath);
-        Log::info("[Updater] Overwrite result: " . ($overwriteResult ? 'success' : 'failed'));
-        if ($overwriteResult) {
-            if ($this->runPostUpdate()) {
-                Log::info('[Updater] Post update commands executed.');
-                Log::info('[Updater] Update process completed successfully.');
-                return true;
-            } else {
-                Log::info('[Updater] Post update commands executed.');
-                Log::info('[Updater] Update process fail.');
-                return false;
-            }
-
-        }
-
-        return false;
+        return $this->upgrade($zipPath);
+ 
     }
 
 
@@ -412,39 +449,5 @@ class AutoUpdaterService
             return false;
         }
     }
-    /*  protected function recursiveCopy($src, $dst)
-      {
-            // Normalize paths
-          $src = rtrim($src, '/');
-          $dst = rtrim($dst, '/');
 
-          // Check if source exists
-          if (!is_dir($src)) {
-              throw new \RuntimeException("Source directory not found: {$src}");
-          }
-
-          // Handle package root directory
-          $srcBasename = basename($src);
-          if ($srcBasename === 'yvsou-cms') {
-              $dst = dirname($dst); // Move contents up one level
-          }
-
-          $dir = opendir($src);
-          @mkdir($dst, 0755, true);
-          logger("recursiveCopy",[$src,$dst]) ;
-          while (false !== ($file = readdir($dir))) {
-              if (($file !== '.') && ($file !== '..')) {
-                  $srcPath = $src . '/' . $file;
-                  $dstPath = $dst . '/' . $file;
-
-                  if (is_dir($srcPath)) {
-                      $this->recursiveCopy($srcPath, $dstPath);
-                  } else {
-                      copy($srcPath, $dstPath);
-                  }
-              }
-          }
-          closedir($dir);
-      }
-          */
 }
