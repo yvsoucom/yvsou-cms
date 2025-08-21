@@ -1,11 +1,9 @@
 #!/bin/bash
 
-# SPDX-FileCopyrightText:  Auto generated
+# SPDX-FileCopyrightText: Auto generated
 # SPDX-License-Identifier: MIT
-#!/bin/bash
 
-# Check if plugin name is provided
-# usage example  ./zip-plugin.sh MoneyPlugin
+# Usage example: ./zip-plugin.sh MoneyPlugin
 
 if [ -z "$1" ]; then
     echo "Usage: $0 <PLUGIN_NAME>"
@@ -31,7 +29,10 @@ if [ -f "$OUTPUT_FILE" ]; then
     rm "$OUTPUT_FILE"
 fi
 
-# Create zip file (recursive)
-zip -r "$OUTPUT_FILE" "$PLUGIN_DIR"
+# Go into the plugin directory and zip contents without including parent directories
+cd "plugins" || exit
+zip -r "../$OUTPUT_FILE" "$PLUGIN_NAME"
+cd ..
 
 echo "✅ Plugin '$PLUGIN_NAME' has been zipped to $OUTPUT_FILE"
+ 

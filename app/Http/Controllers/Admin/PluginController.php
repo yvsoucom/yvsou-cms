@@ -78,15 +78,31 @@ class PluginController extends Controller
         $file = $request->file('plugin_zip');
 
         if ($zip->open($file->getRealPath()) === true) {
-            $pluginName = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
-            $destination = base_path("plugins/{$pluginName}");
-            if (!file_exists($destination)) {
-                mkdir($destination, 0755, true);
+            $pluginName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $pluginsDir = base_path('plugins');
+            $destination = "{$pluginsDir}/{$pluginName}";
+
+            if (!file_exists($pluginsDir)) {
+                mkdir($pluginsDir, 0755, true);
             }
-            $zip->extractTo($destination);
+
+            // Check if the ZIP already contains the folder
+            $firstEntry = $zip->getNameIndex(0);
+            if (substr($firstEntry, -1) === '/') {
+                // ZIP has a root folder, extract into plugins/
+                $zip->extractTo($pluginsDir);
+            } else {
+                // ZIP has files directly, create plugin folder and extract
+                if (!file_exists($destination)) {
+                    mkdir($destination, 0755, true);
+                }
+                $zip->extractTo($destination);
+            }
+
             $zip->close();
         }
 
         return back();
     }
+
 }
