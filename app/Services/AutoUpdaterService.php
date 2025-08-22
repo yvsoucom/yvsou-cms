@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Log;
 use PhpZip\ZipFile;
 use RuntimeException;
 use Throwable;
+use Illuminate\Support\Facades\Artisan;
 class AutoUpdaterService
 {
     protected string $repo;
@@ -125,160 +126,6 @@ class AutoUpdaterService
     }
 
 
-    public function backupCurrentCopy(): ?string
-    {
-        $backupDirName = 'backup-' . date('YmdHis');
-        $backupPath = storage_path("app/backups/{$backupDirName}");
-
-        // Create the backup directory
-        File::makeDirectory($backupPath, 0755, true);
-
-        $sourcePath = base_path();
-
-        // Exclude these folders or files if needed
-        $exclude = ['storage', '.env', 'node_modules', '.git'];
-
-        $this->recursiveCopyWithExclude($sourcePath, $backupPath, $exclude);
-
-        Log::info("Backup copied to: {$backupPath}");
-
-        return $backupPath;
-    }
-
-    protected function recursiveCopyWithExclude($src, $dst, $exclude = [])
-    {
-        $dir = opendir($src);
-        @mkdir($dst, 0755, true);
-
-        while (false !== ($file = readdir($dir))) {
-            if ($file === '.' || $file === '..') {
-                continue;
-            }
-
-            if (in_array($file, $exclude)) {
-                continue;
-            }
-
-            $srcPath = "{$src}/{$file}";
-            $dstPath = "{$dst}/{$file}";
-
-            if (is_dir($srcPath)) {
-                $this->recursiveCopyWithExclude($srcPath, $dstPath, $exclude);
-            } else {
-                copy($srcPath, $dstPath);
-            }
-        }
-
-        closedir($dir);
-    }
-
-    function extractZipFile($zipPath, $extractPath)
-    {
-        try {
-            $zipFile = new ZipFile();
-            $zipFile->openFile($zipPath) // or openFromString($zipContent)
-                ->extractTo($extractPath);
-        } catch (\PhpZip\Exception\ZipException $e) {
-            // Handle error
-            error_log('Zip extraction failed: ' . $e->getMessage());
-        } finally {
-            // Always close the archive to free resources
-            if (isset($zipFile)) {
-                $zipFile->close();
-            }
-        }
-    }
-    public function extractZip(string $zipPath): ?string
-    {
-        $extractPath = base_path('update-temp');
-
-        // Clean up any previous temp
-        if (\File::exists($extractPath)) {
-            \File::deleteDirectory($extractPath);
-        }
-        \File::makeDirectory($extractPath, 0755, true);
-
-        $extracted = false;
-
-        // ✅ Try ZipArchive if available
-        if (class_exists(\ZipArchive::class)) {
-            $zip = new \ZipArchive;
-            if ($zip->open($zipPath) === true) {
-                if ($zip->extractTo($extractPath)) {
-                    Log::info("Extracted ZIP using ZipArchive to {$extractPath}");
-                    $extracted = true;
-                } else {
-                    Log::warning("ZipArchive could not extract {$zipPath}");
-                }
-                $zip->close();
-            } else {
-                Log::warning("ZipArchive could not open {$zipPath}");
-            }
-        } else {
-            Log::info("ZipArchive class not available, trying shell unzip...");
-        }
-
-        if (!$extracted) {
-            if ($this->extractZipFile($zipPath, $extractPath)) {
-                Log::info("Extracted ZIP using ZipFile to {$extractPath}");
-                $extracted = true;
-            } else {
-                Log::warning("ZipFile could not extract {$zipPath}");
-            }
-        }
-
-        // ✅ Fallback to shell unzip if needed
-        if (!$extracted) {
-            if ($this->fallbackShellUnzip($zipPath, $extractPath)) {
-                Log::info("Extracted ZIP using ShellUnzip to {$extractPath}");
-                $extracted = true;
-            } else {
-                Log::warning("ShellUnzip could not extract {$zipPath}");
-            }
-        }
-
-        return $extracted ? $extractPath : null;
-    }
-
-    protected function fallbackShellUnzip(string $zipPath, string $extractPath): bool
-    {
-        if (File::exists($extractPath)) {
-            File::deleteDirectory($extractPath);
-        }
-
-        File::makeDirectory($extractPath, 0755, true);
-
-        $command = sprintf(
-            'unzip -o %s -d %s 2>&1',
-            escapeshellarg($zipPath),
-            escapeshellarg($extractPath)
-        );
-
-        $output = [];
-        $result = null;
-
-        exec($command, $output, $result);
-
-        Log::debug("Shell unzip output: " . implode("\n", $output));
-        Log::debug("Shell unzip return code: {$result}");
-
-        return $result === 0;
-    }
-
-
-    public function overwriteWithExtract(string $extractPath): bool
-    {
-
-        if ($this->recursiveCopy($extractPath, base_path())) {
-            File::deleteDirectory($extractPath);
-            Log::info("Overwrite complete.");
-            return true;
-        }
-        Log::info("Overwrite fail.");
-        return false;
-    }
-
-
     public function runPostUpdate(): bool
     {
         // exec('composer install --no-dev --optimize-autoloader');
@@ -292,7 +139,6 @@ class AutoUpdaterService
             return false;
         }
         try {
-
             // Clear caches
             \Artisan::call('config:clear');
             \Artisan::call('cache:clear');
@@ -302,60 +148,10 @@ class AutoUpdaterService
             \Artisan::call('route:cache');
             \Artisan::call('view:cache');
             Log::info("Post-update complete.");
-
         } catch (\Exception $e) {
             Log::error("❌ Post-update failed: " . $e->getMessage());
             return false;
         }
-
-        return true;
-
-    }
-
-    public function upgrade($zipPath)
-    {
- 
-        $appDir = base_path();
-        $tmpDir = storage_path('framework/upgrade_' . time());
-
-        // Maintenance mode
-        \Artisan::call('down');
-
-        // Extract ZIP
-        $zip = new \ZipArchive;
-        $zip->open($zipPath);
-        $zip->extractTo($tmpDir);
-        $zip->close();
-
-        // Recursively delete old directories/files that exist in ZIP
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($tmpDir, \RecursiveDirectoryIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::CHILD_FIRST
-        );
-        foreach ($iterator as $item) {
-            $relativePath = str_replace($tmpDir . DIRECTORY_SEPARATOR, '', $item->getPathname());
-            $targetPath = $appDir . DIRECTORY_SEPARATOR . $relativePath;
-            if (($relativePath === '.env' || strpos($relativePath, 'storage') === 0))
-                continue;
-            if (file_exists($targetPath)) {
-                $item->isDir() ? File::deleteDirectory($targetPath)
-                    : File::delete($targetPath);
-            }
-        }
-
-        // Copy files to a temporary staging folder first
-        $stagingDir = $appDir . '_new';
-        File::copyDirectory($tmpDir, $stagingDir);
-
-        // Now atomic swap (replace current Laravel root with staging)
-        rename($appDir, $appDir . '_old');
-        rename($stagingDir, $appDir);
-
-        $this->runPostUpdate();
-
-        // Bring app back up
-        \Artisan::call('up');
-
         return true;
     }
 
@@ -371,79 +167,132 @@ class AutoUpdaterService
         }
         Log::info("[Updater] Downloaded update zip to: {$zipPath}");
 
-        return $this->upgrade($zipPath);
- 
+        return $this->updateFromZip($zipPath, base_path());
+
     }
 
-
-    /**
-     * Recursively copies files with proper path handling and error checking
-     */
-    protected function recursiveCopy(string $source, string $destination): bool
+    /** Recursive copy (overwrite) */
+    private function copyRecursive($src, $dst, $exclude = [])
     {
-        try {
-            // Normalize paths
-            $source = rtrim($source, DIRECTORY_SEPARATOR);
-            $destination = rtrim($destination, DIRECTORY_SEPARATOR);
+        $items = scandir($src);
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..')
+                continue;
 
-            // Check if source exists
-            if (!file_exists($source)) {
-                throw new RuntimeException("Source directory does not exist: {$source}");
+            $srcPath = $src . '/' . $item;
+            $dstPath = $dst . '/' . $item;
+
+            foreach ($exclude as $skip) {
+                if ($item === $skip)
+                    continue 2;
             }
 
-            // Handle the case where update package contains root folder
-            if (basename($source) === 'yvsou-cms') {
-                $destination = dirname($destination);
-                Log::debug("Adjusting destination path to prevent nesting: {$destination}");
+            if (is_dir($srcPath)) {
+                if (!is_dir($dstPath))
+                    mkdir($dstPath, 0755, true);
+                $this->copyRecursive($srcPath, $dstPath, $exclude);
+            } else {
+                copy($srcPath, $dstPath);
             }
-
-            // Create destination directory if needed
-            if (!is_dir($destination)) {
-                if (!mkdir($destination, 0755, true)) {
-                    throw new RuntimeException("Failed to create directory: {$destination}");
-                }
-            }
-
-            $dir = opendir($source);
-            if ($dir === false) {
-                throw new RuntimeException("Failed to open source directory: {$source}");
-            }
-
-            while (($file = readdir($dir)) !== false) {
-                if ($file === '.' || $file === '..') {
-                    continue;
-                }
-
-                $srcPath = $source . DIRECTORY_SEPARATOR . $file;
-                $dstPath = $destination . DIRECTORY_SEPARATOR . $file;
-
-                if (is_dir($srcPath)) {
-                    if (!$this->recursiveCopy($srcPath, $dstPath)) {
-                        throw new RuntimeException("Failed to copy directory: {$srcPath}");
-                    }
-                } else {
-                    if (file_exists($dstPath)) {
-                        chmod($dstPath, 0777);
-                        echo "Permissions changed temp 777 successfully";
-                    }
-
-                    if (!copy($srcPath, $dstPath)) {
-                        chmod($dstPath, 0755);
-                        throw new RuntimeException("Failed to copy file: {$srcPath}");
-                    }
-                    // Maintain original file permissions
-                    chmod($dstPath, 0755);
-
-                }
-            }
-
-            closedir($dir);
-            return true;
-
-        } catch (Throwable $e) {
-            Log::error("Recursive copy failed: " . $e->getMessage());
-            return false;
         }
     }
+
+    public function updateFromZip($zipPath, $destination)
+    {
+        $exclude = ['.env', 'storage', 'bootstrap/cache', 'config'];
+        $excludebackup = ['storage'];
+        $tempDir = storage_path('app/tmp_update');
+        $backupDir = storage_path('app/backup_' . date('Ymd_His'));
+
+        // 1. Backup old app
+        $this->copyRecursive(base_path(), $backupDir, $excludebackup);
+
+        // 1. Extract ZIP to temp folder
+        if (File::exists($tempDir)) {
+            File::deleteDirectory($tempDir);
+        }
+        File::makeDirectory($tempDir, 0755, true);
+
+        $zip = new \ZipArchive;
+        if ($zip->open($zipPath) === TRUE) {
+            $zip->extractTo($tempDir);
+            $zip->close();
+        } else {
+            throw new \Exception("Cannot open ZIP file: $zipPath");
+        }
+
+        // Detect if ZIP has a single root folder
+        $dirs = File::directories($tempDir);
+        if (count($dirs) === 1) {
+            $tempDir = $dirs[0];
+        }
+
+        // 2. Overwrite files first
+        $this->copyFiles($tempDir, $destination, $exclude);
+
+        // 3. Delete files not in ZIP
+        $this->deleteExtraFiles($destination, $tempDir, $exclude);
+
+        // Cleanup temp folder
+        File::deleteDirectory(storage_path('app/tmp_update'));
+        $this->runPostUpdate();
+        return true;
+    }
+
+    private function copyFiles($source, $destination, $exclude)
+    {
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($source, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        foreach ($iterator as $file) {
+            $relativePath = str_replace($source . DIRECTORY_SEPARATOR, '', $file->getPathname());
+
+            // Skip excluded paths
+            foreach ($exclude as $skip) {
+                if (str_starts_with($relativePath, $skip)) {
+                    continue 2;
+                }
+            }
+
+            $target = $destination . DIRECTORY_SEPARATOR . $relativePath;
+
+            if ($file->isDir()) {
+                if (!file_exists($target))
+                    mkdir($target, 0755, true);
+            } else {
+                copy($file->getPathname(), $target);
+            }
+        }
+    }
+
+    private function deleteExtraFiles($destination, $source, $exclude)
+    {
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($destination, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        $sourceFiles = collect(File::allFiles($source))
+            ->map(fn($f) => str_replace($source . DIRECTORY_SEPARATOR, '', $f->getPathname()))
+            ->toArray();
+
+        foreach ($iterator as $file) {
+            $relativePath = str_replace($destination . DIRECTORY_SEPARATOR, '', $file->getPathname());
+
+            // Skip excluded paths
+            foreach ($exclude as $skip) {
+                if (str_starts_with($relativePath, $skip)) {
+                    continue 2;
+                }
+            }
+
+            if (!in_array($relativePath, $sourceFiles)) {
+                $file->isDir() ? @rmdir($file->getPathname()) : @unlink($file->getPathname());
+            }
+        }
+    }
+
 
 }
