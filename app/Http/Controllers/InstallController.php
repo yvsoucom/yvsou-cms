@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Dotenv\Dotenv;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 class InstallController extends Controller
 {
     function fixPermissions($dir)
@@ -229,11 +230,43 @@ class InstallController extends Controller
         #Artisan::call('config:clear');
 
         $this->reloadall();
+        $this->dbmigrateCache();
         return view('install.done');
 
     }
 
+    public function dbmigrateCache(): bool
+    {
+        // exec('composer install --no-dev --optimize-autoloader');
+        try {
+            \Artisan::call('migrate', [
+                '--force' => true // run without confirmation in production
+            ]);
+        } catch (\Exception $e) {
+            Log::error("❌ Post-update migrate db fail: " . $e->getMessage());
 
+            return false;
+        }
+        try {
+
+            // Clear caches
+            \Artisan::call('config:clear');
+            \Artisan::call('cache:clear');
+            \Artisan::call('route:clear');
+            \Artisan::call('view:clear');
+            \Artisan::call('config:cache');
+            \Artisan::call('route:cache');
+            \Artisan::call('view:cache');
+            Log::info("Post-update complete.");
+
+        } catch (\Exception $e) {
+            Log::error("❌ Post-update failed: " . $e->getMessage());
+            return false;
+        }
+
+        return true;
+
+    }
     public function reloadall()
     {
 

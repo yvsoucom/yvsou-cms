@@ -125,8 +125,6 @@ class AutoUpdaterService
     }
 
 
-
-
     public function backupCurrentCopy(): ?string
     {
         $backupDirName = 'backup-' . date('YmdHis');
@@ -310,15 +308,13 @@ class AutoUpdaterService
             return false;
         }
 
-
         return true;
 
     }
 
-    public function upgrade($zipFile)
+    public function upgrade($zipPath)
     {
-
-        $zipPath = storage_path('app/' . $zipFile);
+ 
         $appDir = base_path();
         $tmpDir = storage_path('framework/upgrade_' . time());
 
