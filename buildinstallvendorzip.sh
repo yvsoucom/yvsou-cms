@@ -5,7 +5,7 @@
 # SPDX-FileContributor: Lican Huang
 # SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary
 
-ver="1.0.0-beta.4"
+ver="2.0.0-beta.7"
 
 echo "Cleaning up..."
 rm -rf vendor

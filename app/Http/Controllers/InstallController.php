@@ -77,68 +77,7 @@ class InstallController extends Controller
         return view('install.step1');
     }
 
-    public function is_mysql_8_or_higher($dbname, $host, $port, $user, $pass)
-    {
-        $config = [
-            'driver' => 'mysql',
-            'host' => $host,
-            'port' => $port,
-            'database' => $dbname,
-            'username' => $user,
-            'password' => $pass,
-        ];
 
-        // Test connection
-        Config::set('database.connections.installer_mysql', $config);
-        try {
-            $connection = DB::connection('installer_mysql');
-            $versionString = $connection->selectOne('SELECT VERSION() as version')->version;
-            if (preg_match('/^(\d+)\.(\d+)/', $versionString, $matches)) {
-                $major = (int) $matches[1];
-                $minor = (int) $matches[2];
-
-                // MySQL 8+ is major >= 8
-                return $major >= 8;
-            }
-
-            return false; // fallback
-        } catch (\Exception $e) {
-            return back()->withErrors(['Connection failed: ' . $e->getMessage()]);
-        }
-    }
-
-
-    public function createdbtables($newdb, $host, $port, $user, $pass, $adminname, $adminemail, $adminpass)
-    {
-        try {
-            // Connect without specifying a database
-            $pdo = new \PDO("mysql:host=$host", $user, $pass);
-            $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-
-            // Create new database if it doesn't exist
-            $pdo->exec("CREATE DATABASE IF NOT EXISTS `$newdb` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-
-            // Switch to the new database
-            $pdo->exec("USE `$newdb`"); // ✅ CORRECTED LINE
-
-            // Read SQL from file
-            if ($this->is_mysql_8_or_higher($newdb, $host, $port, $user, $pass))
-                $sql = file_get_contents(base_path('install.sql'));
-            else
-                $sql = file_get_contents(base_path('install57.sql'));
-            // Split and execute multiple statements (safely)
-            foreach (array_filter(array_map('trim', explode(';', $sql))) as $stmt) {
-                if (!empty($stmt)) {
-                    $pdo->exec($stmt);
-                }
-            }
-            $stmt = $pdo->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$adminname, $adminemail, $adminpass, 'admin']);
-            echo "Database and tables created successfully.";
-        } catch (\PDOException $e) {
-            die("Error: " . $e->getMessage());
-        }
-    }
 
 
 
@@ -224,16 +163,29 @@ class InstallController extends Controller
 
 
 
-        $this->createdbtables($request->db_name, $request->db_host, $request->db_port, $request->db_user, $request->db_pass, $request->name, $request->email, bcrypt($request->password));
-
         File::put(base_path('.env'), $env);
-        #Artisan::call('config:clear');
 
-        $this->reloadall();
+        \Artisan::call('config:clear');
+        \Artisan::call('cache:clear');
+
         $this->dbmigrateCache();
+        $this->insert_admin($request->name, $request->email, $request->password);
+
         return view('install.done');
 
     }
+
+    function insert_admin($adminName, $adminEmail, $adminPassword)
+    {
+        \App\Models\User::create([
+            'name' => $adminName,
+            'email' => $adminEmail,
+            'password' => bcrypt($adminPassword),
+            'role' => "admin",
+        ]);
+
+    }
+
 
     public function dbmigrateCache(): bool
     {
@@ -267,37 +219,7 @@ class InstallController extends Controller
         return true;
 
     }
-    public function reloadall()
-    {
 
-        // Reload .env
-        $dotenv = Dotenv::createImmutable(base_path());
-        $dotenv->load();
-
-        // Rebuild config repository
-        app()->forgetInstance('config');
-        $config = new \Illuminate\Config\Repository;
-
-        foreach (glob(config_path('*.php')) as $file) {
-            $name = basename($file, '.php');
-            $config->set($name, require $file);
-        }
-
-        app()->instance('config', $config);
-
-        \DB::purge(); // clears all DB connections
-
-        // Optionally reset default connection manually
-        config(['database.default' => env('DB_CONNECTION', 'mysql')]);
-
-        \DB::reconnect(); // reconnect with new config
-
-        $sessionPath = storage_path('framework/sessions');
-        foreach (glob("$sessionPath/*") as $file) {
-            unlink($file);
-        }
-
-    }
 
 
 

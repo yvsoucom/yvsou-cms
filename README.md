@@ -6,7 +6,7 @@ SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary
 ## About yvsou-cms
   
  
-**yvsou-cms** is a powerful content management system developed with Laravel by Hangzhou Domain Zones Technology Co., Ltd. and Institute of Future Science and Technology G.K., Tokyo. It features fine-grained permission control, dynamic directory structures, and is designed for extensibility and commercial readiness. yvsou-cms also features dynamic thenes and plugins frameworks and shortcodes and filters simialar with wordpress. yvsou-cms is a newly redeveloped content management system built with Laravel, encompassing the core functionalities of the DSCloud Platform, which was originally launched in 2011 by Hangzhou Domain Zones Technology Co., Ltd.
+**yvsou-cms** is a powerful content management system developed with Laravel by Hangzhou Domain Zones Technology Co., Ltd. and Institute of Future Science and Technology G.K., Tokyo. It features fine-grained permission control, dynamic directory structures, and is designed for extensibility and commercial readiness. yvsou-cms also features dynamic themes and plugins frameworks and shortcodes and filters similar with wordpress. yvsou-cms is a newly redeveloped content management system built with Laravel, encompassing the core functionalities of the DSCloud Platform, which was originally launched in 2011 by Hangzhou Domain Zones Technology Co., Ltd.
 
 
 
@@ -24,19 +24,24 @@ SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary
 - Group and File-based access control (GFAC)  
 - Clean Laravel architecture  
 - Optional commercial-grade add-ons  
+- Dynamic themes upload and switch
+- Dynamic plugins upload and activation
+- Shortcodes and filters similar with wordpress
+- Multi database engines supported, such as Mysql , PostgreSQL and SQLite
+- Easy install guide similar with wordpress
+- Easy upgrade similar with wordpress
 
 ---
 
 ## 📄 Key Files
 
-| File                | Description                                 |
-|---------------------|---------------------------------------------|
-| `composer.json`     | Laravel dependencies and package config     |
-| `env.example`       | Sample environment configuration file       |
-| `env.install`       | Sample install configuration file           |
-| `routes/web.php`    | Web routes for frontend/backend             |
-| `install.sql`       | mysql schema scripts                        |
----
+| File                  | Description                                 |
+|-----------------------|---------------------------------------------|
+| `composer.json`       | Laravel dependencies and package config     |
+| `env.example`         | Sample environment configuration file       |
+| `yvsou_example_config`| Sample custom  configuration file           |
+| `routes/web.php`      | Web routes for frontend/backend             |
+
 
 
 

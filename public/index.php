@@ -23,7 +23,6 @@ $installedFlag = __DIR__ . '/../storage/installed.lock';
 $inInstaller = strpos($_SERVER['REQUEST_URI'], '/install') !== false;
 
 if (!file_exists($installedFlag) && !$inInstaller) {
-
     // Check storage structure
     $dirs = [
         '../storage',
@@ -45,7 +44,7 @@ if (!file_exists($installedFlag) && !$inInstaller) {
         }
     }
 
-    $filePath = __DIR__ . '/../storage/tmp-install.sqlite';
+    $filePath = __DIR__ . '/../database/database.sqlite';
 
     if (!file_exists($filePath)) {
         // Create an empty file
@@ -73,7 +72,7 @@ if (!file_exists($installedFlag) && !$inInstaller) {
     }
 
     $envPath = __DIR__ . '/../.env';
-    $installenvPath = __DIR__ . '/../env_install';
+    $installenvPath = __DIR__ . '/../env.example';
 
     if (file_exists($installenvPath)) {
         copy($installenvPath, $envPath);
@@ -83,7 +82,7 @@ if (!file_exists($installedFlag) && !$inInstaller) {
     }
 
     $config = __DIR__ . '/../config/yvsou_config.php';
-    $installconfig = __DIR__ . '/../yvsou_install_config.php';
+    $installconfig = __DIR__ . '/../yvsou_example_config.php';
 
     if (file_exists($installenvPath)) {
         copy($installenvPath, $config);
@@ -92,11 +91,9 @@ if (!file_exists($installedFlag) && !$inInstaller) {
         echo "config_install does not exist.\n";
     }
 
-
     header('Location: install');
     exit;
 }
-
 
 
 // Determine if the application is in maintenance mode...
@@ -104,6 +101,9 @@ if (file_exists($maintenance = __DIR__ . '/../storage/framework/maintenance.php'
     require $maintenance;
 }
 
+Artisan::call('config:cache');
+Artisan::call('route:cache');
+Artisan::call('view:cache');
 // Register the Composer autoloader...
 require __DIR__ . '/../vendor/autoload.php';
 
