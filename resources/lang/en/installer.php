@@ -29,6 +29,7 @@ return [
   'description' => 'This installer will guide you through the setup of your new yvsou-cms site.',
   'start' => 'Start Installation',
   'start_installation' => 'Start Installation',
+  'Database Engine' => 'Database Engine',
 
   'env_setup' => '1: Environment Setup',
   'admin_setup' => '2: Create Admin',

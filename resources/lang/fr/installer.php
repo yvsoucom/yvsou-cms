@@ -29,6 +29,8 @@ return [
   'description' => 'Cet assistant vous guidera pour configurer votre nouveau site yvsou-cms.',
   'start' => 'Commencer l’installation',
   'start_installation' => 'Commencer l’installation',
+  'Database Engine' => 'Moteur de base de données',
+
 
   'env_setup' => '1 : Configuration de l’environnement',
   'admin_setup' => '2 : Créer un administrateur',

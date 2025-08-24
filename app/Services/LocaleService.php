@@ -66,7 +66,7 @@ class LocaleService
     public function getlangSet($langSet): array
     {
         $languageArray = [];
-
+        $langSet = $langSet ?? [];
         foreach ($langSet as $code) {
 
             $code = trim($code);

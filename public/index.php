@@ -50,46 +50,27 @@ if (!file_exists($installedFlag) && !$inInstaller) {
         // Create an empty file
         file_put_contents($filePath, '');
     }
-    $vendorfilePath = __DIR__ . '/../vendor';
-    $vendorExists = is_dir($vendorfilePath);
-    if (!$vendorExists) {
-        $composerAvailable = trim(shell_exec('which composer')) ? true : false;
-        if ($composerAvailable) {
-            chdir(__DIR__ . '/../');
-            exec('composer install --no-interaction --prefer-dist --optimize-autoloader 2>&1', $output, $returnCode);
-            if ($returnCode === 0) {
-                echo "Composer install succeeded!\n";
-            } else {
-                echo "Composer install failed!\n";
-                echo implode("\n", $output);
-                exit;
-            }
-        } else {
-            echo "composer unAvailable, please install composer first";
-            exit;
-        }
-
+   
+    // Ensure vendor exists
+    if (!is_dir(__DIR__ . '/../vendor')) {
+        echo "Composer dependencies missing. Please run <code>composer install</code> manually.";
+        exit;
     }
 
+    // Create .env from example if not exists
     $envPath = __DIR__ . '/../.env';
-    $installenvPath = __DIR__ . '/../env.example';
-
-    if (file_exists($installenvPath)) {
-        copy($installenvPath, $envPath);
-        echo ".env file created from env_install.\n";
-    } else {
-        echo "env_install does not exist.\n";
+    $installEnvPath = __DIR__ . '/../env.example';
+    if (file_exists($installEnvPath)) {
+        copy($installEnvPath, $envPath);
     }
 
-    $config = __DIR__ . '/../config/yvsou_config.php';
-    $installconfig = __DIR__ . '/../yvsou_example_config.php';
-
-    if (file_exists($installenvPath)) {
-        copy($installenvPath, $config);
-        echo "config file created from env_install.\n";
-    } else {
-        echo "config_install does not exist.\n";
+    // Copy default config if not exists
+    $configPath = __DIR__ . '/../config/yvsou_config.php';
+    $installConfigPath = __DIR__ . '/../yvsou_example_config.php';
+    if (file_exists($installConfigPath)) {
+        copy($installConfigPath, $configPath);
     }
+    
 
     header('Location: install');
     exit;
@@ -100,10 +81,7 @@ if (!file_exists($installedFlag) && !$inInstaller) {
 if (file_exists($maintenance = __DIR__ . '/../storage/framework/maintenance.php')) {
     require $maintenance;
 }
-
-Artisan::call('config:cache');
-Artisan::call('route:cache');
-Artisan::call('view:cache');
+ 
 // Register the Composer autoloader...
 require __DIR__ . '/../vendor/autoload.php';
 

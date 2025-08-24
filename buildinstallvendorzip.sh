@@ -41,8 +41,7 @@ echo "Copying vendor folder..."
 cp -r vendor build/yvsou-cms/vendor
 
 echo "Using installer versions of config and env..."
-cp env_install build/yvsou-cms/.env
-cp yvsou_install_config.php build/yvsou-cms/config/yvsou_config.php
+ 
 
 echo "Zipping installer..."
 cd build
@@ -60,8 +59,6 @@ mkdir -p yvsou-cms/storage/framework/sessions
 mkdir -p yvsou-cms/storage/framework/testing
 mkdir -p yvsou-cms/storage/framework/views
 mkdir -p yvsou-cms/storage/logs
-   
-cp ../storage/tmp-install.sqlite  yvsou-cms/storage/tmp-install.sqlite  
  
 zip -r "../yvsou-cms-vendor-installer-${ver}.zip" yvsou-cms
 cd ..

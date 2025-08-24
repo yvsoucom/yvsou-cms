@@ -29,6 +29,8 @@ return [
   'description' => 'このインストーラーは、新しい yvsou-cms サイトのセットアップをガイドします。',
   'start' => 'インストール開始',
   'start_installation' => 'インストール開始',
+  'Database Engine' => 'データベースエンジン',
+
 
   'env_setup' => '1：環境設定',
   'admin_setup' => '2：管理者作成',

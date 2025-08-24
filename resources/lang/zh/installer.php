@@ -29,6 +29,8 @@ return [
   'description' => '本安装器将指导你完成 yvsou-cms 网站的配置。',
   'start' => '开始安装',
   'start_installation' => '开始安装',
+  'Database Engine' => '数据库引擎',
+
 
   'env_setup' => '1：环境设置',
   'admin_setup' => '2：创建管理员',

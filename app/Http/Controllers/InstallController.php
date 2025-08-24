@@ -78,31 +78,66 @@ class InstallController extends Controller
     }
 
 
+    protected function updateEnvDatabaseEngine($selectedEngine, $data)
+    {
+        $envPath = base_path('.env');
+        $content = file_get_contents($envPath);
+
+        // DB keys we care about
+        $keys = ['DB_CONNECTION', 'DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD'];
+
+        // Remove old DB lines
+        foreach ($keys as $key) {
+            $content = preg_replace("/^{$key}=.*$/m", '', $content);
+        }
+
+        // Add new config based on engine
+        if ($selectedEngine === 'mysql') {
+            $newLines = [
+                "DB_CONNECTION=mysql",
+                "DB_HOST=" . ($data['db_host'] ?? '127.0.0.1'),
+                "DB_PORT=" . ($data['db_port'] ?? '3306'),
+                "DB_DATABASE=" . ($data['db_name'] ?? 'laravel'),
+                "DB_USERNAME=" . ($data['db_user'] ?? 'root'),
+                "DB_PASSWORD=" . ($data['db_password'] ?? ''),
+            ];
+        } elseif ($selectedEngine === 'pgsql') {
+            $newLines = [
+                "DB_CONNECTION=pgsql",
+                "DB_HOST=" . ($data['db_host'] ?? '127.0.0.1'),
+                "DB_PORT=" . ($data['db_port'] ?? '5432'),
+                "DB_DATABASE=" . ($data['db_name'] ?? 'laravel'),
+                "DB_USERNAME=" . ($data['db_user'] ?? 'postgres'),
+                "DB_PASSWORD=" . ($data['db_password'] ?? 'secret'),
+            ];
+        } else { // sqlite
+            $newLines = [
+                "DB_CONNECTION=sqlite",
+                "DB_DATABASE=" . ($data['db_database'] ?? 'database/database.sqlite'),
+            ];
+        }
+
+        // Append new lines to .env
+        $content = trim($content) . "\n" . implode("\n", $newLines);
+
+        file_put_contents($envPath, $content);
+    }
 
 
 
     public function saveEnv(Request $request)
     {
-        logger("request", [$request->app_name]);
-        logger("request", [$request->app_url]);
-        logger("request", [$request->db_host]);
-        logger("request", [$request->db_port]);
-        logger("request", [$request->db_name]);
-        logger("request", [$request->db_user]);
-        logger("request", [$request->db_pass]);
 
-        logger("request", [$request->name]);
-        logger("request", [$request->email]);
-        logger("request", [$request->password]);
 
         $validated = $request->validate([
             'app_name' => 'required',
             'app_url' => 'required',
             'db_host' => 'required',
             'db_port' => 'required',
-            'db_name' => 'required',
-            'db_user' => 'required',
-            'db_pass' => 'nullable',
+            'db_database' => 'required',
+            'db_username' => 'required',
+            'db_password' => 'nullable',
+            'db_connection' => 'required|in:mysql,pgsql,sqlite',
 
             'name' => 'required',
             'email' => 'required',
@@ -121,15 +156,16 @@ class InstallController extends Controller
 
 
         #  file_put_contents(config_path('yvsou_example_config.php'), json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        $cusconfig = File::get(base_path('yvsou_example_config.php'));
-        $cusconfig = str_replace("'DEFAULT_LANGUAGE' => 'ja'", "'DEFAULT_LANGUAGE' => '$request->default_lang'", $cusconfig);
+        $cusconfig = File::get(base_path('/config/yvsou_config.php'));
+        $cusconfig = str_replace("'DEFAULT_LANGUAGE' => 'en'", "'DEFAULT_LANGUAGE' => '$request->default_lang'", $cusconfig);
 
         $languages = $request->input('lang_set', []);
 
         // Convert to JSON string
         $jsonLanguages = json_encode($languages);
+        logger("jsonLanguages", [$jsonLanguages]);
 
-        $cusconfig = str_replace("'LANGUAGESET' => ['en','zh','ja']", "'LANGUAGESET' => $jsonLanguages ", $cusconfig);
+        $cusconfig = str_replace("'LANGUAGESET' => ['en', 'zh', 'ja']", "'LANGUAGESET' => $jsonLanguages ", $cusconfig);
 
         $adminstring = 'false';
         if ($isAdmin)
@@ -147,23 +183,32 @@ class InstallController extends Controller
         File::put(config_path('yvsou_config.php'), contents: $cusconfig);
         File::put(storage_path('installed.lock'), now());
 
+        if ($request->db_connection === 'sqlite') {
+            if (!file_exists(base_path($request->db_database))) {
+                touch(base_path($request->db_database));
+                chmod(base_path($request->db_database), 0664);
+            }
+        }
 
-
-        $env = File::get(base_path('env.example'));
+        $envData = [
+            'DB_CONNECTION' => $request->db_connection,
+            'DB_HOST' => $request->db_host ?? '',
+            'DB_PORT' => $request->db_port ?? '',
+            'DB_DATABASE' => $request->db_database,
+            'DB_USERNAME' => $request->db_username ?? '',
+            'DB_PASSWORD' => $request->db_password ?? '',
+        ];
+        $env = File::get(base_path('.env'));
         $env = str_replace('APP_NAME=yvsou-cms', 'APP_NAME=' . $request->app_name, $env);
         $env = str_replace('APP_URL=http://127.0.0.1:8000', 'APP_URL=' . $request->app_url, $env);
-        $env = str_replace('DB_HOST=127.0.0.1', 'DB_HOST=' . $request->db_host, $env);
-        $env = str_replace('DB_PORT=3306', 'DB_PORT=' . $request->db_port, $env);
-        $env = str_replace('DB_DATABASE=yvsou_test', 'DB_DATABASE=' . $request->db_name, $env);
-        $env = str_replace('DB_USERNAME=root', 'DB_USERNAME=' . $request->db_user, $env);
-        $env = str_replace('DB_PASSWORD=', 'DB_PASSWORD=' . $request->db_pass, $env);
+
 
         $envkeystr = 'base64:' . base64_encode(random_bytes(32));
         $env = str_replace('APP_KEY=', 'APP_KEY=' . $envkeystr, $env);
 
-
-
         File::put(base_path('.env'), $env);
+
+        $this->updateEnvDatabaseEngine($request->db_connection, $envData);
 
         \Artisan::call('config:clear');
         \Artisan::call('cache:clear');
@@ -191,9 +236,12 @@ class InstallController extends Controller
     {
         // exec('composer install --no-dev --optimize-autoloader');
         try {
+
             \Artisan::call('migrate', [
-                '--force' => true // run without confirmation in production
+                '--path' => 'database/migrations',
+                '--force' => true
             ]);
+
         } catch (\Exception $e) {
             Log::error("❌ Post-update migrate db fail: " . $e->getMessage());
 

@@ -33,11 +33,21 @@
 
             <x-install.input name="app_name" label="installer.app_name" value="yvsou-cms" />
             <x-install.input name="app_url" label="installer.app_url" value="http://127.0.0.1:8000" />
+
+            <div>
+                <label for="db_connection">{{ __('installer.Database Engine') }}:</label>
+                <select name="db_connection" id="db_connection" required>
+                    <option value="mysql">MySQL</option>
+                    <option value="pgsql">PostgreSQL</option>
+                    <option value="sqlite">SQLite</option>
+                </select>
+            </div>
+
             <x-install.input name="db_host" label="installer.db_host" value="127.0.0.1" />
             <x-install.input name="db_port" label="installer.db_port" value="3306" />
-            <x-install.input name="db_name" label="installer.db_name" />
-            <x-install.input name="db_user" label="installer.db_user" />
-            <x-install.input name="db_pass" label="installer.db_pass" type="password" />
+            <x-install.input name="db_database" label="installer.db_name" />
+            <x-install.input name="db_username" label="installer.db_user" />
+            <x-install.input name="db_password" label="installer.db_pass" type="password" />
 
             <!-- Admin Setup -->
             <h2 class="text-xl font-semibold mt-8 mb-4">{{ __('installer.admin_setup') }}</h2>
@@ -57,7 +67,7 @@
                     </label>
                 </div>
                 <br />
-                 <div class="mb-4">
+                <div class="mb-4">
                     <label for="is_blockbot" class="inline-flex items-center">
                         <input type="checkbox" name="is_blockbot" id="is_blockbot" value="1"
                             class="form-checkbox text-indigo-600">
