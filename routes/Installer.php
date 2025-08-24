@@ -18,7 +18,7 @@ Route::middleware('prevent.reinstall')->prefix('install')->name('install.')->gro
   Route::get('/', [InstallController::class, 'welcome']);
   Route::get('/envForm', [InstallController::class, 'envForm'])->name('envForm');
   Route::post('/saveEnv', [InstallController::class, 'saveEnv'])->name('saveEnv');
- # Route::post('/createAdmin', [InstallController::class, 'createAdmin'])->name('createAdmin');
- # Route::post('/saveCustomConfig', [InstallController::class, 'saveCustomConfig'])->name('saveCustomConfig');
- 
+  Route::post('/dbmigrate', [InstallController::class, 'dbmigrate'])->name('dbmigrate');
+
+
 });

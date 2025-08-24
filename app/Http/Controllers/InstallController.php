@@ -212,7 +212,46 @@ class InstallController extends Controller
     }
 
 
+    public function dbmigrate(Request $request)
+    {
+        \Artisan::call('cache:clear');
+        \Artisan::call('config:clear');
 
+        $this->reloadDatabaseFromEnv();
+
+
+
+        $this->dbmigrateCache();
+        $this->insert_admin($request->name, $request->email, $request->password);
+
+        return view('install.done');
+    }
+
+
+
+    public function generateAppKey()
+    {
+        try {
+            // Clear cached config to ensure .env changes are picked up
+            Artisan::call('config:clear');
+            Artisan::call('cache:clear');
+
+            // Generate the key
+            Artisan::call('key:generate', [
+                '--show' => false, // false to write to .env
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Application key generated successfully.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to generate APP_KEY: ' . $e->getMessage()
+            ]);
+        }
+    }
 
     public function saveEnv(Request $request)
     {
@@ -291,24 +330,14 @@ class InstallController extends Controller
         $env = str_replace('APP_URL=http://127.0.0.1:8000', 'APP_URL=' . $request->app_url, $env);
 
 
-        $envkeystr = 'base64:' . base64_encode(random_bytes(32));
-        $env = str_replace('APP_KEY=', 'APP_KEY=' . $envkeystr, $env);
-
+       
         File::put(base_path('.env'), $env);
 
         $this->updateEnvDatabaseEngine($request->db_connection, $envData);
 
-        \Artisan::call('cache:clear');
-        \Artisan::call('config:clear');
-
-        $this->reloadDatabaseFromEnv();
-
+        $this->generateAppKey();
         
-
-        $this->dbmigrateCache();
-        $this->insert_admin($request->name, $request->email, $request->password);
-
-        return view('install.done');
+        return view('install.step2');
 
     }
 
