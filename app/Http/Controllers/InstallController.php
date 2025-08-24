@@ -126,18 +126,41 @@ class InstallController extends Controller
             // Reload .env file
             $dotenv = Dotenv::createImmutable(base_path());
             $dotenv->load();
+            // Update Laravel config manually from env
+            $connection = env('DB_CONNECTION', 'mysql');
 
+            Config::set("database.default", $connection);
             // Force update config from env
-            Config::set('database.connections.mysql.host', env('DB_HOST'));
-            Config::set('database.connections.mysql.port', env('DB_PORT'));
-            Config::set('database.connections.mysql.database', env('DB_DATABASE'));
-            Config::set('database.connections.mysql.username', env('DB_USERNAME'));
-            Config::set('database.connections.mysql.password', env('DB_PASSWORD'));
-            Config::set('database.default', env('DB_CONNECTION'));
 
-            $connection = config('database.default', 'mysql');
             $dbName = env('DB_DATABASE');
             logger("Reloading DB connection: $connection, DB: $dbName");
+
+            switch ($connection) {
+                case 'mysql':
+                    Config::set('database.connections.mysql.host', env('DB_HOST', '127.0.0.1'));
+                    Config::set('database.connections.mysql.port', env('DB_PORT', 3306));
+                    Config::set('database.connections.mysql.database', env('DB_DATABASE', 'laravel'));
+                    Config::set('database.connections.mysql.username', env('DB_USERNAME', 'root'));
+                    Config::set('database.connections.mysql.password', env('DB_PASSWORD', ''));
+                    break;
+                case 'pgsql':
+                    Config::set('database.connections.pgsql.host', env('DB_HOST', '127.0.0.1'));
+                    Config::set('database.connections.pgsql.port', env('DB_PORT', 5432));
+                    Config::set('database.connections.pgsql.database', env('DB_DATABASE', 'laravel'));
+                    Config::set('database.connections.pgsql.username', env('DB_USERNAME', 'postgres'));
+                    Config::set('database.connections.pgsql.password', env('DB_PASSWORD', ''));
+                    break;
+                case 'sqlite':
+                    $dbPath = env('DB_DATABASE', database_path('database.sqlite'));
+                    if (!File::exists($dbPath)) {
+                        File::ensureDirectoryExists(dirname($dbPath));
+                        File::put($dbPath, '');
+                        chmod($dbPath, 0664);
+                    }
+                    Config::set('database.connections.sqlite.database', $dbPath);
+                    break;
+            }
+
             switch ($connection) {
                 case 'mysql':
                     $config = Config::get("database.connections.mysql");
@@ -214,17 +237,7 @@ class InstallController extends Controller
 
     public function dbmigrate(Request $request)
     {
-        \Artisan::call('cache:clear');
-        \Artisan::call('config:clear');
 
-        $this->reloadDatabaseFromEnv();
-
-
-
-        $this->dbmigrateCache();
-        $this->insert_admin($request->name, $request->email, $request->password);
-
-        return view('install.done');
     }
 
 
@@ -330,14 +343,25 @@ class InstallController extends Controller
         $env = str_replace('APP_URL=http://127.0.0.1:8000', 'APP_URL=' . $request->app_url, $env);
 
 
-       
+
         File::put(base_path('.env'), $env);
 
         $this->updateEnvDatabaseEngine($request->db_connection, $envData);
 
         $this->generateAppKey();
-        
-        return view('install.step2');
+        logger("after generateAppKey", [""]);
+        $this->reloadDatabaseFromEnv();
+        logger("after reloadDatabaseFromEnv", [""]);
+
+        $this->databasemigrate();
+        logger("after dbmigrate ", [""]);
+        $this->ClearCache();
+        logger("after ClearCache", [""]);
+        $this->insert_admin($request->name, $request->email, $request->password);
+        logger("after insert_admin", [""]);
+        return view('install.done');
+
+        // return view('install.step2');
 
     }
 
@@ -352,23 +376,42 @@ class InstallController extends Controller
 
     }
 
-    public function dbmigrateCache(): bool
+    public function databasemigrate()
     {
-        // exec('composer install --no-dev --optimize-autoloader');
+        logger("dbmigrate ", []);
+
         try {
 
             \Artisan::call('migrate', [
                 '--path' => 'database/migrations',
-                '--force' => true
+                '--force' => true,
+                '--step' => true
             ]);
 
+
+            $output = \Artisan::output();
+            logger("✅ Migration Output:", [$output]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Migration completed',
+                'output' => $output
+            ], 200);
+
         } catch (\Exception $e) {
-            Log::error("❌ Post-update migrate db fail: " . $e->getMessage());
+            logger("❌ Post-update migrate db fail: " . $e->getMessage());
 
-            return false;
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
         }
-        try {
+    }
 
+    public function ClearCache(): bool
+    {
+        try {
+            logger("Post-update migrate db success.", [""]);
             // Clear caches
             \Artisan::call('config:clear');
             \Artisan::call('cache:clear');

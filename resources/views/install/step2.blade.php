@@ -17,6 +17,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>{{ __('installer.title') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
 </head>
@@ -26,8 +28,8 @@
         <h1 class="text-3xl font-bold mb-6 text-center">{{ __('installer.title') }}</h1>
 
         <form method="POST" action="{{ route('install.dbmigrate') }}">
-            @csrf
-            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                   @csrf
+          
             <div class="text-center">
                 <p class="mb-6">{{ __('installer.step2_desc') }}</p>
                 <button type="submit"

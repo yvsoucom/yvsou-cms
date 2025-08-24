@@ -28,6 +28,8 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
     </style>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
 </head>
 
 <body>

@@ -13,12 +13,10 @@
 
 use App\Http\Controllers\InstallController;
 
-Route::middleware('prevent.reinstall')->prefix('install')->name('install.')->group(function () {
-
-  Route::get('/', [InstallController::class, 'welcome']);
-  Route::get('/envForm', [InstallController::class, 'envForm'])->name('envForm');
-  Route::post('/saveEnv', [InstallController::class, 'saveEnv'])->name('saveEnv');
-  Route::post('/dbmigrate', [InstallController::class, 'dbmigrate'])->name('dbmigrate');
-
-
+ 
+Route::middleware(['web', 'prevent.reinstall'])->prefix('install')->name('install.')->group(function () {
+    Route::get('/', [InstallController::class, 'welcome']);
+    Route::get('/envForm', [InstallController::class, 'envForm'])->name('envForm');
+    Route::post('/saveEnv', [InstallController::class, 'saveEnv'])->name('saveEnv');
+    Route::post('/dbmigrate', [InstallController::class, 'dbmigrate'])->name('dbmigrate');
 });
