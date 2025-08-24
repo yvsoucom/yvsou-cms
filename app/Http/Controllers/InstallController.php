@@ -77,58 +77,122 @@ class InstallController extends Controller
         return view('install.step1');
     }
 
-
     protected function updateEnvDatabaseEngine($selectedEngine, $data)
     {
+
         $envPath = base_path('.env');
         $content = file_get_contents($envPath);
 
-        // DB keys we care about
-        $keys = ['DB_CONNECTION', 'DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD'];
+        // Define block markers
+        $blocks = [
+            'mysql' => ['### MYSQL_START ###', '### MYSQL_END ###'],
+            'pgsql' => ['### PGSQL_START ###', '### PGSQL_END ###'],
+            'sqlite' => ['### SQLITE_START ###', '### SQLITE_END ###'],
+        ];
 
-        // Remove old DB lines
-        foreach ($keys as $key) {
-            $content = preg_replace("/^{$key}=.*$/m", '', $content);
+        foreach ($blocks as $engine => [$start, $end]) {
+            // Extract the block content
+            $pattern = "/({$start})(.*?){$end}/s";
+            if (preg_match($pattern, $content, $matches)) {
+                $blockContent = $matches[2];
+
+                if ($engine === $selectedEngine) {
+                    // Uncomment and update the selected block
+                    $blockContent = preg_replace('/^#\s?/m', '', $blockContent);
+
+                    // Update values
+                    $blockContent = preg_replace('/DB_HOST=.*/', 'DB_HOST=' . ($data['DB_HOST'] ?? '127.0.0.1'), $blockContent);
+                    $blockContent = preg_replace('/DB_PORT=.*/', 'DB_PORT=' . ($data['DB_PORT'] ?? ($engine === 'mysql' ? '3306' : '5432')), $blockContent);
+                    $blockContent = preg_replace('/DB_DATABASE=.*/', 'DB_DATABASE=' . ($data['DB_DATABASE'] ?? 'laravel'), $blockContent);
+                    $blockContent = preg_replace('/DB_USERNAME=.*/', 'DB_USERNAME=' . ($data['DB_USERNAME'] ?? ($engine === 'mysql' ? 'root' : 'postgres')), $blockContent);
+                    $blockContent = preg_replace('/DB_PASSWORD=.*/', 'DB_PASSWORD=' . ($data['DB_PASSWORD'] ?? ''), $blockContent);
+                } else {
+                    // Comment out other blocks
+                    $blockContent = preg_replace('/^(?!#)/m', '# ', $blockContent);
+                }
+
+                // Replace in content
+                $content = preg_replace($pattern, "$start$blockContent$end", $content);
+            }
         }
-
-        // Add new config based on engine
-        if ($selectedEngine === 'mysql') {
-            $newLines = [
-                "DB_CONNECTION=mysql",
-                "DB_HOST=" . ($data['db_host'] ?? '127.0.0.1'),
-                "DB_PORT=" . ($data['db_port'] ?? '3306'),
-                "DB_DATABASE=" . ($data['db_name'] ?? 'laravel'),
-                "DB_USERNAME=" . ($data['db_user'] ?? 'root'),
-                "DB_PASSWORD=" . ($data['db_password'] ?? ''),
-            ];
-        } elseif ($selectedEngine === 'pgsql') {
-            $newLines = [
-                "DB_CONNECTION=pgsql",
-                "DB_HOST=" . ($data['db_host'] ?? '127.0.0.1'),
-                "DB_PORT=" . ($data['db_port'] ?? '5432'),
-                "DB_DATABASE=" . ($data['db_name'] ?? 'laravel'),
-                "DB_USERNAME=" . ($data['db_user'] ?? 'postgres'),
-                "DB_PASSWORD=" . ($data['db_password'] ?? 'secret'),
-            ];
-        } else { // sqlite
-            $newLines = [
-                "DB_CONNECTION=sqlite",
-                "DB_DATABASE=" . ($data['db_database'] ?? 'database/database.sqlite'),
-            ];
-        }
-
-        // Append new lines to .env
-        $content = trim($content) . "\n" . implode("\n", $newLines);
 
         file_put_contents($envPath, $content);
     }
 
 
 
+    function reloadDatabaseFromEnv(): bool
+    {
+        try {
+            $connection = env('DB_CONNECTION', 'mysql');
+
+            switch ($connection) {
+                case 'mysql':
+                    $host = env('DB_HOST', '127.0.0.1');
+                    $port = env('DB_PORT', 3306);
+                    $database = env('DB_DATABASE', 'laravel');
+                    $username = env('DB_USERNAME', 'root');
+                    $password = env('DB_PASSWORD', '');
+                    // Connect to MySQL server without specifying database
+                    $pdo = new \PDO("mysql:host=$host;port=$port", $username, $password);
+                    $pdo->exec("CREATE DATABASE IF NOT EXISTS `$database` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+
+                    Config::set('database.connections.mysql.host', env('DB_HOST', '127.0.0.1'));
+                    Config::set('database.connections.mysql.port', env('DB_PORT', 3306));
+                    Config::set('database.connections.mysql.database', env('DB_DATABASE', 'laravel'));
+                    Config::set('database.connections.mysql.username', env('DB_USERNAME', 'root'));
+                    Config::set('database.connections.mysql.password', env('DB_PASSWORD', ''));
+                    DB::purge('mysql');
+                    DB::reconnect('mysql');
+                    break;
+
+                case 'pgsql':
+                    $host = env('DB_HOST', '127.0.0.1');
+                    $port = env('DB_PORT', 5432);
+                    $database = env('DB_DATABASE', 'laravel');
+                    $username = env('DB_USERNAME', 'postgres');
+                    $password = env('DB_PASSWORD', '');
+
+                    // Connect to PostgreSQL server without specifying database
+                    $pdo = new \PDO("pgsql:host=$host;port=$port;dbname=postgres", $username, $password);
+                    $pdo->exec("CREATE DATABASE \"$database\";"); // PostgreSQL requires quotes
+
+                    Config::set('database.connections.pgsql.host', env('DB_HOST', '127.0.0.1'));
+                    Config::set('database.connections.pgsql.port', env('DB_PORT', 5432));
+                    Config::set('database.connections.pgsql.database', env('DB_DATABASE', 'laravel'));
+                    Config::set('database.connections.pgsql.username', env('DB_USERNAME', 'postgres'));
+                    Config::set('database.connections.pgsql.password', env('DB_PASSWORD', ''));
+                    DB::purge('pgsql');
+                    DB::reconnect('pgsql');
+                    break;
+
+                case 'sqlite':
+                    $dbPath = env('DB_DATABASE', database_path('database.sqlite'));
+                    if (!file_exists($dbPath)) {
+                        touch($dbPath);
+                        chmod($dbPath, 0664);
+                    }
+                    Config::set('database.connections.sqlite.database', env('DB_DATABASE', database_path('database.sqlite')));
+                    DB::purge('sqlite');
+                    DB::reconnect('sqlite');
+                    break;
+
+                default:
+                    throw new \Exception("Unsupported DB connection: {$connection}");
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            logger('Database reload failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+
+
     public function saveEnv(Request $request)
     {
-
-
+ 
         $validated = $request->validate([
             'app_name' => 'required',
             'app_url' => 'required',
@@ -210,8 +274,14 @@ class InstallController extends Controller
 
         $this->updateEnvDatabaseEngine($request->db_connection, $envData);
 
-        \Artisan::call('config:clear');
         \Artisan::call('cache:clear');
+        \Artisan::call('config:clear');
+
+        $this->reloadDatabaseFromEnv();
+
+        // Test new connection
+        $databases = DB::select('SELECT DATABASE() as db');
+        logger("new conect db", $databases);
 
         $this->dbmigrateCache();
         $this->insert_admin($request->name, $request->email, $request->password);
