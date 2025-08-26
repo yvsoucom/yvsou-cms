@@ -10,13 +10,14 @@
  * For commercial use, contact: yvsoucom@gmail.com
  */
 
-
 use App\Http\Controllers\InstallController;
 
- 
 Route::middleware(['web', 'prevent.reinstall'])->prefix('install')->name('install.')->group(function () {
     Route::get('/', [InstallController::class, 'welcome']);
     Route::get('/envForm', [InstallController::class, 'envForm'])->name('envForm');
     Route::post('/saveEnv', [InstallController::class, 'saveEnv'])->name('saveEnv');
-    Route::post('/dbmigrate', [InstallController::class, 'dbmigrate'])->name('dbmigrate');
+
+    Route::get('/migrate-stream', [InstallController::class, 'migrateStream'])->name('migrateStream');
+    Route::get('/done', [InstallController::class, 'done'])->name('done');
+    Route::get('/migrate', [InstallController::class, 'showMigrate'])->name('migrate');
 });

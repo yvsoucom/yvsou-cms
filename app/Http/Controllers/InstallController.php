@@ -33,6 +33,8 @@ use Illuminate\Http\Request;
 use Dotenv\Dotenv;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\Process\Process;
+
 
 class InstallController extends Controller
 {
@@ -321,7 +323,6 @@ class InstallController extends Controller
 
 
         File::put(config_path('yvsou_config.php'), contents: $cusconfig);
-        File::put(storage_path('installed.lock'), now());
 
         if ($request->db_connection === 'sqlite') {
             if (!file_exists(base_path($request->db_database))) {
@@ -352,15 +353,20 @@ class InstallController extends Controller
         logger("after generateAppKey", [""]);
         $this->reloadDatabaseFromEnv();
         logger("after reloadDatabaseFromEnv", [""]);
+        $name = $request->name;
+        $email = $request->email;
+        $password = $request->password;
 
-        $this->databasemigrate();
-        logger("after dbmigrate ", [""]);
-        $this->ClearCache();
-        logger("after ClearCache", [""]);
-        $this->insert_admin($request->name, $request->email, $request->password);
-        logger("after insert_admin", [""]);
-        return view('install.done');
-
+        return view('install.step2', compact('name', 'email', 'password'));
+        /*
+          $this->databasemigrate();
+         logger("after dbmigrate ", [""]);
+         $this->ClearCache();
+         logger("after ClearCache", [""]);
+         $this->insert_admin($request->name, $request->email, $request->password);
+         logger("after insert_admin", [""]);
+         return view('install.done');
+ */
         // return view('install.step2');
 
     }
@@ -422,5 +428,60 @@ class InstallController extends Controller
         }
         return true;
     }
+
+    public function migrateStream()
+    {
+        $response = response()->stream(function () {
+
+            $migrationFiles = glob(database_path('migrations') . '/*.php');
+            $total = count($migrationFiles);
+            $current = 0;
+
+            $process = new Process(['php', 'artisan', 'migrate', '--force']);
+            $process->setTimeout(300);
+            $process->start();
+
+            foreach ($process as $type => $data) {
+                if ($type === Process::OUT) {
+                    if (preg_match('/Migrating:\s+(.+)/', $data, $matches)) {
+                        $current++;
+                        $percent = intval(($current / $total) * 100);
+                        echo "event: progress\n";
+                        echo 'data: {"message": "' . $matches[1] . '", "percent": ' . $percent . '}' . "\n\n";
+                    } else {
+                        echo "event: log\n";
+                        echo 'data: {"message": "' . trim($data) . '"}' . "\n\n";
+                    }
+                }
+                flush();
+            }
+
+            echo "event: complete\n";
+            echo 'data: {"redirect": "' . route('install.step3') . '"}' . "\n\n";
+            flush();
+
+        }, 200, [
+            'Content-Type' => 'text/event-stream',
+            'Cache-Control' => 'no-cache',
+            'Connection' => 'keep-alive',
+        ]);
+
+        return $response;
+    }
+
+
+
+    public function showMigrate()
+    {
+        return view('install.migrate'); // spinner + migration
+    }
+    public function done()
+    {
+        File::put(storage_path('installed.lock'), now());
+
+        return view('install.done');
+    }
+
+
 
 }
