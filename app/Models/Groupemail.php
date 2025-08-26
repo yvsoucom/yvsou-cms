@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class GroupEmail
  * 
  * @property int $id
- * @property string|null $user_send
+ * @property int $userid_send
  * @property string $IP
  * @property Carbon $sDate
  * @property string $title
@@ -52,7 +52,7 @@ class GroupEmail extends Model
 	];
 
 	protected $fillable = [
-		'user_send',
+		'userid_send',
 		'IP',
 		'sDate',
 		'title',

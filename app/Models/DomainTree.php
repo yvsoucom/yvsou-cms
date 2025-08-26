@@ -22,12 +22,13 @@
  * Contact: yvsoucom@gmail.com
  * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
  */
- 
+
 namespace App\Models;
 
 use App\Services\DomainService;
 use App\Services\LocaleService;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasCompositePrimaryKey;
 
 /**
  * Class DomainTree
@@ -41,10 +42,10 @@ use Illuminate\Database\Eloquent\Model;
  */
 class DomainTree extends Model
 {
+ 
     protected $table = 'domain_trees';
-    public $incrementing = false;
     protected $primaryKey = ['id', 'lang'];
-
+    public $incrementing = false;
     protected $fillable = [
         'id',
         'domain_dict_name',

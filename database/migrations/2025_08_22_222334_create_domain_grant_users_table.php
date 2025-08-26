@@ -36,11 +36,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('domain_grant_users', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('domainid', 600);
-            $table->integer('userid');
-        });
+        if (!Schema::hasTable('domain_grant_users')) {
+            Schema::create('domain_grant_users', function (Blueprint $table) {
+                $table->bigIncrements('id');
+                $table->string('domainid', 600);
+                $table->integer('userid');
+
+            });
+        }
     }
 
     /**

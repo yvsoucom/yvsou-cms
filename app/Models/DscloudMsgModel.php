@@ -38,7 +38,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class DscloudMsgModel extends Model
 {
-	protected $table = 'dscloud_msgModel';
+	protected $table = 'dscloud_msg_models';
 	protected $primaryKey = 'msgtypeID';
 	public $timestamps = false;
 

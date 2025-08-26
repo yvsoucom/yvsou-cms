@@ -32,13 +32,13 @@ use Illuminate\Database\Eloquent\Model;
  * Class Log
  * 
  * @property int $logID
- * @property string $user_login
+ * @property int $userid
  * @property Carbon $dtime
  * @property string $type
  * @property string $contents
  * @property string $where
- * @property string $fromUser
- * @property string $toUser
+ * @property int $fromUserid
+ * @property int $toUserid
  * @property string $msgtype
  * @property int $creattime
  *
@@ -56,13 +56,13 @@ class Log extends Model
 	];
 
 	protected $fillable = [
-		'user_login',
+		'userid',
 		'dtime',
 		'type',
 		'contents',
 		'where',
-		'fromUser',
-		'toUser',
+		'fromUserid',
+		'toUserid',
 		'msgtype',
 		'creattime'
 	];

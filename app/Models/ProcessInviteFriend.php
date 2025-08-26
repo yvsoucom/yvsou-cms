@@ -31,8 +31,8 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class ProcessInviteFriend
  * 
- * @property string $user
- * @property string $friend
+ * @property int $userid
+ * @property int $friendid
  * @property int $handled
  *
  * @package App\Models

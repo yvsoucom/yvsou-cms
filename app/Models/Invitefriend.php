@@ -31,7 +31,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class InviteFriend
  * 
- * @property string $user
+ * @property int $userid
  * @property string $inviteEmail
  * @property string $domainID
  * @property Carbon $invitetime
@@ -50,7 +50,7 @@ class InviteFriend extends Model
 	];
 
 	protected $fillable = [
-		'user',
+		'userid',
 		'domainID',
 		'invitetime'
 	];

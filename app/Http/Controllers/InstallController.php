@@ -378,40 +378,34 @@ class InstallController extends Controller
 
     public function databasemigrate()
     {
-        logger("dbmigrate ", []);
+        logger("🔹 Starting database migration...");
 
         try {
+            set_time_limit(0);
+            ini_set('memory_limit', '512M');
 
-            \Artisan::call('migrate', [
+            $exitCode = \Artisan::call('migrate', [
                 '--path' => 'database/migrations',
                 '--force' => true,
-                '--step' => true
+                '--step' => true,
             ]);
 
-
             $output = \Artisan::output();
-            logger("✅ Migration Output:", [$output]);
+            logger("✅ Migration finished with exit code {$exitCode}:\n" . $output);
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Migration completed',
-                'output' => $output
-            ], 200);
+            return true;
 
         } catch (\Exception $e) {
-            logger("❌ Post-update migrate db fail: " . $e->getMessage());
-
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 500);
+            logger("❌ Database migration failed: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return false;
         }
     }
+
 
     public function ClearCache(): bool
     {
         try {
-            logger("Post-update migrate db success.", [""]);
+            logger("ClearCache.", [""]);
             // Clear caches
             \Artisan::call('config:clear');
             \Artisan::call('cache:clear');
@@ -420,16 +414,13 @@ class InstallController extends Controller
             \Artisan::call('config:cache');
             \Artisan::call('route:cache');
             \Artisan::call('view:cache');
-            Log::info("Post-update complete.");
+            Log::info("ClearCache complete.");
 
         } catch (\Exception $e) {
             Log::error("❌ Post-update failed: " . $e->getMessage());
             return false;
         }
-
         return true;
-
     }
-
 
 }

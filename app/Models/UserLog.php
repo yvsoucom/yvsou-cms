@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class UserLog
  * 
- * @property string $user_login
+ * @property string $userid
  * @property string $log_type
  * @property Carbon $log_date
  * @property string $ip
@@ -58,7 +58,7 @@ class UserLog extends Model
 	];
 
 	protected $fillable = [
-		'user_login',
+		'userid',
 		'log_type',
 		'log_date',
 		'ip',

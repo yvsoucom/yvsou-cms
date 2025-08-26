@@ -39,7 +39,8 @@ use Illuminate\Database\Eloquent\Model;
 class DomainTreeChildId extends Model
 {
     protected $table = 'domain_tree_child_ids';
-    public $incrementing = false;
+    protected $primaryKey = 'id';
+
     public $timestamps = false;
 
     protected $fillable = [
