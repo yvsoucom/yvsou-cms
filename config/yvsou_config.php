@@ -15,7 +15,7 @@ return array(
     'CONFIG_VERSION' => 'config-v1.0.0',
     
     'DEFAULT_LANGUAGE' => 'zh',
-    'LANGUAGESET' => ["en","zh","ja","fr"] ,
+    'LANGUAGESET' => ["en","zh"] ,
 
     'MIGRATEDOMAINHOST' => [
         'yvsou.com/wp-content',
@@ -23,7 +23,7 @@ return array(
         '127.0.0.1:8000'
     ],
 
-    'ADMINHASRIGHTS' =>  true ,
+    'ADMINHASRIGHTS' =>  false ,
     'BLOCKBOT' =>   false ,
 
 );

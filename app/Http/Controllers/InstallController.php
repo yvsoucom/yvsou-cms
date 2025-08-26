@@ -297,13 +297,15 @@ class InstallController extends Controller
             'db_connection' => 'required|in:mysql,pgsql,sqlite',
 
 
-            'default_lang' => 'required',
-            'lang_set' => 'required|array|min:1', // Make sure language_set is an array and has at least one value
+            //'default_lang' => 'required',
+            // 'lang_set' => 'required|array|min:1', // Make sure language_set is an array and has at least one value
 
         ]);
 
-        $isAdmin = $request->boolean('is_adminsp');
-        $isBlockBot = $request->boolean('is_blockbot');
+
+        $isAdmin = $request->boolean('is_adminsp', false);
+        $isBlockBot = $request->boolean('is_blockbot', false);
+
 
         logger("requestafter", [$validated]);
 
@@ -311,12 +313,16 @@ class InstallController extends Controller
 
         #  file_put_contents(config_path('yvsou_example_config.php'), json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         $cusconfig = File::get(base_path('/config/yvsou_config.php'));
-        $cusconfig = str_replace("'DEFAULT_LANGUAGE' => 'en'", "'DEFAULT_LANGUAGE' => '$request->default_lang'", $cusconfig);
+        $defaultLang = $request->default_lang ?? 'en';
+        $cusconfig = str_replace("'DEFAULT_LANGUAGE' => 'en'", "'DEFAULT_LANGUAGE' => '$defaultLang'", $cusconfig);
 
         $languages = $request->input('lang_set', []);
 
         // Convert to JSON string
         $jsonLanguages = json_encode($languages);
+        if (!in_array($defaultLang, $languages)) {
+            $languages[] = $defaultLang;
+        }
         logger("jsonLanguages", [$jsonLanguages]);
 
         $cusconfig = str_replace("'LANGUAGESET' => ['en', 'zh', 'ja']", "'LANGUAGESET' => $jsonLanguages ", $cusconfig);
@@ -368,16 +374,7 @@ class InstallController extends Controller
 
         $this->ClearCache();
         return view('install.step2');
-        /*
-          $this->databasemigrate();
-         logger("after dbmigrate ", [""]);
-         $this->ClearCache();
-         logger("after ClearCache", [""]);
-         $this->insert_admin($request->name, $request->email, $request->password);
-         logger("after insert_admin", [""]);
-         return view('install.done');
-        */
-        // return view('install.step2');
+
 
     }
 
@@ -452,64 +449,6 @@ class InstallController extends Controller
         }
         return true;
     }
-
-    public function migrateStream()
-    {
-        return response()->stream(function () {
-
-            $migrationFiles = glob(database_path('migrations') . '/*.php');
-            $total = count($migrationFiles);
-            $current = 0;
-
-            // Start migration process
-            $process = new Process(['php', 'artisan', 'migrate', '--force']);
-            $process->setTimeout(300);
-            $process->start();
-
-            while ($process->isRunning()) {
-                $output = $process->getIncrementalOutput();
-
-                // Detect migrated table lines
-                if (preg_match_all('/Migrating:\s+(.+)/', $output, $matches)) {
-                    foreach ($matches[1] as $match) {
-                        $current++;
-                        $percent = intval(($current / $total) * 100);
-                        echo "event: progress\n";
-                        echo 'data: {"message": "' . $match . '", "percent": ' . $percent . '}' . "\n\n";
-                    }
-                }
-
-                // Log other output
-                $lines = explode("\n", trim($output));
-                foreach ($lines as $line) {
-                    if ($line) {
-                        echo "event: log\n";
-                        echo 'data: {"message": "' . trim($line) . '"}' . "\n\n";
-                    }
-                }
-
-                flush();
-                usleep(100000); // small delay
-            }
-
-            // Final output
-            if (!$process->isSuccessful()) {
-                echo "event: log\n";
-                echo 'data: {"message": "Migration failed: ' . $process->getErrorOutput() . '"}' . "\n\n";
-            }
-
-            echo "event: complete\n";
-            echo 'data: {"redirect": "' . route('install.step3') . '"}' . "\n\n";
-            flush();
-
-        }, 200, [
-            'Content-Type' => 'text/event-stream',
-            'Cache-Control' => 'no-cache',
-            'Connection' => 'keep-alive',
-        ]);
-    }
-
-
 
 
 
