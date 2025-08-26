@@ -48,14 +48,7 @@
             <x-install.input name="db_database" label="installer.db_name" />
             <x-install.input name="db_username" label="installer.db_user" />
             <x-install.input name="db_password" label="installer.db_pass" type="password" />
-
-            <!-- Admin Setup -->
-            <h2 class="text-xl font-semibold mt-8 mb-4">{{ __('installer.admin_setup') }}</h2>
-
-            <x-install.input name="name" label="installer.admin_name" required />
-            <x-install.input name="email" label="installer.admin_email" type="email" required />
-            <x-install.input name="password" label="installer.admin_password" type="password" required />
-
+            
             <!-- Custom Config -->
             <h2 class="text-xl font-semibold mt-8 mb-4">{{ __('installer.custom_config') }}</h2>
             <div class="space-y-6">

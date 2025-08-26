@@ -26,16 +26,20 @@
         <h1 class="text-3xl font-bold mb-6 text-center">{{ __('installer.title') }}</h1>
         <form method="POST" action="{{ route('install.saveAdmin') }}">
             @csrf
-            <!-- Environment Setup -->
-            <h2 class="text-xl font-semibold mb-4">{{ __('installer.admin_setup') }}</h2>
-
+            
             <!-- Admin Setup -->
             <h2 class="text-xl font-semibold mt-8 mb-4">{{ __('installer.admin_setup') }}</h2>
 
             <x-install.input name="name" label="installer.admin_name" required />
             <x-install.input name="email" label="installer.admin_email" type="email" required />
             <x-install.input name="password" label="installer.admin_password" type="password" required />
+   <div class="flex justify-end">
+                    <button type="submit"
+                        class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+                        {{ __('installer.create_admin') }}
+                    </button>
 
+                </div>
         </form>
     </div>
 </body>

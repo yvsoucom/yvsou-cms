@@ -1,8 +1,8 @@
 {{--
- SPDX-FileCopyrightText:  (c) 2025  Hangzhou Domain Zones Technology Co., Ltd.
- SPDX-FileCopyrightText:  Institute of Future Science and Technology G.K., Tokyo
- SPDX-FileContributor: Lican Huang
- @created 2025-08-26
+SPDX-FileCopyrightText: (c) 2025 Hangzhou Domain Zones Technology Co., Ltd.
+SPDX-FileCopyrightText: Institute of Future Science and Technology G.K., Tokyo
+SPDX-FileContributor: Lican Huang
+@created 2025-08-26
 *
 * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary
 * License: Dual Licensed – GPLv3 or Commercial
@@ -24,22 +24,26 @@
 * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
 */
 --}}
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Step 2: Guide</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-100 flex items-center justify-center h-screen">
     <div class="bg-white p-8 rounded shadow w-96 text-center">
         <h1 class="text-xl font-bold mb-4">Step 2: Setup Guide</h1>
-        <p class="mb-4">Please make sure your database and environment are ready.  Please backup your database first.
-        After reading, click “Next” to run the migrations and setup your admin account.</p>
+        <p class="mb-4">Please make sure your database and environment are ready. Please backup your database first.
+            After reading, click “Next” to run the migrations and setup your admin account.</p>
 
         <a href="{{ route('install.migrate') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
             Next
         </a>
     </div>
 </body>
+
 </html>

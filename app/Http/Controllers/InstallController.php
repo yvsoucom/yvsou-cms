@@ -268,6 +268,21 @@ class InstallController extends Controller
         }
     }
 
+    public function saveAdmin(Request $request)
+    {
+
+        $validated = $request->validate([
+
+
+            'name' => 'required',
+            'email' => 'required',
+            'password' => 'required',
+
+        ]);
+
+        $this->insert_admin($request->name, $request->email, $request->password);
+        return redirect(route('install.done'));
+    }
     public function saveEnv(Request $request)
     {
 
@@ -281,9 +296,6 @@ class InstallController extends Controller
             'db_password' => 'nullable',
             'db_connection' => 'required|in:mysql,pgsql,sqlite',
 
-            'name' => 'required',
-            'email' => 'required',
-            'password' => 'required',
 
             'default_lang' => 'required',
             'lang_set' => 'required|array|min:1', // Make sure language_set is an array and has at least one value
@@ -353,11 +365,9 @@ class InstallController extends Controller
         logger("after generateAppKey", [""]);
         $this->reloadDatabaseFromEnv();
         logger("after reloadDatabaseFromEnv", [""]);
-        $name = $request->name;
-        $email = $request->email;
-        $password = $request->password;
 
-        return view('install.step2', compact('name', 'email', 'password'));
+        $this->ClearCache();
+        return view('install.step2');
         /*
           $this->databasemigrate();
          logger("after dbmigrate ", [""]);
@@ -366,7 +376,7 @@ class InstallController extends Controller
          $this->insert_admin($request->name, $request->email, $request->password);
          logger("after insert_admin", [""]);
          return view('install.done');
- */
+        */
         // return view('install.step2');
 
     }
@@ -382,7 +392,17 @@ class InstallController extends Controller
 
     }
 
-    public function databasemigrate()
+
+    public function showMigrate()
+    {
+        return view('install.migrate');
+    }
+
+    public function step3()
+    {
+        return view('install.step3');
+    }
+    public function runMigrate()
     {
         logger("🔹 Starting database migration...");
 
@@ -398,16 +418,20 @@ class InstallController extends Controller
 
             $output = \Artisan::output();
             logger("✅ Migration finished with exit code {$exitCode}:\n" . $output);
-
-            return true;
+            Artisan::call('config:clear');
+            Artisan::call('cache:clear');
+            // THIS IS IMPORTANT
+            return response()->json([
+                'success' => true,
+                'redirect' => route('install.step3') // must be a valid route
+            ]);
 
         } catch (\Exception $e) {
             logger("❌ Database migration failed: " . $e->getMessage() . "\n" . $e->getTraceAsString());
-            return false;
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+
         }
     }
-
-
     public function ClearCache(): bool
     {
         try {
@@ -431,29 +455,47 @@ class InstallController extends Controller
 
     public function migrateStream()
     {
-        $response = response()->stream(function () {
+        return response()->stream(function () {
 
             $migrationFiles = glob(database_path('migrations') . '/*.php');
             $total = count($migrationFiles);
             $current = 0;
 
+            // Start migration process
             $process = new Process(['php', 'artisan', 'migrate', '--force']);
             $process->setTimeout(300);
             $process->start();
 
-            foreach ($process as $type => $data) {
-                if ($type === Process::OUT) {
-                    if (preg_match('/Migrating:\s+(.+)/', $data, $matches)) {
+            while ($process->isRunning()) {
+                $output = $process->getIncrementalOutput();
+
+                // Detect migrated table lines
+                if (preg_match_all('/Migrating:\s+(.+)/', $output, $matches)) {
+                    foreach ($matches[1] as $match) {
                         $current++;
                         $percent = intval(($current / $total) * 100);
                         echo "event: progress\n";
-                        echo 'data: {"message": "' . $matches[1] . '", "percent": ' . $percent . '}' . "\n\n";
-                    } else {
-                        echo "event: log\n";
-                        echo 'data: {"message": "' . trim($data) . '"}' . "\n\n";
+                        echo 'data: {"message": "' . $match . '", "percent": ' . $percent . '}' . "\n\n";
                     }
                 }
+
+                // Log other output
+                $lines = explode("\n", trim($output));
+                foreach ($lines as $line) {
+                    if ($line) {
+                        echo "event: log\n";
+                        echo 'data: {"message": "' . trim($line) . '"}' . "\n\n";
+                    }
+                }
+
                 flush();
+                usleep(100000); // small delay
+            }
+
+            // Final output
+            if (!$process->isSuccessful()) {
+                echo "event: log\n";
+                echo 'data: {"message": "Migration failed: ' . $process->getErrorOutput() . '"}' . "\n\n";
             }
 
             echo "event: complete\n";
@@ -465,16 +507,12 @@ class InstallController extends Controller
             'Cache-Control' => 'no-cache',
             'Connection' => 'keep-alive',
         ]);
-
-        return $response;
     }
 
 
 
-    public function showMigrate()
-    {
-        return view('install.migrate'); // spinner + migration
-    }
+
+
     public function done()
     {
         File::put(storage_path('installed.lock'), now());
