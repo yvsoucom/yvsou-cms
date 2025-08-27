@@ -106,5 +106,23 @@
         </form>
     </div>
 </body>
-
+<script>
+document.getElementById('db_connection').addEventListener('change', function() {
+    const portInput = document.getElementById('db_port');
+    switch (this.value) {
+        case 'mysql':
+            portInput.value = 3306;
+            portInput.disabled = false;
+            break;
+        case 'pgsql':
+            portInput.value = 5432;
+            portInput.disabled = false;
+            break;
+        case 'sqlite':
+            portInput.value = '';
+            portInput.disabled = true; // SQLite does not need port
+            break;
+    }
+});
+</script>
 </html>

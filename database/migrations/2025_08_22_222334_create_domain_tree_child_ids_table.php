@@ -38,12 +38,11 @@ return new class extends Migration {
     {
         if (!Schema::hasTable('domain_tree_child_ids')) {
             Schema::create('domain_tree_child_ids', function (Blueprint $table) {
-                $table->bigIncrements('id')->unique('id');
+ 
+                $table->bigIncrements('id'); // primary key, auto-increment
 
                 $table->unsignedBigInteger('child_id');
                 $table->string('domainid', 600);
-
-                $table->primary(['id']);
             });
         }
     }
