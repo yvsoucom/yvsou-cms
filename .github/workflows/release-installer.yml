@@ -52,16 +52,12 @@ jobs:
         set -eux 
         mkdir -p build_common
         cp -r app bootstrap config database public resources routes build_common/
-        cp composer.json composer.lock artisan install.sql install57.sql build_common/
-        cp env_install build_common/env_install
-        cp yvsou_install_config.php build_common/yvsou_install_config.php   
+        cp composer.json composer.lock artisan   build_common/
+         
         cp *.* build_common/ || true
         rm -f build_common/*.sh || true
-        rm -f build_common/config/yvsou_config.php || true
         cp composer.sh build_common/ || true
-      
         cp vite.config.js tailwind.config.js postcss.config.js build_common/ || true
-
         
         if [ -d plugins ]; then    
           cp -r plugins build_common/
@@ -72,8 +68,7 @@ jobs:
         mkdir -p build_common/storage/app/{private,public,protected-files}
         mkdir -p build_common/storage/framework/{cache,sessions,testing,views}
         mkdir -p build_common/storage/logs
-        cp storage/tmp-install.sqlite build_common/storage/tmp-install.sqlite || true
-
+      
     # ✅ Build installer.zip
     - name: Build installer.zip
       run: |
