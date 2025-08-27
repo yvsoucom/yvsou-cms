@@ -42,14 +42,15 @@ class LocaleService
         logger('setbootLocaleFromCookie getLocale   ', [app()->getLocale()]); // Temporarily check this
 
         if (!$cookieLocale)
-            $cookieLocale = config('yvsou_config.DEFAULT_LANGUAGE');
+            $cookieLocale = config('app.locale');
 
         if (!in_array($cookieLocale, config('yvsou_config.LANGUAGESET'))) {
             $Locale = app()->getLocale();
             logger('setbootLocaleFromCookie getLocale not in array  ', [$Locale]); // Temporarily check this
 
             if (!$Locale) {
-                $Locale = config('yvsou_config.DEFAULT_LANGUAGE');
+
+                $Locale = config('app.locale');
                 //  App::setLocale($Locale);
             }
         } else {
@@ -99,23 +100,6 @@ class LocaleService
 
 
 
-    /*    public function getSetLocaleFromCookie(): void
-        {
-
-            $cookieLocale = Cookie::get('locale');
-
-            if (!in_array($cookieLocale, config('yvsou_config.LANGUAGESET'))) {
-
-            } else {
-                if (App::getLocale() !== $cookieLocale) {
-                    App::setLocale($cookieLocale);
-                    logger('setLocale', [$cookieLocale]); // Temporarily check this
-                    logger('setLocaleafter', [App::getLocale()]); // Temporarily check this
-                }
-            }
-
-        }
-    */
     public function getcurlang(): int
     {
         //  $this->getSetLocaleFromCookie();

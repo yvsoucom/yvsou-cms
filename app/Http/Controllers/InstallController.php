@@ -312,35 +312,38 @@ class InstallController extends Controller
 
 
         #  file_put_contents(config_path('yvsou_example_config.php'), json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        $cusconfig = File::get(base_path('/config/yvsou_config.php'));
+        $env = File::get(base_path('.env'));
         $defaultLang = $request->default_lang ?? 'en';
-        $cusconfig = str_replace("'DEFAULT_LANGUAGE' => 'en'", "'DEFAULT_LANGUAGE' => '$defaultLang'", $cusconfig);
+        $env = str_replace('APP_LOCALE=en', 'APP_LOCALE=' . $defaultLang, $env);
 
         $languages = $request->input('lang_set', []);
 
         // Convert to JSON string
-        $jsonLanguages = json_encode($languages);
+
         if (!in_array($defaultLang, $languages)) {
             $languages[] = $defaultLang;
         }
-        logger("jsonLanguages", [$jsonLanguages]);
 
-        $cusconfig = str_replace("'LANGUAGESET' => ['en', 'zh', 'ja']", "'LANGUAGESET' => $jsonLanguages ", $cusconfig);
+        $commaLanguages = implode(',', $languages);
 
+
+        logger("commaLanguages", [$commaLanguages]);
+        $env = str_replace("LANGUAGESET=en,zh,ja", "LANGUAGESET=$commaLanguages", $env);
+
+        logger('env', [$env]);
+        
         $adminstring = 'false';
         if ($isAdmin)
             $adminstring = 'true';
 
-        $cusconfig = str_replace("'ADMINHASRIGHTS' => true", "'ADMINHASRIGHTS' =>  $adminstring ", $cusconfig);
+        $env = str_replace("ADMINHASRIGHTS=true", "ADMINHASRIGHTS=$adminstring", $env);
 
         $blockbotstring = 'false';
         if ($isBlockBot)
             $blockbotstring = 'true';
 
-        $cusconfig = str_replace("'BLOCKBOT' => false", "'BLOCKBOT' =>   $blockbotstring ", $cusconfig);
+        $env = str_replace("BLOCKBOT=false", "BLOCKBOT=$blockbotstring ", $env);
 
-
-        File::put(config_path('yvsou_config.php'), contents: $cusconfig);
 
         if ($request->db_connection === 'sqlite') {
             if (!file_exists(base_path($request->db_database))) {
@@ -357,7 +360,7 @@ class InstallController extends Controller
             'DB_USERNAME' => $request->db_username ?? '',
             'DB_PASSWORD' => $request->db_password ?? '',
         ];
-        $env = File::get(base_path('.env'));
+
         $env = str_replace('APP_NAME=yvsou-cms', 'APP_NAME=' . $request->app_name, $env);
         $env = str_replace('APP_URL=http://127.0.0.1:8000', 'APP_URL=' . $request->app_url, $env);
 

@@ -23,59 +23,38 @@
  * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
  */
 
-
 namespace App\Http\Middleware;
+
 use Closure;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Cookie;
-
 
 class SetLocale
 {
-
     public function handle($request, Closure $next)
     {
-        $defaultLocale = config('yvsou_config.DEFAULT_LANGUAGE', 'en');
+        // Load default locale from APP_LOCALE in .env or fallback to 'en'
+        $defaultLocale = env('APP_LOCALE', 'en');
         $supportedLocales = config('yvsou_config.LANGUAGESET', ['en', 'zh', 'ja', 'fr']);
 
+        // Priority: session -> cookie -> .env (APP_LOCALE)
         $locale = session('locale')
             ?? ($_COOKIE['locale'] ?? null)
             ?? $defaultLocale;
 
-        if (in_array($locale, $supportedLocales)) {
-            app()->setLocale($locale);
-        } else {
-            app()->setLocale($defaultLocale);
+        if (!in_array($locale, $supportedLocales)) {
+            $locale = $defaultLocale;
         }
 
-        // Optional: Log for debugging
+        app()->setLocale($locale);
+
+        // Debug logging
         logger('SetLocale middleware applied', [
-            'locale_set' => app()->getLocale(),
+            'locale_set' => $locale,
             'session_locale' => session('locale'),
             'cookie_locale' => $_COOKIE['locale'] ?? null,
-            'default_locale' => $defaultLocale,
+            'env_locale' => $defaultLocale,
         ]);
-        return $next($request);
-    }
-    public function handle1($request, Closure $next)
-    {
-        logger('Locale in SetLocale middleware before', [app()->getLocale()]);
-
-        // $locale = Cookie::get('locale', config('yvsou_config.DEFAULT_LANGUAGE'));
-        $locale = $_COOKIE['locale'] ?? 'en';
-        logger('cookieLocale in SetLocale middleware  ', [$locale]);
-
-        if (in_array($locale, config('yvsou_config.LANGUAGESET'))) {
-            app()->setLocale($locale);
-            logger('cookieLocale in SetLocale middleware after', [app()->getLocale()]);
-
-        }
 
         return $next($request);
     }
 }
-
-
-
-
-

@@ -11,19 +11,14 @@
  */
 
 
-return array(
-    'CONFIG_VERSION' => 'config-v1.0.0',
-    
-    'DEFAULT_LANGUAGE' => 'zh',
-    'LANGUAGESET' => ["en","zh"] ,
+ return [
 
-    'MIGRATEDOMAINHOST' => [
-        'yvsou.com/wp-content',
-        'www.yvsou.com/wp-content',
-        '127.0.0.1:8000'
-    ],
+    'LANGUAGESET' => explode(',', env('LANGUAGESET', 'en,zh')),
 
-    'ADMINHASRIGHTS' =>  false ,
-    'BLOCKBOT' =>   false ,
+    'MIGRATEDOMAINHOST' => explode(',', env('MIGRATEDOMAINHOST', 'yvsou.com/wp-content,www.yvsou.com/wp-content,127.0.0.1:8000')),
 
-);
+    'ADMINHASRIGHTS' => env('ADMINHASRIGHTS', false),
+
+    'BLOCKBOT' => env('BLOCKBOT', false),
+
+];

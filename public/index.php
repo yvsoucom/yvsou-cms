@@ -44,13 +44,14 @@ if (!file_exists($installedFlag) && !$inInstaller) {
         }
     }
 
+    /*
     $filePath = __DIR__ . '/../database/database.sqlite';
 
     if (!file_exists($filePath)) {
         // Create an empty file
         file_put_contents($filePath, '');
     }
-   
+   */
     // Ensure vendor exists
     if (!is_dir(__DIR__ . '/../vendor')) {
         echo "Composer dependencies missing. Please run <code>composer install</code> manually.";
@@ -64,13 +65,14 @@ if (!file_exists($installedFlag) && !$inInstaller) {
         copy($installEnvPath, $envPath);
     }
 
+    /*
     // Copy default config if not exists
     $configPath = __DIR__ . '/../config/yvsou_config.php';
     $installConfigPath = __DIR__ . '/../yvsou_example_config.php';
     if (file_exists($installConfigPath)) {
         copy($installConfigPath, $configPath);
     }
-    
+    */
 
     header('Location: install');
     exit;

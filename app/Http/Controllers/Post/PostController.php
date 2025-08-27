@@ -100,6 +100,7 @@ class PostController extends Controller
     function convertToMigrateRelative($html)
     {
         $domainhosts = config('yvsou_config.MIGRATEDOMAINHOST');
+        
         logger('domainhosts', [$domainhosts]);
         $html = $this->removeMigarateContentUrls($html, $domainhosts);
         $html = $this->convertImageSrcToRelative($html, $domainhosts);
