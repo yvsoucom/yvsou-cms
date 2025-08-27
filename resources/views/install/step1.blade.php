@@ -48,7 +48,7 @@
             <x-install.input name="db_database" label="installer.db_name" />
             <x-install.input name="db_username" label="installer.db_user" />
             <x-install.input name="db_password" label="installer.db_pass" type="password" />
-            
+
             <!-- Custom Config -->
             <h2 class="text-xl font-semibold mt-8 mb-4">{{ __('installer.custom_config') }}</h2>
             <div class="space-y-6">
@@ -107,22 +107,32 @@
     </div>
 </body>
 <script>
-document.getElementById('db_connection').addEventListener('change', function() {
-    const portInput = document.getElementById('db_port');
-    switch (this.value) {
-        case 'mysql':
-            portInput.value = 3306;
-            portInput.disabled = false;
-            break;
-        case 'pgsql':
-            portInput.value = 5432;
-            portInput.disabled = false;
-            break;
-        case 'sqlite':
-            portInput.value = '';
-            portInput.disabled = true; // SQLite does not need port
-            break;
-    }
-});
+    document.getElementById('db_connection').addEventListener('change', function () {
+        const hostInput = document.getElementById('db_host');
+        const portInput = document.getElementById('db_port');
+        const dbusernameInput = document.getElementById('db_username');
+        const dbpasswordInput = document.getElementById('db_password');
+        switch (this.value) {
+            case 'mysql':
+                portInput.value = 3306;
+                portInput.disabled = false;
+                break;
+            case 'pgsql':
+                portInput.value = 5432;
+                portInput.disabled = false;
+                break;
+            case 'sqlite':
+                portInput.value = '';
+                portInput.disabled = true; // SQLite does not need port
+                hostInput.value = ''; // SQLite does not need host
+                hostInput.disabled = true;
+                dbusernameInput.value = ''; // SQLite does not need username
+                dbusernameInput.disabled = true;
+                dbpasswordInput.value = ''; // SQLite does not need password
+                dbpasswordInput.disabled = true;
+                break;
+        }
+    });
 </script>
+
 </html>

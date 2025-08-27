@@ -81,7 +81,7 @@ class InstallController extends Controller
 
     protected function updateEnvDatabaseEngine($selectedEngine, $data)
     {
-
+        logger("updateEnvDatabaseEngine", [$selectedEngine, $data]);
         $envPath = base_path('.env');
         $content = file_get_contents($envPath);
 
@@ -103,11 +103,34 @@ class InstallController extends Controller
                     $blockContent = preg_replace('/^#\s?/m', '', $blockContent);
 
                     // Update values
-                    $blockContent = preg_replace('/DB_HOST=.*/', 'DB_HOST=' . ($data['DB_HOST'] ?? '127.0.0.1'), $blockContent);
-                    $blockContent = preg_replace('/DB_PORT=.*/', 'DB_PORT=' . ($data['DB_PORT'] ?? ($engine === 'mysql' ? '3306' : '5432')), $blockContent);
-                    $blockContent = preg_replace('/DB_DATABASE=.*/', 'DB_DATABASE=' . ($data['DB_DATABASE'] ?? 'laravel'), $blockContent);
-                    $blockContent = preg_replace('/DB_USERNAME=.*/', 'DB_USERNAME=' . ($data['DB_USERNAME'] ?? ($engine === 'mysql' ? 'root' : 'postgres')), $blockContent);
-                    $blockContent = preg_replace('/DB_PASSWORD=.*/', 'DB_PASSWORD=' . ($data['DB_PASSWORD'] ?? ''), $blockContent);
+
+                    if ($engine === 'sqlite') {
+                        // Ensure the database is placed under storage/sqlite/
+                        $dbName = $data['DB_DATABASE'] ?? 'database.sqlite';
+                        $dbPath = 'storage/sqlite/' . $dbName;
+
+                        // Make sure directory exists
+                        if (!is_dir(storage_path('sqlite'))) {
+                            mkdir(storage_path('sqlite'), 0755, true);
+                        }
+
+                        // Create the SQLite file if it does not exist
+                        $fullPath = storage_path('sqlite/' . $dbName);
+                        logger("SQLite DB Path", [$fullPath]);
+                        if (!file_exists($fullPath)) {
+                            touch($fullPath);
+                            chmod($fullPath, 0664);
+                        }
+
+                        $blockContent = preg_replace('/DB_DATABASE=.*/', 'DB_DATABASE=' . $fullPath, $blockContent);
+                    } else {
+                        // MySQL / PostgreSQL updates
+                        $blockContent = preg_replace('/DB_HOST=.*/', 'DB_HOST=' . ($data['DB_HOST'] ?? '127.0.0.1'), $blockContent);
+                        $blockContent = preg_replace('/DB_PORT=.*/', 'DB_PORT=' . ($data['DB_PORT'] ?? ($engine === 'mysql' ? '3306' : '5432')), $blockContent);
+                        $blockContent = preg_replace('/DB_DATABASE=.*/', 'DB_DATABASE=' . ($data['DB_DATABASE'] ?? 'laravel'), $blockContent);
+                        $blockContent = preg_replace('/DB_USERNAME=.*/', 'DB_USERNAME=' . ($data['DB_USERNAME'] ?? ($engine === 'mysql' ? 'root' : 'postgres')), $blockContent);
+                        $blockContent = preg_replace('/DB_PASSWORD=.*/', 'DB_PASSWORD=' . ($data['DB_PASSWORD'] ?? ''), $blockContent);
+                    }
                 } else {
                     // Comment out other blocks
                     $blockContent = preg_replace('/^(?!#)/m', '# ', $blockContent);
@@ -126,11 +149,13 @@ class InstallController extends Controller
     {
         try {
             // Reload .env file
+            logger("Reloading database from .env", [""]);
             $dotenv = Dotenv::createImmutable(base_path());
             $dotenv->load();
             // Update Laravel config manually from env
+            logger("Reloading database from .env - updating config", [""]);
             $connection = env('DB_CONNECTION', 'mysql');
-
+            logger("Database connection type", [$connection]);
             Config::set("database.default", $connection);
             // Force update config from env
 
@@ -153,7 +178,7 @@ class InstallController extends Controller
                     Config::set('database.connections.pgsql.password', env('DB_PASSWORD', ''));
                     break;
                 case 'sqlite':
-                    $dbPath = env('DB_DATABASE', database_path('database.sqlite'));
+                    $dbPath = env('DB_DATABASE', storage_path('database.sqlite'));
                     if (!File::exists($dbPath)) {
                         File::ensureDirectoryExists(dirname($dbPath));
                         File::put($dbPath, '');
@@ -203,11 +228,13 @@ class InstallController extends Controller
                     break;
 
                 case 'sqlite':
-                    $dbPath = $config['database'] ?? database_path('database.sqlite');
+                    /*
+                    $dbPath = $config['database'] ?? storage_path('database.sqlite');
                     if (!file_exists($dbPath)) {
                         touch($dbPath);
                         chmod($dbPath, 0664);
                     }
+                    */
                     break;
 
                 default:
@@ -236,11 +263,6 @@ class InstallController extends Controller
 
     }
 
-
-    public function dbmigrate(Request $request)
-    {
-
-    }
 
 
 
@@ -289,11 +311,9 @@ class InstallController extends Controller
         $validated = $request->validate([
             'app_name' => 'required',
             'app_url' => 'required',
-            'db_host' => 'required',
-            'db_port' => 'required',
+
             'db_database' => 'required',
-            'db_username' => 'required',
-            'db_password' => 'nullable',
+
             'db_connection' => 'required|in:mysql,pgsql,sqlite',
 
 
@@ -331,7 +351,7 @@ class InstallController extends Controller
         $env = str_replace("LANGUAGESET=en,zh,ja", "LANGUAGESET=$commaLanguages", $env);
 
         logger('env', [$env]);
-        
+
         $adminstring = 'false';
         if ($isAdmin)
             $adminstring = 'true';
@@ -345,12 +365,6 @@ class InstallController extends Controller
         $env = str_replace("BLOCKBOT=false", "BLOCKBOT=$blockbotstring ", $env);
 
 
-        if ($request->db_connection === 'sqlite') {
-            if (!file_exists(base_path($request->db_database))) {
-                touch(base_path($request->db_database));
-                chmod(base_path($request->db_database), 0664);
-            }
-        }
 
         $envData = [
             'DB_CONNECTION' => $request->db_connection,
@@ -376,6 +390,7 @@ class InstallController extends Controller
         logger("after reloadDatabaseFromEnv", [""]);
 
         $this->ClearCache();
+        logger("after ClearCache", [""]);
         return view('install.step2');
 
 

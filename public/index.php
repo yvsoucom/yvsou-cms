@@ -19,7 +19,6 @@ use Illuminate\Support\Str;
 define('LARAVEL_START', microtime(true));
 
 $installedFlag = __DIR__ . '/../storage/installed.lock';
-#$installedconfigFlag = __DIR__ . '/../config/yvsou_config.php';
 $inInstaller = strpos($_SERVER['REQUEST_URI'], '/install') !== false;
 
 if (!file_exists($installedFlag) && !$inInstaller) {
@@ -44,14 +43,7 @@ if (!file_exists($installedFlag) && !$inInstaller) {
         }
     }
 
-    /*
-    $filePath = __DIR__ . '/../database/database.sqlite';
 
-    if (!file_exists($filePath)) {
-        // Create an empty file
-        file_put_contents($filePath, '');
-    }
-   */
     // Ensure vendor exists
     if (!is_dir(__DIR__ . '/../vendor')) {
         echo "Composer dependencies missing. Please run <code>composer install</code> manually.";
@@ -65,14 +57,7 @@ if (!file_exists($installedFlag) && !$inInstaller) {
         copy($installEnvPath, $envPath);
     }
 
-    /*
-    // Copy default config if not exists
-    $configPath = __DIR__ . '/../config/yvsou_config.php';
-    $installConfigPath = __DIR__ . '/../yvsou_example_config.php';
-    if (file_exists($installConfigPath)) {
-        copy($installConfigPath, $configPath);
-    }
-    */
+
 
     header('Location: install');
     exit;
@@ -83,7 +68,7 @@ if (!file_exists($installedFlag) && !$inInstaller) {
 if (file_exists($maintenance = __DIR__ . '/../storage/framework/maintenance.php')) {
     require $maintenance;
 }
- 
+
 // Register the Composer autoloader...
 require __DIR__ . '/../vendor/autoload.php';
 

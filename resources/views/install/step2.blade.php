@@ -26,12 +26,13 @@ SPDX-FileContributor: Lican Huang
 --}}
 
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="{{ app()->getLocale() }}">
+ 
 <head>
     <meta charset="UTF-8">
-    <title>Step 2: Guide</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ __('installer.Step 2: Guide') }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-gray-100 flex items-center justify-center h-screen">

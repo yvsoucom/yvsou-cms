@@ -4,7 +4,7 @@
 /public/hot
 /public/storage
 /storage/*.key
-/storage/pail
+/storage/sqlite
 /vendor
 .env
 .env.bak
