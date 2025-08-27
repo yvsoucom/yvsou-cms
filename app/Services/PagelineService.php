@@ -32,10 +32,10 @@ use App\Services\RightsService;
 use Illuminate\Support\Facades\DB;
 class PagelineService
 {
- 
+
     public function showNewPosts(): array
     {
-        $results = $this->getPagelines();  
+        $results = $this->getPagelines();
         $headlines = [];
         foreach ($results as $row) {
             $postId = $row->postid;
@@ -53,18 +53,23 @@ class PagelineService
         return $headlines;
     }
 
+
     function getPagelines()
     {
         $langid = (new LocaleService())->getcurlang();
-
         $slen = ConstantService::$slen;
+
         $postsQuery = DB::table('domain_post_ids')
-            ->useIndex('gDate')
             ->select('postid', 'lang', 'groupid')
             ->where('isTrash', 0)
             ->where('lang', $langid);
 
-        return $posts = $postsQuery
+        // Apply index hint only for MySQL
+        if (DB::getDriverName() === 'mysql') {
+            $postsQuery->useIndex('gDate');
+        }
+
+        return $postsQuery
             ->orderByDesc('gDate')
             ->limit($slen)
             ->get();

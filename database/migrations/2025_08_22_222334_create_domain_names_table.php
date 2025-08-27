@@ -39,7 +39,7 @@ return new class extends Migration {
             Schema::create('domain_names', function (Blueprint $table) {
                 $table->bigIncrements('id');               // Auto-increment primary key
                 $table->integer('userid');
-                $table->boolean('checked')->comment('0: join, 1: blocked, 2: request');
+                $table->tinyInteger('checked')->comment('0: join, 1: blocked, 2: request');
                 $table->string('domainid', 600);
                 $table->boolean('rights')->default(false);
                 $table->string('name4group', 128);

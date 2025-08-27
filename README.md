@@ -30,6 +30,7 @@ SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary
 - Multi database engines supported, such as Mysql , PostgreSQL and SQLite
 - Easy install guide similar with wordpress
 - Easy upgrade similar with wordpress
+- websocket support
 
 ---
 
