@@ -26,36 +26,54 @@
 */
 
 
+ 
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
 class StartWebSocket extends Command
 {
-    protected $signature = 'ws:start';
-    protected $description = 'Start the Workerman WebSocket server';
+    protected $signature = 'ws:start {--d|daemon : Run servers in daemon mode}';
+    protected $description = 'Start all Workerman WebSocket servers (Register, Gateway, Business)';
 
     public function handle()
     {
-        $enabled = config('websocket.enabled');
+        $enabled = config('websocket.enabled', true);
         if (!$enabled) {
             $this->info('WebSocket server is disabled in config.');
-            return;
+            return 0;
         }
 
-        $this->info('Starting Workerman WebSocket server...');
+        $daemonOption = $this->option('daemon') ? ' -d' : '';
 
-        $host = config('websocket.host', '0.0.0.0');
-        $port = config('websocket.port', 8080);
-        $workerCount = config('websocket.worker_count', 4);
+        // List of Workerman scripts
+        $scripts = [
+            base_path('ws/register.php'),
+            base_path('ws/gateway.php'),
+            base_path('ws/business.php'),
+        ];
 
-        $cmd = "php " . base_path('ws-server.php') . " start -d";
-        exec($cmd, $output, $returnVar);
+        foreach ($scripts as $script) {
+            if (!file_exists($script)) {
+                $this->error("File not found: {$script}");
+                continue;
+            }
 
-        if ($returnVar === 0) {
-            $this->info("Workerman started at ws://{$host}:{$port} with {$workerCount} workers.");
-        } else {
-            $this->error('Failed to start Workerman.');
+            $this->info("Starting {$script}...");
+            exec("php {$script} start{$daemonOption} 2>&1", $output, $returnVar);
+
+            if ($returnVar === 0) {
+                $this->info("✅ {$script} started successfully.");
+            } else {
+                $this->error("❌ Failed to start {$script}. Output:");
+                $this->line(implode("\n", $output));
+            }
+
+            // Clear output for next iteration
+            $output = [];
         }
+
+        return 0;
     }
 }
+ 

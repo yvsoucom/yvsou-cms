@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fd4efadaa2048c129ad64ea4ad8adbd0",
+    "content-hash": "e54cac359ed32a4e4e854eac2d3c27fa",
     "packages": [
         {
             "name": "adbario/php-dot-notation",
@@ -6594,6 +6594,91 @@
                 "source": "https://github.com/workerman-php/coroutine/tree/v1.1.3"
             },
             "time": "2025-02-17T03:34:21+00:00"
+        },
+        {
+            "name": "workerman/gateway-worker",
+            "version": "v4.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/walkor/GatewayWorker.git",
+                "reference": "25e4430982caa98f82e9187d092ce34b2fddfc90"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/walkor/GatewayWorker/zipball/25e4430982caa98f82e9187d092ce34b2fddfc90",
+                "reference": "25e4430982caa98f82e9187d092ce34b2fddfc90",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2",
+                "workerman/workerman": "^4.0.30 || ^5.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GatewayWorker\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "homepage": "http://www.workerman.net",
+            "keywords": [
+                "communication",
+                "distributed"
+            ],
+            "support": {
+                "issues": "https://github.com/walkor/GatewayWorker/issues",
+                "source": "https://github.com/walkor/GatewayWorker/tree/v4.0.1"
+            },
+            "funding": [
+                {
+                    "url": "https://opencollective.com/walkor",
+                    "type": "open_collective"
+                },
+                {
+                    "url": "https://www.patreon.com/walkor",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2025-06-27T01:30:09+00:00"
+        },
+        {
+            "name": "workerman/gatewayclient",
+            "version": "v3.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/walkor/GatewayClient.git",
+                "reference": "5dfa435a5583ac1bd13d18a0f5a942867e23f536"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/walkor/GatewayClient/zipball/5dfa435a5583ac1bd13d18a0f5a942867e23f536",
+                "reference": "5dfa435a5583ac1bd13d18a0f5a942867e23f536",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "GatewayClient\\": "./"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "homepage": "http://www.workerman.net",
+            "support": {
+                "issues": "https://github.com/walkor/GatewayClient/issues",
+                "source": "https://github.com/walkor/GatewayClient/tree/v3.1.1"
+            },
+            "time": "2025-01-15T06:35:41+00:00"
         },
         {
             "name": "workerman/workerman",
