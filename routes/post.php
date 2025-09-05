@@ -38,10 +38,14 @@ Route::middleware(['auth'])->prefix('post')->name('post.')->group(function () {
   Route::get('/create/{groupid}', [PostController::class, 'create'])
     ->name('create');
 
+  Route::get('/localcreate/{groupid}', [PostController::class, 'localcreate'])
+    ->name('localcreate');
 
   Route::post('store', [PostController::class, 'store'])
     ->name('store');
 
+   Route::post('localstore', [PostController::class, 'localstore'])
+    ->name('localstore');  
   Route::post('commentstore', [PostController::class, 'commentstore'])
     ->name('commentstore');
 
@@ -52,6 +56,7 @@ Route::middleware(['auth'])->prefix('post')->name('post.')->group(function () {
 
 
   Route::get('/edit/{groupid}/{pid}', [PostController::class, 'edit'])->name('edit');
+  Route::get('/localedit/{groupid}/{pid}', [PostController::class, 'localedit'])->name('localedit');
 
   Route::get('/movegroup/{groupid}/{pid}', [PostController::class, 'movegroup'])->name('movegroup');
   Route::get('/copygroup/{groupid}/{pid}', [PostController::class, 'copygroup'])->name('copygroup');
@@ -134,5 +139,5 @@ Route::middleware(['auth'])->prefix('post')->name('post.')->group(function () {
   Route::post('/comment-rights/{id}', [CommentRightsController::class, 'update'])->name('comment-rights.update');
 
 
- 
+
 });

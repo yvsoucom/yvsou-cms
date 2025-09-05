@@ -1,1 +1,1 @@
-<?php return ['active' => 'PurityTheme'];
+<?php return ['active' => 'DefaultTheme'];

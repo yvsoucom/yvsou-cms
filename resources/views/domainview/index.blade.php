@@ -51,6 +51,19 @@
                     </button>
                 </form>
             @endif
+
+            @if(isset($createpost))
+                <form id="create-local-post-form" action="{{ route('post.localcreate', compact('groupid')) }}" method="GET">
+                    @csrf
+                    <input type="hidden" name="groupid" value="{{ $groupid }}">
+                    <button type="submit"
+                        class="inline-flex items-center gap-2 px-5 py-3 bg-green-600 hover:bg-green-700 text-white text-lg font-medium rounded-xl shadow transition duration-200">
+                        ✍️ {{ __('domain.createlocalpost') ?? 'Create New Local Post' }}
+                    </button>
+                </form>
+            @endif
+
+
         </div>
 
         {{-- Domain Directory Manage --}}
@@ -223,8 +236,8 @@
                         $menu = $plugin['menus'];
 
                         $icon = $menu['icon'] ?? '🧩';
-                       // $name = $menu['name'] ?? '🧩';
-                
+                        // $name = $menu['name'] ?? '🧩';
+
                         $name = __($plugin['slug'] . '::menu.' . $menu['name']);
 
                         $route = "plugins." . $plugin['slug'] . ".index";

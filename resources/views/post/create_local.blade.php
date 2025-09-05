@@ -34,7 +34,7 @@
       {{ __('post.Create New Post (Local File Reference)') }}
     </h1>
 
-    <form method="POST" action="{{ route('post.store.local') }}" class="space-y-5">
+    <form method="POST" action="{{ route('post.localstore') }}" class="space-y-5">
       @csrf
       <input type="hidden" name="groupid" value="{{ $groupid }}">
 

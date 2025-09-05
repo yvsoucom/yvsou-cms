@@ -421,6 +421,14 @@ class PostController extends Controller
         return view('post.create', compact('groupid')); // resources/views/domainview/index.blade.php
     }
 
+     public function localcreate(Request $request)
+    {
+        $validated = $request->validate([
+            'groupid' => 'required|string',
+        ]);
+        $groupid = $request->groupid;
+        return view('post.create_local', compact('groupid')); // resources/views/domainview/index.blade.php
+    }
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -500,6 +508,16 @@ class PostController extends Controller
         $post_content = $this->addProtectedUrls($post_content);
 
         return view('post.edit', compact(['groupid', 'post', 'post_content'])); // resources/views/domainview/index.blade.php
+    }
+
+     public function localedit($groupid, $postid)
+    {
+
+        $post = DomainPost::findOrFail($postid);
+        $post_content = $this->convertToMigrateRelative($post->post_content);
+        $post_content = $this->addProtectedUrls($post_content);
+
+        return view('post.edit_local', compact(['groupid', 'post', 'post_content'])); // resources/views/domainview/index.blade.php
     }
     public function update(Request $request)
     {
