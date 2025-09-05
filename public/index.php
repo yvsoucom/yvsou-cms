@@ -30,6 +30,7 @@ if (!file_exists($installedFlag) && !$inInstaller) {
         '../storage/app/private',
         '../storage/app/public',
         '../storage/app/protected-files',
+        '../storage/app/tmp',
         '../storage/framework/cache',
         '../storage/framework/sessions',
         '../storage/framework/testing',

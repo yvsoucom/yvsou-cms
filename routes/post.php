@@ -134,4 +134,5 @@ Route::middleware(['auth'])->prefix('post')->name('post.')->group(function () {
   Route::post('/comment-rights/{id}', [CommentRightsController::class, 'update'])->name('comment-rights.update');
 
 
+ 
 });
