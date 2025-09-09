@@ -37,12 +37,12 @@ SPDX-FileContributor: Lican Huang
 
 <body class="bg-gray-100 flex items-center justify-center h-screen">
     <div class="bg-white p-8 rounded shadow w-96 text-center">
-        <h1 class="text-xl font-bold mb-4">Step 2: Setup Guide</h1>
-        <p class="mb-4">Please make sure your database and environment are ready. Please backup your database first.
-            After reading, click “Next” to run the migrations and setup your admin account.</p>
+        <h1 class="text-xl font-bold mb-4">{{__('installer.Step 2: Setup Guide')  }} </h1>
+        <p class="mb-4">{{__('installer.Please make sure your database and environment are ready. Please backup your database first.
+            After reading, click “Next” to run the migrations and setup your admin account.')  }} </p>
 
         <a href="{{ route('install.migrate') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            Next
+            {{__('installer.Next')}}
         </a>
     </div>
 </body>
