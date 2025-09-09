@@ -65,5 +65,11 @@ return [
   'goto_home' => 'Aller à l’accueil',
   'goto_admin' => 'Connexion administrateur',
   'security_note' => 'Pour des raisons de sécurité, ne supprimez pas le fichier installed.lock.',
+
+  'Step 2: Setup Guide' => 'Étape 2 : Guide d’installation',
+  'Please make sure your database and environment are ready. Please backup your database first.
+            After reading, click “Next” to run the migrations and setup your admin account.'
+  => 'Veuillez vous assurer que votre base de données et votre environnement sont prêts. Veuillez d’abord sauvegarder votre base de données. Après lecture, cliquez sur « Suivant » pour exécuter les migrations et configurer votre compte administrateur.',
+  'Next' => 'Suivant',
 ];
 

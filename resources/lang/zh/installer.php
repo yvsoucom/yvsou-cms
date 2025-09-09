@@ -66,4 +66,10 @@ return [
   'goto_home' => '访问首页',
   'goto_admin' => '登录后台',
   'security_note' => '为安全起见，请不要删除 installed.lock 文件。',
+
+  'Step 2: Setup Guide' => '步骤二：安装指南',
+  'Please make sure your database and environment are ready. Please backup your database first.
+            After reading, click “Next” to run the migrations and setup your admin account.'
+  => '请确保您的数据库和环境已准备就绪。请先备份数据库。阅读后，点击“下一步”以运行迁移并设置管理员账户。',
+  'Next' => '下一步',
 ];

@@ -66,4 +66,10 @@ return [
   'goto_home' => 'ホームページへ',
   'goto_admin' => '管理者ログイン',
   'security_note' => 'セキュリティのため、installed.lock ファイルを削除しないでください。',
+
+  'Step 2: Setup Guide' => 'ステップ2：セットアップガイド',
+  'Please make sure your database and environment are ready. Please backup your database first.
+            After reading, click “Next” to run the migrations and setup your admin account.'
+  => 'データベースと環境が準備できていることを確認してください。まずデータベースをバックアップしてください。内容を読んだ後、「次へ」をクリックしてマイグレーションを実行し、管理者アカウントを設定してください。',
+  'Next' => '次へ',
 ];
