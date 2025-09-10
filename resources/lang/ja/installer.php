@@ -48,6 +48,7 @@ return [
   'admin_name' => '管理者アカウント名',
   'admin_email' => 'メールアドレス',
   'admin_password' => '管理者パスワード',
+  'create_admin' => '管理者アカウントを作成',
 
   'admin_super' => '管理者にスーパーパワーを付与しますか？',
   'blockbot' => 'ボットアクセスをブロックしますか？',

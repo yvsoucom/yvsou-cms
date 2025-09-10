@@ -25,6 +25,6 @@
 // config/version.php
 return [
   'github_repo' => 'yvsoucom/yvsou-cms',
-  'app_version' => 'v2.0.0-beta.8',
+  'app_version' => 'v2.0.0-beta.9',
   'env_version' => 'env-v2.0.0',
 ];

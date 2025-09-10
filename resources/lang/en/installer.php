@@ -49,6 +49,8 @@ return [
   'admin_email' => 'Email Address',
   'admin_password' => 'Admin Password',
 
+  'create_admin' => 'Create Admin Account',
+
   // Custom Config
   'admin_super' => 'Admin Super Power?',
   'blockbot' => 'Block Bot Access  ?',

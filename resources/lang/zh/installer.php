@@ -48,6 +48,7 @@ return [
   'admin_name' => '管理员账户名称',
   'admin_email' => '电子邮箱地址',
   'admin_password' => '管理员密码',
+  'create_admin' => '创建管理员账户',
 
   'admin_super' => '是否授予管理员超级权限？',
   'blockbot' => '阻止机器人访问？',

@@ -17,9 +17,9 @@ use App\Http\Controllers\ProtectedFileController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\Lang\LangController;
 use App\Http\Controllers\HomeController;
-use App\Services\VersionCheckService;
 
- 
+
+
 Route::get('/', [HomeController::class, 'home'])->name('home');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
@@ -27,7 +27,7 @@ Route::get('/profile', [HomeController::class, 'profile'])->name('profile');
 Route::get('/terms', [HomeController::class, 'terms'])->name('terms');
 Route::get('/privacy', [HomeController::class, 'privacy'])->name('privacy');
 
- 
+
 Route::get('/lang/{locale}', [LangController::class, 'setLang'])->name('lang.setLang');
 
 Route::get('/upgrade', function () {
@@ -44,40 +44,23 @@ Route::post('/install/set-locale', function (Illuminate\Http\Request $request) {
 })->name('install.setLocale');
 
 
-/*
-Route::middleware(['SetLocale'])->group(function () {
-   Route::get('/', [HomeController::class, 'index']);
-   // other routes...
-});
 
-Route::middleware('prevent.install')->group(function () {
-   Route::get('/install', [InstallController::class, 'welcome'])->name('install.welcome');
-  # Route::post('/install', [InstallController::class, 'submit'])->name('install.submit');
-});
-
-*/
 Route::middleware(['auth'])->get('/dashboard', function () {
     return view('admin.dashboard');
 })->name('dashboard'); // ← this "name" is required
 
 
 
-#Route::post('/search', [SearchController::class, 'search'])->name('search');
-
 Route::get('/headlines', [PostController::class, 'showHeadlines'])->name('headlines.show');
-/*
-Route::get('/protected/{filename}', [ProtectedFileController::class, 'show'])
-    ->where('filename', '.*')  // allow slashes in filename
-    ->middleware(['auth']);
-*/
+
 
 Route::get('/protected/{filename}', [ProtectedFileController::class, 'show'])
     ->where('filename', '.*');  // allow slashes in filename
 
 Route::get('/verify', [CaptchaController::class, 'show']);
 Route::post('/verify', [CaptchaController::class, 'verify'])->name('verify');
- 
- 
+
+
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/domainview.php';

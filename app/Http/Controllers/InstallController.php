@@ -81,7 +81,7 @@ class InstallController extends Controller
 
     protected function updateEnvDatabaseEngine($selectedEngine, $data)
     {
-        logger("updateEnvDatabaseEngine", [$selectedEngine, $data]);
+        // logger("updateEnvDatabaseEngine", [$selectedEngine, $data]);
         $envPath = base_path('.env');
         $content = file_get_contents($envPath);
 
@@ -350,7 +350,7 @@ class InstallController extends Controller
         logger("commaLanguages", [$commaLanguages]);
         $env = str_replace("LANGUAGESET=en,zh,ja", "LANGUAGESET=$commaLanguages", $env);
 
-        logger('env', [$env]);
+        // logger('env', [$env]);
 
         $adminstring = 'false';
         if ($isAdmin)
@@ -378,12 +378,13 @@ class InstallController extends Controller
         $env = str_replace('APP_NAME=yvsou-cms', 'APP_NAME=' . $request->app_name, $env);
         $env = str_replace('APP_URL=http://127.0.0.1:8000', 'APP_URL=' . $request->app_url, $env);
 
-
+        logger("before  put env", [""]);
 
         File::put(base_path('.env'), $env);
+        logger("After  put env", [""]);
 
         $this->updateEnvDatabaseEngine($request->db_connection, $envData);
-
+        logger("After  updateEnvDatabaseEngine", [""]);
         $this->generateAppKey();
         logger("after generateAppKey", [""]);
         $this->reloadDatabaseFromEnv();
@@ -392,7 +393,6 @@ class InstallController extends Controller
         $this->ClearCache();
         logger("after ClearCache", [""]);
         return view('install.step2');
-
 
     }
 
@@ -458,13 +458,14 @@ class InstallController extends Controller
             \Artisan::call('view:clear');
             \Artisan::call('config:cache');
             \Artisan::call('route:cache');
-            \Artisan::call('view:cache');
-            Log::info("ClearCache complete.");
+          //  \Artisan::call('view:cache');
+
 
         } catch (\Exception $e) {
-            Log::error("❌ Post-update failed: " . $e->getMessage());
+            logger("❌ ClearCache failed: " . $e->getMessage());
             return false;
         }
+        logger("ClearCache complete.");
         return true;
     }
 

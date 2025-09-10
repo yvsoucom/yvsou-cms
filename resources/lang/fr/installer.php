@@ -47,6 +47,7 @@ return [
   'admin_name' => 'Nom du compte administrateur',
   'admin_email' => 'Adresse e-mail',
   'admin_password' => 'Mot de passe administrateur',
+  'create_admin' => 'Créer un compte administrateur',
 
   'admin_super' => 'Pouvoirs super administrateur ?',
   'blockbot' => 'Bloquer l’accès des robots ?',
