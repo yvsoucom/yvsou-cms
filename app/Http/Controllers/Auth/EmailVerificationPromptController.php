@@ -1,6 +1,6 @@
 <?php
 /**
- * © 2025 Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo   All rights reserved.
+ * © 2025 Hangzhou Domain Zones Technology Co., Ltd.  All rights reserved.
  * Author: Lican Huang
  * 
  * SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary
