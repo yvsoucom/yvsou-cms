@@ -1,12 +1,11 @@
 SPDX-FileCopyrightText: 2025 Hangzhou Domain Zones Technology Co., Ltd.
-SPDX-FileCopyrightText: 2025 Institute of Future Science and Technology G.K., Tokyo
 SPDX-FileContributor: Lican Huang
 SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary
 
 # yvsou-cms Commercial License
 
 Effective Date: 2025-06-03  
-Licensor: Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo 
+Licensor: Hangzhou Domain Zones Technology Co., Ltd.   
 Contact: yvsoucom@gmail.com
 
 ---
@@ -45,7 +44,7 @@ Contact: yvsoucom@gmail.com
 
 ## 5. Legal
 
-This license is governed by the laws of China or Japan.  
+This license is governed by the laws of China.  
 Violating this agreement may result in termination of rights and legal action.
 
 ---

@@ -5,7 +5,7 @@ This software is dual licensed.
 You may use this software under the terms of the GNU General Public License version 3 or later (GPL-3.0-or-later), or under the terms of a separate commercial license, provided by:
 
     Hangzhou Domain Zones Technology Co., Ltd.
-    Institute of Future Science and Technology G.K., Tokyo
+     
 
 To obtain a commercial license (e.g. for proprietary usage, closed-source distribution, or priority support), please contact:
 
@@ -16,4 +16,4 @@ The commercial license grants rights outside the scope of the GPL, including:
   - Internal use without GPL redistribution requirements
   - Additional support or warranties as negotiated
 
-© 2025 Hangzhou Domain Zones Technology Co., Ltd., Institute of Future Science and Technology G.K., Tokyo. All rights reserved.
+© 2025 Hangzhou Domain Zones Technology Co., Ltd.,  . All rights reserved.

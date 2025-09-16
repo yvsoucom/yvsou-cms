@@ -1,7 +1,7 @@
 <?php
 /**
  * SPDX-FileCopyrightText: (c) 2025  Hangzhou Domain Zones Technology Co., Ltd.
- * SPDX-FileCopyrightText: Institute of Future Science and Technology G.K., Tokyo
+ 
  * SPDX-FileContributor: Lican Huang
  *
  * SPDX-License-Identifier: GPL-3.0-or-later

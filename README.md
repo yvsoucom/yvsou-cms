@@ -1,12 +1,11 @@
 SPDX-FileCopyrightText: 2025 Hangzhou Domain Zones Technology Co., Ltd.
-SPDX-FileCopyrightText: 2025 Institute of Future Science and Technology G.K., Tokyo
 SPDX-FileContributor: Lican Huang
 SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-Proprietary
  
 ## About yvsou-cms
   
  
-**yvsou-cms** is a powerful content management system developed with Laravel by Hangzhou Domain Zones Technology Co., Ltd. and Institute of Future Science and Technology G.K., Tokyo. It features fine-grained permission control, dynamic directory structures, and is designed for extensibility and commercial readiness. yvsou-cms also features dynamic themes and plugins frameworks and shortcodes and filters similar with wordpress. yvsou-cms is a newly redeveloped content management system built with Laravel, encompassing the core functionalities of the DSCloud Platform, which was originally launched in 2011 by Hangzhou Domain Zones Technology Co., Ltd.
+**yvsou-cms** is a powerful content management system developed with Laravel by Hangzhou Domain Zones Technology Co., Ltd.  It features fine-grained permission control, dynamic directory structures, and is designed for extensibility and commercial readiness. yvsou-cms also features dynamic themes and plugins frameworks and shortcodes and filters similar with wordpress. yvsou-cms is a newly redeveloped content management system built with Laravel, encompassing the core functionalities of the DSCloud Platform, which was originally launched in 2011 by Hangzhou Domain Zones Technology Co., Ltd.
 
 
 
