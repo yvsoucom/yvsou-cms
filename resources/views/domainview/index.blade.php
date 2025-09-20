@@ -52,7 +52,7 @@
                 </form>
             @endif
 
-            @if(isset($createpost))
+            @if(isset($createlocalpost))
                 <form id="create-local-post-form" action="{{ route('post.localcreate', compact('groupid')) }}" method="GET">
                     @csrf
                     <input type="hidden" name="groupid" value="{{ $groupid }}">

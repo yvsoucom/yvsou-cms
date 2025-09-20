@@ -1,6 +1,5 @@
 {{--
- SPDX-FileCopyrightText:  (c) 2025  Hangzhou Domain Zones Technology Co., Ltd.
- SPDX-FileCopyrightText:   
+ SPDX-FileCopyrightText:  (c) 2025  Hangzhou Domain Zones Technology Co., Ltd. 
  SPDX-FileContributor: Lican Huang
  @created 2025-09-05
 *
