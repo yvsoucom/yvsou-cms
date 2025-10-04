@@ -54,6 +54,7 @@ return [
   'blockbot' => '阻止机器人访问？',
   'choose_default_language' => '🌐 选择默认语言',
   'choose_languages' => '🌐 选择支持的语言',
+  'websocket enabled' => '启用 WebSocket（用于实时功能）',
 
   'create_config' => '创建配置',
 

@@ -325,7 +325,7 @@ class InstallController extends Controller
 
         $isAdmin = $request->boolean('is_adminsp', false);
         $isBlockBot = $request->boolean('is_blockbot', false);
-
+        $websocket_enabled = $request->boolean('websocket_enabled', false);
 
         logger("requestafter", [$validated]);
 
@@ -364,6 +364,11 @@ class InstallController extends Controller
 
         $env = str_replace("BLOCKBOT=false", "BLOCKBOT=$blockbotstring ", $env);
 
+        $blockbotstring = 'false';
+        if ($websocket_enabled)
+            $blockbotstring = 'true';
+
+        $env = str_replace("WEBSOCKET_ENABLED=true", "BLOCKBOT=$blockbotstring ", $env);
 
 
         $envData = [
@@ -458,7 +463,7 @@ class InstallController extends Controller
             \Artisan::call('view:clear');
             \Artisan::call('config:cache');
             \Artisan::call('route:cache');
-          //  \Artisan::call('view:cache');
+            //  \Artisan::call('view:cache');
 
 
         } catch (\Exception $e) {

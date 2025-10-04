@@ -54,6 +54,7 @@ return [
   'blockbot' => 'ボットアクセスをブロックしますか？',
   'choose_default_language' => '🌐 デフォルト言語を選択',
   'choose_languages' => '🌐 使用可能な言語を選択',
+  'websocket enabled' => 'WebSocketを有効にする（リアルタイム機能用）',
 
   'create_config' => '構成を作成',
 

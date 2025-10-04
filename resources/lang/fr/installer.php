@@ -53,6 +53,7 @@ return [
   'blockbot' => 'Bloquer l’accès des robots ?',
   'choose_default_language' => '🌐 Choisir la langue par défaut',
   'choose_languages' => '🌐 Choisir les langues disponibles',
+  'websocket enabled' => 'Activer WebSocket (pour les fonctionnalités en temps réel)',
 
   'create_config' => 'Créer la configuration',
 

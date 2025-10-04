@@ -69,6 +69,15 @@
 
                 </div>
                 <br />
+                  <div class="mb-4">
+                    <label for="is_blockbot" class="inline-flex items-center">
+                        <input type="checkbox" name="websocket_enabled" id="websocket_enabled" value="1"
+                            class="form-checkbox text-indigo-600">
+                        <span class="ml-2">{{ __('installer.websocket enabled') }}</span>
+                    </label>
+
+                </div>
+                <br />
                 <div class="mb-4">
                     <label for="default_lang" class="block text-sm font-medium text-gray-700 mb-1">
                         {{ __('installer.choose_default_language') }}

@@ -56,7 +56,7 @@ return [
   'blockbot' => 'Block Bot Access  ?',
   'choose_default_language' => '🌐 Choose Default Language',
   'choose_languages' => '🌐 Choose Languages',
-
+  'websocket enabled' => 'Enable WebSocket (for real-time features)',
   // Button
   'create_config' => 'Create Config',
 
@@ -71,12 +71,12 @@ return [
   'goto_home' => 'Go to Homepage',
   'goto_admin' => 'Login to Admin',
   'security_note' => 'For security, do not delete the installed.lock file.',
-  
+
   'Step 2: Setup Guide' => 'Step 2: Setup Guide',
   'Please make sure your database and environment are ready. Please backup your database first.
             After reading, click “Next” to run the migrations and setup your admin account.' => 'Please make sure your database and environment are ready. Please backup your database first.
             After reading, click “Next” to run the migrations and setup your admin account.',
-  'Next' => 'Next'  ,
+  'Next' => 'Next',
 
 
 ];
