@@ -4,3 +4,6 @@
 [submodule "plugins/PurityTheme"]
 	path = plugins/PurityTheme
 	url = git@github.com:yvsoucom/PurityTheme.git
+[submodule "plugins/EduPlugin"]
+	path = plugins/EduPlugin
+	url = https://github.com/yvsoucom/EduPlugin.git
