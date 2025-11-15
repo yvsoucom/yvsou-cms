@@ -20,7 +20,8 @@ use App\Http\Controllers\Admin\UserCenterController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Theme\ThemeController;
 
-Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+// Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
 
     // Admin Profile Routes (any verified user)
     Route::prefix('profile')->name('profile.')->group(function () {
@@ -42,7 +43,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 });
 
-Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+//Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth',  'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+
     // ... existing routes ...
     Route::prefix('usercenter')->name('usercenter.')->group(function () {
         Route::get('/', [UserCenterController::class, 'index'])->name('index');
@@ -54,8 +57,6 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
         Route::get('/toggle/{plugin}', [PluginController::class, 'toggle'])->name('toggle');
         Route::get('/delete/{plugin}', [PluginController::class, 'destroy'])->name('destroy');
         Route::post('/switch', [PluginController::class, 'switch'])->name('switch');
-
-
 
     });
 
