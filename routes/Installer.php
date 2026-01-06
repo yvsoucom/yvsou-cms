@@ -26,3 +26,15 @@ Route::middleware(['web', 'prevent.reinstall'])->prefix('install')->name('instal
     Route::get('/step3', [InstallController::class, 'step3'])->name('step3');
 
 });
+
+Route::prefix('install')->name('install.')->group(function() {
+    Route::get('websocket', [\App\Http\Controllers\Install\WebSocketController::class, 'show'])
+        ->name('websocket');
+    Route::post('websocket', [\App\Http\Controllers\Install\WebSocketController::class, 'store'])
+        ->name('websocket.store');
+
+    // Example: next step after WebSocket
+    Route::get('next-step', function() {
+        return view('install.next-step');
+    })->name('next.step');
+});

@@ -24,7 +24,6 @@
 * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
 */
 
-
  
 namespace App\Console\Commands;
 
@@ -32,47 +31,33 @@ use Illuminate\Console\Command;
 
 class StartWebSocket extends Command
 {
-    protected $signature = 'ws:start {--d|daemon : Run servers in daemon mode}';
-    protected $description = 'Start all Workerman WebSocket servers (Register, Gateway, Business)';
+    protected $signature = 'ws:start {--daemon}';
+    protected $description = 'Start the WebSocket server (Workerman or Swoole)';
 
     public function handle()
     {
-        $enabled = config('websocket.enabled', true);
-        if (!$enabled) {
-            $this->info('WebSocket server is disabled in config.');
-            return 0;
-        }
+        $driver = config('websocket.ws_driver');
 
-        $daemonOption = $this->option('daemon') ? ' -d' : '';
-
-        // List of Workerman scripts
-        $scripts = [
-            base_path('ws/register.php'),
-            base_path('ws/gateway.php'),
-            base_path('ws/business.php'),
-        ];
-
-        foreach ($scripts as $script) {
-            if (!file_exists($script)) {
-                $this->error("File not found: {$script}");
-                continue;
+        if ($driver === 'workerman') {
+            $this->info('Starting Workerman WebSocket server...');
+            $cmd = "php " . base_path('ws/workerman-server.php') . " start";
+            if ($this->option('daemon')) {
+                $cmd .= " -d";
             }
+            exec($cmd);
 
-            $this->info("Starting {$script}...");
-            exec("php {$script} start{$daemonOption} 2>&1", $output, $returnVar);
-
-            if ($returnVar === 0) {
-                $this->info("✅ {$script} started successfully.");
-            } else {
-                $this->error("❌ Failed to start {$script}. Output:");
-                $this->line(implode("\n", $output));
+        } elseif ($driver === 'swoole') {
+            $this->info('Starting Swoole WebSocket server...');
+            $cmd = "php " . base_path('ws/swoole-server.php');
+            if ($this->option('daemon')) {
+                $cmd .= " --daemon";
             }
+            exec($cmd);
 
-            // Clear output for next iteration
-            $output = [];
+        } else {
+            $this->error('Invalid WebSocket driver configured.');
         }
-
-        return 0;
     }
 }
- 
+
+  

@@ -33,7 +33,7 @@ return [
     | Set to true if the user wants to run Workerman WebSocket server.
     |
     */
-    'enabled' => env('WEBSOCKET_ENABLED', false),
+    'ws_enabled' => env('WEBSOCKET_ENABLED', true),
 
     /*
     | WebSocket host and port
@@ -45,4 +45,29 @@ return [
     | Number of worker processes
     */
     'worker_count' => env('WEBSOCKET_WORKER_COUNT', 4),
+     /*
+    | WebSocket driver.  swoole or workerman
+    */
+
+    'ws_driver' => env('WEBSOCKET_DRIVER', default: 'workerman'),
+
+    
+    'workerman' => [
+        'gateway_register' => env('WORKERMAN_GATEWAY_REGISTER', '127.0.0.1:1238'),
+        'register_host' => env('WORKERMAN_GATEWAY_REGISTER_HOST', '0.0.0.0'),
+        'register_port' => env('WORKERMAN_GATEWAY_REGISTER_PORT', 1238),
+    ],
+
+    'swoole' => [
+        'ssl' => env('SWOOLE_SSL', false),
+        'host' => env('SWOOLE_HOST', '0.0.0.0'),
+        'port' => env('SWOOLE_PORT', 9502),
+        'worker_num' => env('SWOOLE_WORKER_NUM', 4),
+        'task_worker_num' => env('SWOOLE_TASK_WORKER_NUM', 4),
+        'max_conn' => env('SWOOLE_MAX_CONN', 10000),
+        'max_request' => env('SWOOLE_MAX_REQUEST', 10000),
+    ],
+
 ];
+
+ 
