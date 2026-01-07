@@ -23,21 +23,31 @@
 * Contact: yvsoucom@gmail.com
 * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
 */
+ 
+// ws/swoole-server.php
 
 use Swoole\WebSocket\Server;
+use Swoole\Timer;
+use Illuminate\Contracts\Console\Kernel;
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
-$config = require __DIR__ . '/../bootstrap/app.php';
-$app = $config->make(Illuminate\Contracts\Console\Kernel::class);
-$app->bootstrap();
+// Bootstrap Laravel
+$app = require_once __DIR__ . '/../bootstrap/app.php';
+$kernel = $app->make(Kernel::class);
+$kernel->bootstrap();
 
-$wsConfig = config('websocket.swoole');
+// Load websocket config
+$wsConfig = config('websocket.swoole', [
+    'host' => '0.0.0.0',
+    'port' => 9502,
+    'worker_num' => 4,
+    'task_worker_num' => 2,
+    'max_conn' => 1000,
+    'max_request' => 10000,
+]);
 
-$server = new Server(
-    $wsConfig['host'],
-    $wsConfig['port']
-);
+$server = new Server($wsConfig['host'], $wsConfig['port']);
 
 $server->set([
     'worker_num' => $wsConfig['worker_num'],
@@ -45,26 +55,62 @@ $server->set([
     'max_conn' => $wsConfig['max_conn'],
     'max_request' => $wsConfig['max_request'],
     'daemonize' => in_array('--daemon', $_SERVER['argv'] ?? []),
+    // native heartbeat for idle connections
+    'heartbeat_idle_time' => 60,        // disconnect clients idle for 60s
+    'heartbeat_check_interval' => 10,   // check every 10s
 ]);
 
+/**
+ * When client connects
+ */
 $server->on('open', function (Server $server, $request) {
     echo "Client {$request->fd} connected\n";
 });
 
+/**
+ * When message received
+ * JSON format: {"act":"chat","msg":"Hello"}
+ */
 $server->on('message', function (Server $server, $frame) {
+    $data = json_decode($frame->data, true) ?: ['act' => 'chat', 'msg' => $frame->data];
+
     foreach ($server->connections as $fd) {
         if ($server->isEstablished($fd)) {
             $server->push($fd, json_encode([
                 'user' => $frame->fd === $fd ? 'you' : $frame->fd,
-                'act'  => 'chat',
-                'msg'  => $frame->data,
+                'act'  => $data['act'] ?? 'chat',
+                'msg'  => $data['msg'] ?? '',
             ]));
         }
     }
 });
 
+/**
+ * When client disconnects
+ */
 $server->on('close', function ($server, $fd) {
-    echo "Client {$fd} closed\n";
+    echo "Client {$fd} disconnected\n";
 });
 
+/**
+ * Heartbeat: send to all clients every 10s
+*/
+// -------------------- Heartbeat --------------------
+// Use Swoole\Timer::tick() in Swoole 6+
+
+Timer::tick(10000, function () use ($server) {
+    foreach ($server->connections as $fd) {
+        if ($server->isEstablished($fd)) {
+            $server->push($fd, json_encode([
+                'act' => 'heartbeat',
+                'time' => time()
+            ]));
+        }
+    }
+});
+
+/**
+ * Start server
+ */
 $server->start();
+ 

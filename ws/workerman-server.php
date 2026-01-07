@@ -24,35 +24,78 @@
 * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
 */
 
+
+// ws/workerman-server.php
+
 use Workerman\Worker;
-use GatewayWorker\Register;
-use GatewayWorker\Gateway;
-use GatewayWorker\BusinessWorker;
+use Workerman\Connection\TcpConnection;
+ 
+use Workerman\Timer;
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
-$app = require __DIR__ . '/../bootstrap/app.php';
-$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+// Bootstrap Laravel
+$app = require_once __DIR__ . '/../bootstrap/app.php';
+$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+$kernel->bootstrap();
 
-$config = config('websocket');
+// Load websocket config
+$wsConfig = config('websocket.workerman', [
+    'host' => '0.0.0.0',
+    'port' => 8080,
+    'worker_count' => 4,
+    'heartbeat_interval' => 10, // seconds
+]);
 
-// Register
-$register = new Register(
-    "text://{$config['workerman']['register_host']}:{$config['workerman']['register_port']}"
-);
+$ws_worker = new Worker("websocket://{$wsConfig['host']}:{$wsConfig['port']}");
 
-// Gateway
-$gateway = new Gateway(
-    "websocket://{$config['host']}:{$config['port']}"
-);
-$gateway->name = 'WebSocketGateway';
-$gateway->count = $config['worker_count'];
-$gateway->registerAddress = $config['workerman']['gateway_register'];
+// Set number of processes
+$ws_worker->count = $wsConfig['worker_count'];
 
-// BusinessWorker
-$businessWorker = new BusinessWorker();
-$businessWorker->name = 'WebSocketBusinessWorker';
-$businessWorker->count = $config['worker_count'];
-$businessWorker->registerAddress = $config['workerman']['gateway_register'];
+// Store connections and uid mapping
+$connections = []; // connection id => TcpConnection
+$uids = [];        // connection id => uid
 
+// On new connection
+$ws_worker->onConnect = function (TcpConnection $connection) use (&$connections) {
+    echo "Client connected: {$connection->id}\n";
+    $connections[$connection->id] = $connection;
+};
+
+// On message received
+$ws_worker->onMessage = function (TcpConnection $connection, $data) use (&$connections, &$uids) {
+    $msgData = json_decode($data, true) ?: ['act' => 'chat', 'msg' => $data];
+
+    // Assign uid if not already assigned
+    if (!isset($uids[$connection->id])) {
+        $uids[$connection->id] = $msgData['uid'] ?? $connection->id;
+    }
+
+    foreach ($connections as $conn) {
+        $conn->send(json_encode([
+            'user' => $conn === $connection ? 'you' : $uids[$connection->id],
+            'act'  => $msgData['act'],
+            'msg'  => $msgData['msg'],
+        ]));
+    }
+};
+
+// On connection closed
+$ws_worker->onClose = function (TcpConnection $connection) use (&$connections, &$uids) {
+    echo "Client disconnected: {$connection->id}\n";
+    unset($connections[$connection->id], $uids[$connection->id]);
+};
+
+// Heartbeat timer
+Timer::add($wsConfig['heartbeat_interval'], function () use (&$connections) {
+    foreach ($connections as $connection) {
+        $connection->send(json_encode([
+            'act'  => 'heartbeat',
+            'time' => time(),
+        ]));
+    }
+});
+
+// Run all workers
 Worker::runAll();
+ 
