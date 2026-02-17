@@ -128,6 +128,141 @@ You can access the live Metrics here:
 
 [https://cms-test.yvsou.com/]   test yvsou-cms site  (https://cms-test.yvsou.com/)
 
+
+
+# WebSocket Server (Workerman / Swoole)
+
+yvsou-cms supports two WebSocket engines:
+
+Workerman (default, pure PHP, easy to deploy)
+
+Swoole (high-performance, requires PHP extension)
+
+Only one engine runs at a time, selected by configuration.
+
+1. Choose WebSocket Engine
+
+In istallation, you choose the websocket driver.
+
+Check your .env file:
+
+WEBSOCKET_DRIVER=workerman
+
+
+or
+
+WEBSOCKET_DRIVER=swoole
+
+
+No code changes are required.
+
+2. Configuration
+
+WebSocket settings are defined in:
+
+config/websocket.php
+
+
+Example:
+
+return [
+    'driver' => env('WEBSOCKET_DRIVER', 'workerman'),
+
+    'workerman' => [
+        'host' => '0.0.0.0',
+        'port' => 8080,
+        'worker_count' => 4,
+        'heartbeat' => 10,
+    ],
+
+    'swoole' => [
+        'host' => '0.0.0.0',
+        'port' => 9502,
+        'worker_num' => 4,
+        'task_worker_num' => 2,
+        'heartbeat_idle_time' => 60,
+        'heartbeat_check_interval' => 30,
+    ],
+];
+
+3. Start WebSocket Server
+
+The system provides one unified command:
+
+php artisan websocket:start
+
+
+The command automatically starts:
+
+Workerman if WEBSOCKET_DRIVER=workerman
+
+Swoole if WEBSOCKET_DRIVER=swoole
+
+4. Run as Background Service (Recommended)
+Using Supervisor
+[program:yvsou-websocket]
+command=php artisan websocket:start
+directory=/path/to/yvsou-cms
+autostart=true
+autorestart=true
+user=www
+stdout_logfile=/var/log/yvsou-websocket.log
+stderr_logfile=/var/log/yvsou-websocket-error.log
+
+
+This ensures the WebSocket server:
+
+Restarts automatically on crash
+
+Runs independently of Laravel HTTP requests
+
+5. Architecture Notes
+
+WebSocket servers do NOT start automatically with Laravel HTTP
+
+They run as separate CLI processes
+
+Laravel is bootstrapped only to:
+
+Load config
+
+Access services
+
+Dispatch events
+
+This design ensures:
+
+✔ No performance impact on HTTP
+✔ Clean separation of concerns
+✔ Easy debugging and scaling
+
+6. When to Use Which Engine
+Engine	Recommended For
+Workerman	Shared hosting, simple deployment
+Swoole	High concurrency, long-running connections
+7. File Structure
+ws/
+├── workerman-server.php
+└── swoole-server.php
+
+app/Console/Commands/
+└── WebSocketStartCommand.php
+
+8. Notes
+
+Only one WebSocket engine runs at a time
+
+Switching engines only requires changing .env
+
+No database migration is required
+
+Heartbeat is handled internally by each engine
+
+
+
+
+
+
 ## Publish Paper References
 [Lican Huang, Authorization Policies and Co-Operating Strategies of DSCloud Platform
 ](https://arxiv.org/pdf/1801.02147)
