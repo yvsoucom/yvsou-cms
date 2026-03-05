@@ -27,6 +27,7 @@ namespace App\Services;
 
 use InvalidArgumentException;
 use App\Models\PostReversion;
+use Illuminate\Container\Container;
 use Symfony\Component\String\UnicodeString;
 use SebastianBergmann\Diff\Differ;
 use SebastianBergmann\Diff\Output\StrictUnifiedDiffOutputBuilder;
@@ -36,7 +37,7 @@ class ReversionService
 {
     public function reconstructHtmlPostVersion(int $postId, int $targetVersion): string
     {
-        logger("reconstructHtmlPostVersion", [$postId, $targetVersion]);
+        $this->logDebug('reconstructHtmlPostVersion', [$postId, $targetVersion]);
         // Fetch all reversions from version 0 up to and including the target version
         $reversions = PostReversion::where('postid', $postId)
             ->where('version', '<=', $targetVersion)
@@ -110,7 +111,7 @@ class ReversionService
         $modifiedLines = $this->normalizeHtmlToLines($modifiedText);
 
         $diff = $this->diffWithLineInfo($baseLines, $modifiedLines);
-        logger("diffWithLineInfo", $diff);
+        $this->logDebug('diffWithLineInfo', $diff);
         return $diff;
     }
 
@@ -234,9 +235,9 @@ class ReversionService
     function reconstructFromDiffRanges($baseText, string $diffjson)
     {
         $moditextlines = $this->reconstructModifiedFromDiff($baseText, $diffjson);
-        logger("reconstructFromDiffRanges  ", $moditextlines);
+        $this->logDebug('reconstructFromDiffRanges', $moditextlines);
         $modihtml = $this->linesToHtml($moditextlines);
-        logger("reconstructFromDiffRanges  modihtml:", [$modihtml]);
+        $this->logDebug('reconstructFromDiffRanges modihtml', [$modihtml]);
 
         return $modihtml;
     }
@@ -244,30 +245,30 @@ class ReversionService
     function reconstructModifiedFromDiff($baseText, string $diffjson): array
     {
         $diff = json_decode($diffjson, true);
-        logger("reconstructModifiedFromDiff", $diff);
+        $this->logDebug('reconstructModifiedFromDiff', $diff);
 
         $baseLines = $this->normalizeHtmlToLines($baseText);
         $res = [];
 
         foreach ($diff as $entry) {
-            logger("reconstructModifiedFromDiff entry", $entry);
+            $this->logDebug('reconstructModifiedFromDiff entry', $entry);
             switch ($entry['type']) {
                 case 'inserted':
                 case 'modified':
-                    logger("reconstructModifiedFromDiff entry line", [$entry['line']]);
+                    $this->logDebug('reconstructModifiedFromDiff entry line', [$entry['line']]);
 
                     $res[] = $entry['line'];
-                    logger("reconstructModifiedFromDiff entry res", $res);
+                    $this->logDebug('reconstructModifiedFromDiff entry res', $res);
 
                     break;
 
                 case 'unchanged':
                     if (isset($entry['base_lineno']) && isset($baseLines[$entry['base_lineno']])) {
                         $res[] = $baseLines[$entry['base_lineno']];
-                        logger("reconstructModifiedFromDiff entry res", $res);
+                        $this->logDebug('reconstructModifiedFromDiff entry res', $res);
 
                     } else {
-                        logger()->error("Invalid base_lineno in diff", $entry);
+                        $this->logError('Invalid base_lineno in diff', $entry);
                     }
                     break;
 
@@ -277,14 +278,56 @@ class ReversionService
                     break;
 
                 default:
-                    logger()->warning("Unknown diff entry type: " . $entry['type']);
+                    $this->logWarning('Unknown diff entry type: ' . $entry['type']);
             }
         }
-        logger("reconstructModifiedFromDiff  res", $res);
+        $this->logDebug('reconstructModifiedFromDiff res', $res);
 
         return $res;
     }
 
+    private function canUseLogger(): bool
+    {
+        $container = Container::getInstance();
+
+        return $container instanceof Container && $container->bound('log');
+    }
+
+    private function logDebug(string $message, mixed $context = []): void
+    {
+        if (!$this->canUseLogger()) {
+            return;
+        }
+
+        logger()->debug($message, $this->normalizeLogContext($context));
+    }
+
+    private function logWarning(string $message, mixed $context = []): void
+    {
+        if (!$this->canUseLogger()) {
+            return;
+        }
+
+        logger()->warning($message, $this->normalizeLogContext($context));
+    }
+
+    private function logError(string $message, mixed $context = []): void
+    {
+        if (!$this->canUseLogger()) {
+            return;
+        }
+
+        logger()->error($message, $this->normalizeLogContext($context));
+    }
+
+    private function normalizeLogContext(mixed $context): array
+    {
+        if (is_array($context)) {
+            return $context;
+        }
+
+        return ['value' => $context];
+    }
+
 
 }
-
