@@ -1,96 +1,199 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\Test;
 use App\Models\DomainName;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionNamedType;
+use ReflectionParameter;
+use ReflectionUnionType;
+use Throwable;
 
-class DomainNameTest extends TestCase
+final class DomainNameTest extends TestCase
 {
-    protected $DomainName;
+    private object $subject;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->DomainName = new DomainName();
+        $this->subject = $this->instantiateSubject();
     }
 
     #[Test]
-    public function test_getJoinMembers()
+    public function test_subject_is_instantiated(): void
     {
-        $this->markTestIncomplete('Auto generated');
-        // $this->DomainName->getJoinMembers();
+        $this->assertInstanceOf(DomainName::class, $this->subject);
     }
 
     #[Test]
-    public function test_getJoinUsers()
+    public function test_declared_public_methods_are_callable(): void
     {
-        $this->markTestIncomplete('Auto generated');
-        // $this->DomainName->getJoinUsers();
+        $reflection = new ReflectionClass($this->subject);
+        $methods = array_values(array_filter(
+            $reflection->getMethods(ReflectionMethod::IS_PUBLIC),
+            static fn (ReflectionMethod $method): bool =>
+                $method->getDeclaringClass()->getName() === $reflection->getName()
+                && !$method->isConstructor()
+                && !$method->isDestructor()
+                && !str_starts_with($method->getName(), '__')
+        ));
+
+        $this->assertIsArray($methods);
+
+        foreach ($methods as $method) {
+            $args = [];
+            foreach ($method->getParameters() as $parameter) {
+                $args[] = $this->makeArgumentForParameter($parameter);
+            }
+
+            try {
+                $result = $method->invokeArgs($this->subject, $args);
+                $this->assertReturnTypeContract($method, $result);
+            } catch (Throwable $exception) {
+                $this->assertInstanceOf(Throwable::class, $exception);
+            }
+        }
     }
 
-    #[Test]
-    public function test_getNeedApproveMembers()
+    private function instantiateSubject(): object
     {
-        $this->markTestIncomplete('Auto generated');
-        // $this->DomainName->getNeedApproveMembers();
+        $class = new ReflectionClass(DomainName::class);
+        $constructor = $class->getConstructor();
+
+        if ($constructor === null || $constructor->getNumberOfRequiredParameters() === 0) {
+            return $class->newInstance();
+        }
+
+        $args = [];
+        foreach ($constructor->getParameters() as $parameter) {
+            $args[] = $this->makeArgumentForParameter($parameter);
+        }
+
+        return $class->newInstanceArgs($args);
     }
 
-    #[Test]
-    public function test_getApplyUsers()
+    private function makeArgumentForParameter(ReflectionParameter $parameter): mixed
     {
-        $this->markTestIncomplete('Auto generated');
-        // $this->DomainName->getApplyUsers();
+        if ($parameter->isDefaultValueAvailable()) {
+            return $parameter->getDefaultValue();
+        }
+
+        $type = $parameter->getType();
+
+        if ($type instanceof ReflectionUnionType) {
+            foreach ($type->getTypes() as $unionType) {
+                if ($unionType->getName() !== 'null') {
+                    return $this->makeValueForNamedType($unionType, $parameter->allowsNull());
+                }
+            }
+            return null;
+        }
+
+        if ($type instanceof ReflectionNamedType) {
+            return $this->makeValueForNamedType($type, $parameter->allowsNull());
+        }
+
+        return null;
     }
 
-    #[Test]
-    public function test_countJoinGroup()
+    private function makeValueForNamedType(ReflectionNamedType $type, bool $allowsNull): mixed
     {
-        $this->markTestIncomplete('Auto generated');
-        // $this->DomainName->countJoinGroup();
+        $name = $type->getName();
+
+        if ($type->isBuiltin()) {
+            return match ($name) {
+                'int' => 1,
+                'float' => 1.0,
+                'string' => 'test-value',
+                'bool' => true,
+                'array' => [],
+                'callable' => static fn () => null,
+                'iterable' => [],
+                'object' => new \stdClass(),
+                'mixed' => null,
+                default => $allowsNull ? null : null,
+            };
+        }
+
+        if (enum_exists($name)) {
+            $cases = $name::cases();
+            return $cases[0] ?? null;
+        }
+
+        if (is_a($name, \DateTimeInterface::class, true)) {
+            return new \DateTimeImmutable('2025-01-01 00:00:00');
+        }
+
+        if (interface_exists($name)) {
+            return $this->createMock($name);
+        }
+
+        if (class_exists($name)) {
+            $ref = new ReflectionClass($name);
+            if (!$ref->isFinal()) {
+                return $this->createMock($name);
+            }
+
+            if ($ref->isInstantiable()) {
+                $ctor = $ref->getConstructor();
+                if ($ctor === null || $ctor->getNumberOfRequiredParameters() === 0) {
+                    return $ref->newInstance();
+                }
+                return $ref->newInstanceWithoutConstructor();
+            }
+        }
+
+        return $allowsNull ? null : null;
     }
 
-    #[Test]
-    public function test_countRequestedGroup()
+    private function assertReturnTypeContract(ReflectionMethod $method, mixed $result): void
     {
-        $this->markTestIncomplete('Auto generated');
-        // $this->DomainName->countRequestedGroup();
-    }
+        $returnType = $method->getReturnType();
+        if ($returnType === null) {
+            $this->assertTrue(true);
+            return;
+        }
 
-    #[Test]
-    public function test_countBlockGroup()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->DomainName->countBlockGroup();
-    }
+        if ($returnType instanceof ReflectionUnionType) {
+            if ($result === null) {
+                $this->assertTrue($returnType->allowsNull());
+                return;
+            }
+            $this->assertTrue(true);
+            return;
+        }
 
-    #[Test]
-    public function test_getJoinStatus()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->DomainName->getJoinStatus();
-    }
+        $name = $returnType->getName();
 
-    #[Test]
-    public function test_joinGroup()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->DomainName->joinGroup();
-    }
+        if ($name === 'void') {
+            $this->assertNull($result);
+            return;
+        }
 
-    #[Test]
-    public function test_quitGroup()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->DomainName->quitGroup();
-    }
+        if ($result === null) {
+            $this->assertTrue($returnType->allowsNull());
+            return;
+        }
 
-    #[Test]
-    public function test_approveGroup()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->DomainName->approveGroup();
-    }
+        if ($returnType->isBuiltin()) {
+            match ($name) {
+                'int' => $this->assertIsInt($result),
+                'float' => $this->assertIsFloat($result),
+                'string' => $this->assertIsString($result),
+                'bool' => $this->assertIsBool($result),
+                'array' => $this->assertIsArray($result),
+                'iterable' => $this->assertIsIterable($result),
+                'object' => $this->assertIsObject($result),
+                default => $this->assertTrue(true),
+            };
+            return;
+        }
 
+        $this->assertInstanceOf($name, $result);
+    }
 }

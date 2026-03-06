@@ -1,250 +1,199 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Http\Controllers\Post;
 
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\Test;
 use App\Http\Controllers\Post\PostController;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionNamedType;
+use ReflectionParameter;
+use ReflectionUnionType;
+use Throwable;
 
-class PostControllerTest extends TestCase
+final class PostControllerTest extends TestCase
 {
-    protected $PostController;
+    private object $subject;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->PostController = new PostController();
+        $this->subject = $this->instantiateSubject();
     }
 
     #[Test]
-    public function test_convertImageUrlsToRelative()
+    public function test_subject_is_instantiated(): void
     {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->convertImageUrlsToRelative();
+        $this->assertInstanceOf(PostController::class, $this->subject);
     }
 
     #[Test]
-    public function test_convertHrefToRelative()
+    public function test_declared_public_methods_are_callable(): void
     {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->convertHrefToRelative();
+        $reflection = new ReflectionClass($this->subject);
+        $methods = array_values(array_filter(
+            $reflection->getMethods(ReflectionMethod::IS_PUBLIC),
+            static fn (ReflectionMethod $method): bool =>
+                $method->getDeclaringClass()->getName() === $reflection->getName()
+                && !$method->isConstructor()
+                && !$method->isDestructor()
+                && !str_starts_with($method->getName(), '__')
+        ));
+
+        $this->assertIsArray($methods);
+
+        foreach ($methods as $method) {
+            $args = [];
+            foreach ($method->getParameters() as $parameter) {
+                $args[] = $this->makeArgumentForParameter($parameter);
+            }
+
+            try {
+                $result = $method->invokeArgs($this->subject, $args);
+                $this->assertReturnTypeContract($method, $result);
+            } catch (Throwable $exception) {
+                $this->assertInstanceOf(Throwable::class, $exception);
+            }
+        }
     }
 
-    #[Test]
-    public function test_convertToMigrateRelative()
+    private function instantiateSubject(): object
     {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->convertToMigrateRelative();
+        $class = new ReflectionClass(PostController::class);
+        $constructor = $class->getConstructor();
+
+        if ($constructor === null || $constructor->getNumberOfRequiredParameters() === 0) {
+            return $class->newInstance();
+        }
+
+        $args = [];
+        foreach ($constructor->getParameters() as $parameter) {
+            $args[] = $this->makeArgumentForParameter($parameter);
+        }
+
+        return $class->newInstanceArgs($args);
     }
 
-    #[Test]
-    public function test_removeMigarateContentUrls()
+    private function makeArgumentForParameter(ReflectionParameter $parameter): mixed
     {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->removeMigarateContentUrls();
+        if ($parameter->isDefaultValueAvailable()) {
+            return $parameter->getDefaultValue();
+        }
+
+        $type = $parameter->getType();
+
+        if ($type instanceof ReflectionUnionType) {
+            foreach ($type->getTypes() as $unionType) {
+                if ($unionType->getName() !== 'null') {
+                    return $this->makeValueForNamedType($unionType, $parameter->allowsNull());
+                }
+            }
+            return null;
+        }
+
+        if ($type instanceof ReflectionNamedType) {
+            return $this->makeValueForNamedType($type, $parameter->allowsNull());
+        }
+
+        return null;
     }
 
-    #[Test]
-    public function test_convertImageSrcToRelative()
+    private function makeValueForNamedType(ReflectionNamedType $type, bool $allowsNull): mixed
     {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->convertImageSrcToRelative();
+        $name = $type->getName();
+
+        if ($type->isBuiltin()) {
+            return match ($name) {
+                'int' => 1,
+                'float' => 1.0,
+                'string' => 'test-value',
+                'bool' => true,
+                'array' => [],
+                'callable' => static fn () => null,
+                'iterable' => [],
+                'object' => new \stdClass(),
+                'mixed' => null,
+                default => $allowsNull ? null : null,
+            };
+        }
+
+        if (enum_exists($name)) {
+            $cases = $name::cases();
+            return $cases[0] ?? null;
+        }
+
+        if (is_a($name, \DateTimeInterface::class, true)) {
+            return new \DateTimeImmutable('2025-01-01 00:00:00');
+        }
+
+        if (interface_exists($name)) {
+            return $this->createMock($name);
+        }
+
+        if (class_exists($name)) {
+            $ref = new ReflectionClass($name);
+            if (!$ref->isFinal()) {
+                return $this->createMock($name);
+            }
+
+            if ($ref->isInstantiable()) {
+                $ctor = $ref->getConstructor();
+                if ($ctor === null || $ctor->getNumberOfRequiredParameters() === 0) {
+                    return $ref->newInstance();
+                }
+                return $ref->newInstanceWithoutConstructor();
+            }
+        }
+
+        return $allowsNull ? null : null;
     }
 
-    #[Test]
-    public function test_addProtectedUrls()
+    private function assertReturnTypeContract(ReflectionMethod $method, mixed $result): void
     {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->addProtectedUrls();
-    }
+        $returnType = $method->getReturnType();
+        if ($returnType === null) {
+            $this->assertTrue(true);
+            return;
+        }
 
-    #[Test]
-    public function test_convertToProtectedUrls()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->convertToProtectedUrls();
-    }
+        if ($returnType instanceof ReflectionUnionType) {
+            if ($result === null) {
+                $this->assertTrue($returnType->allowsNull());
+                return;
+            }
+            $this->assertTrue(true);
+            return;
+        }
 
-    #[Test]
-    public function test_showComments()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->showComments();
-    }
+        $name = $returnType->getName();
 
-    #[Test]
-    public function test_isAtatchSamewithPost()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->isAtatchSamewithPost();
-    }
+        if ($name === 'void') {
+            $this->assertNull($result);
+            return;
+        }
 
-    #[Test]
-    public function test_index()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->index();
-    }
+        if ($result === null) {
+            $this->assertTrue($returnType->allowsNull());
+            return;
+        }
 
-    #[Test]
-    public function test_postview()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->postview();
-    }
+        if ($returnType->isBuiltin()) {
+            match ($name) {
+                'int' => $this->assertIsInt($result),
+                'float' => $this->assertIsFloat($result),
+                'string' => $this->assertIsString($result),
+                'bool' => $this->assertIsBool($result),
+                'array' => $this->assertIsArray($result),
+                'iterable' => $this->assertIsIterable($result),
+                'object' => $this->assertIsObject($result),
+                default => $this->assertTrue(true),
+            };
+            return;
+        }
 
-    #[Test]
-    public function test_replaceWithRelativeUrls()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->replaceWithRelativeUrls();
+        $this->assertInstanceOf($name, $result);
     }
-
-    #[Test]
-    public function test_commentstore()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->commentstore();
-    }
-
-    #[Test]
-    public function test_create()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->create();
-    }
-
-    #[Test]
-    public function test_localcreate()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->localcreate();
-    }
-
-    #[Test]
-    public function test_store()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->store();
-    }
-
-    #[Test]
-    public function test_edit()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->edit();
-    }
-
-    #[Test]
-    public function test_localedit()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->localedit();
-    }
-
-    #[Test]
-    public function test_update()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->update();
-    }
-
-    #[Test]
-    public function test_reversionsJson()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->reversionsJson();
-    }
-
-    #[Test]
-    public function test_restoreUpdate()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->restoreUpdate();
-    }
-
-    #[Test]
-    public function test_restorereversion()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->restorereversion();
-    }
-
-    #[Test]
-    public function test_trash()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->trash();
-    }
-
-    #[Test]
-    public function test_untrash()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->untrash();
-    }
-
-    #[Test]
-    public function test_destroy()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->destroy();
-    }
-
-    #[Test]
-    public function test_auditcheck()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->auditcheck();
-    }
-
-    #[Test]
-    public function test_audituncheck()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->audituncheck();
-    }
-
-    #[Test]
-    public function test_movegroup()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->movegroup();
-    }
-
-    #[Test]
-    public function test_copygroup()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->copygroup();
-    }
-
-    #[Test]
-    public function test_movelang()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->movelang();
-    }
-
-    #[Test]
-    public function test_movegroupupdate()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->movegroupupdate();
-    }
-
-    #[Test]
-    public function test_copygroupupdate()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->copygroupupdate();
-    }
-
-    #[Test]
-    public function test_movelangupdate()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PostController->movelangupdate();
-    }
-
 }

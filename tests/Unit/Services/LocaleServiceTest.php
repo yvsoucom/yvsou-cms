@@ -1,61 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\Test;
-use App\Services\LocaleService;
-
-class LocaleServiceTest extends TestCase
+final class LocaleServiceTest extends ServiceContractTestCase
 {
-    protected $LocaleService;
-
-    protected function setUp(): void
+    protected function serviceClass(): string
     {
-        parent::setUp();
-        $this->LocaleService = new LocaleService();
+        return \App\Services\LocaleService::class;
     }
-
-    #[Test]
-    public function test_setbootLocaleFromCookie()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->LocaleService->setbootLocaleFromCookie();
-    }
-
-    #[Test]
-    public function test_getlangSet()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->LocaleService->getlangSet();
-    }
-
-    #[Test]
-    public function test_getlangIdSet()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->LocaleService->getlangIdSet();
-    }
-
-    #[Test]
-    public function test_getlangID()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->LocaleService->getlangID();
-    }
-
-    #[Test]
-    public function test_getcurlang()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->LocaleService->getcurlang();
-    }
-
-    #[Test]
-    public function test_getcurlangcode()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->LocaleService->getcurlangcode();
-    }
-
 }

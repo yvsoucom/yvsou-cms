@@ -1,26 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\Test;
-use App\Services\PluginFilterManager;
-
-class PluginFilterManagerTest extends TestCase
+final class PluginFilterManagerTest extends ServiceContractTestCase
 {
-    protected $PluginFilterManager;
-
-    protected function setUp(): void
+    protected function serviceClass(): string
     {
-        parent::setUp();
-        $this->PluginFilterManager = new PluginFilterManager();
+        return \App\Services\PluginFilterManager::class;
     }
-
-    #[Test]
-    public function test_getManager()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PluginFilterManager->getManager();
-    }
-
 }

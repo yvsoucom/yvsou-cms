@@ -1,26 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\Test;
-use App\Services\CacheClearService;
-
-class CacheClearServiceTest extends TestCase
+final class CacheClearServiceTest extends ServiceContractTestCase
 {
-    protected $CacheClearService;
-
-    protected function setUp(): void
+    protected function serviceClass(): string
     {
-        parent::setUp();
-        $this->CacheClearService = new CacheClearService();
+        return \App\Services\CacheClearService::class;
     }
-
-    #[Test]
-    public function test_clearCache()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->CacheClearService->clearCache();
-    }
-
 }

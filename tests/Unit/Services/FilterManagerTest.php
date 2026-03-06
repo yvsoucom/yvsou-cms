@@ -1,33 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\Test;
-use App\Services\FilterManager;
-
-class FilterManagerTest extends TestCase
+final class FilterManagerTest extends ServiceContractTestCase
 {
-    protected $FilterManager;
-
-    protected function setUp(): void
+    protected function serviceClass(): string
     {
-        parent::setUp();
-        $this->FilterManager = new FilterManager();
+        return \App\Services\FilterManager::class;
     }
-
-    #[Test]
-    public function test_addFilter()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->FilterManager->addFilter();
-    }
-
-    #[Test]
-    public function test_applyFilters()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->FilterManager->applyFilters();
-    }
-
 }

@@ -1,19 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\Test;
-use App\Services\ConstantService;
-
-class ConstantServiceTest extends TestCase
+final class ConstantServiceTest extends ServiceContractTestCase
 {
-    protected $ConstantService;
-
-    protected function setUp(): void
+    protected function serviceClass(): string
     {
-        parent::setUp();
-        $this->ConstantService = new ConstantService();
+        return \App\Services\ConstantService::class;
     }
-
 }

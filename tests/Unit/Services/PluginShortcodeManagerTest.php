@@ -1,33 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\Test;
-use App\Services\PluginShortcodeManager;
-
-class PluginShortcodeManagerTest extends TestCase
+final class PluginShortcodeManagerTest extends ServiceContractTestCase
 {
-    protected $PluginShortcodeManager;
-
-    protected function setUp(): void
+    protected function serviceClass(): string
     {
-        parent::setUp();
-        $this->PluginShortcodeManager = new PluginShortcodeManager();
+        return \App\Services\PluginShortcodeManager::class;
     }
-
-    #[Test]
-    public function test_getManager()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PluginShortcodeManager->getManager();
-    }
-
-    #[Test]
-    public function test_render()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->PluginShortcodeManager->render();
-    }
-
 }

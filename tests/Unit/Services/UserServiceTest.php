@@ -1,19 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\Test;
-use App\Services\UserService;
-
-class UserServiceTest extends TestCase
+final class UserServiceTest extends ServiceContractTestCase
 {
-    protected $UserService;
-
-    protected function setUp(): void
+    protected function serviceClass(): string
     {
-        parent::setUp();
-        $this->UserService = new UserService();
+        return \App\Services\UserService::class;
     }
-
 }

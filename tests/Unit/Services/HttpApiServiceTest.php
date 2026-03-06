@@ -1,26 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\Test;
-use App\Services\HttpApiService;
-
-class HttpApiServiceTest extends TestCase
+final class HttpApiServiceTest extends ServiceContractTestCase
 {
-    protected $HttpApiService;
-
-    protected function setUp(): void
+    protected function serviceClass(): string
     {
-        parent::setUp();
-        $this->HttpApiService = new HttpApiService();
+        return \App\Services\HttpApiService::class;
     }
-
-    #[Test]
-    public function test_callRemote()
-    {
-        $this->markTestIncomplete('Auto generated');
-        // $this->HttpApiService->callRemote();
-    }
-
 }
