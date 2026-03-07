@@ -34,7 +34,7 @@ class Kernel extends ConsoleKernel
     /**
      * The Artisan commands provided by your application.
      */
-    protected array $commands = [
+    protected $commands = [
         \App\Console\Commands\StartWebSocket::class, // your WS command
     ];
 
