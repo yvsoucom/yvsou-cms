@@ -2,7 +2,7 @@
 /**
  * SPDX-FileCopyrightText: (c) 2025  Hangzhou Domain Zones Technology Co., Ltd.
  * SPDX-FileContributor: Lican Huang
- * @created 2025-09-05
+ * @created 2026-05-05
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  * License: Dual Licensed – GPLv3 or Commercial
@@ -23,39 +23,40 @@
  * Contact: yvsoucom@gmail.com
  * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
  */
+// app/Http/Middleware/CheckScope.php
 
-namespace App\Console;
+namespace App\Http\Middleware;
 
-use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Closure;
+use App\Http\Controllers\Api\Support\ApiTokenService;
 
-class Kernel extends ConsoleKernel
+class CheckScope
 {
-    /**
-     * The Artisan commands provided by your application.
-     */
-    protected $commands = [
-        \App\Console\Commands\StartWebSocket::class, // your WS command
-    ];
-
-    /**
-     * Define the application's command schedule.
-     */
-    protected function schedule(Schedule $schedule): void
+    public function handle($request, Closure $next, $scope)
     {
-        // Example: scheduled cleanup
-        // $schedule->command('tmp:cleanup')->daily();
-        $schedule->command('tmp:cleanup')->dailyAt('02:00');
+        $token = $request->bearerToken();
 
-        $schedule->command('tokens:prune')->daily();
+        if (!$token) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
 
+        $service = app(ApiTokenService::class);
+
+        $user = $service->resolveUser($token);
+
+        if (!$user) {
+            return response()->json(['error' => 'Invalid token'], 401);
+        }
+
+        // assuming you store scopes in token payload or DB
+        $scopes = $service->getScopes($token); // you must implement this
+
+        if (!in_array($scope, $scopes, true)) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+
+        auth()->setUser($user);
+
+        return $next($request);
     }
-
-    /**
-     * Register the commands for the application.
-     */
-    protected function commands(): void
-    {
-        $this->load(__DIR__ . '/Commands');
-    }
-}
+} 

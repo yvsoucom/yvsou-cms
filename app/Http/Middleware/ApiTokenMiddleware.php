@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api\Middleware;
+namespace App\Http\Middleware;
 
 use App\Http\Controllers\Api\Support\ApiTokenService;
 use Closure;

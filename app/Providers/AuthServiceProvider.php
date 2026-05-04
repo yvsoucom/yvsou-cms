@@ -2,7 +2,7 @@
 /**
  * SPDX-FileCopyrightText: (c) 2025  Hangzhou Domain Zones Technology Co., Ltd.
  * SPDX-FileContributor: Lican Huang
- * @created 2025-09-05
+ * @created 2026-05-05
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  * License: Dual Licensed – GPLv3 or Commercial
@@ -23,39 +23,31 @@
  * Contact: yvsoucom@gmail.com
  * GPL License: https://www.gnu.org/licenses/gpl-3.0.html
  */
+// app/Providers/AuthServiceProvider.php
 
-namespace App\Console;
 
-use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
-class Kernel extends ConsoleKernel
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Auth;
+use App\Auth\Guards\ApiTokenGuard;
+use App\Services\ApiTokenService;
+
+
+class AuthServiceProvider extends ServiceProvider
 {
-    /**
-     * The Artisan commands provided by your application.
-     */
-    protected $commands = [
-        \App\Console\Commands\StartWebSocket::class, // your WS command
-    ];
-
-    /**
-     * Define the application's command schedule.
-     */
-    protected function schedule(Schedule $schedule): void
+    public function register(): void
     {
-        // Example: scheduled cleanup
-        // $schedule->command('tmp:cleanup')->daily();
-        $schedule->command('tmp:cleanup')->dailyAt('02:00');
-
-        $schedule->command('tokens:prune')->daily();
-
+        //
     }
 
-    /**
-     * Register the commands for the application.
-     */
-    protected function commands(): void
+    public function boot(): void
     {
-        $this->load(__DIR__ . '/Commands');
+        Auth::extend('api-token', function ($app) {
+            return new ApiTokenGuard(
+                $app->make(ApiTokenService::class)
+            );
+        });
     }
 }

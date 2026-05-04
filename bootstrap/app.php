@@ -29,17 +29,18 @@ $app = Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         // Register global middleware
-        
+    
         $middleware->append(EncryptCookies::class);
         $middleware->append(AddQueuedCookiesToResponse::class);
         $middleware->append(StartSession::class);
         $middleware->append(\App\Http\Middleware\SetLocale::class);
-    
+
         // ✅ Route middleware (used by name in routes)
     
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
             'prevent.reinstall' => PreventReinstall::class,
+            'scope' => \App\Http\Middleware\CheckScope::class,
         ]);
 
     })

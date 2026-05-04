@@ -74,8 +74,13 @@ class UserController extends Controller
             if ($user === null || !Hash::check($credentials['password'], $user->password)) {
                 return $this->error('Invalid credentials', ['email' => ['Authentication failed']], 401);
             }
-
-            $token = $this->tokenService->issue($user);
+ 
+            $token = $this->tokenService->issue(
+                $user,
+                'admin',
+                ['users.read', 'users.write'],
+                'web-login'
+            );
 
             return $this->success([
                 'token_type' => 'Bearer',
