@@ -25,10 +25,10 @@
 */
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\CommentController;
-use App\Http\Controllers\Api\DomainController;
-use App\Http\Controllers\Api\PostController;
-use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\V1\CommentController;
+use App\Http\Controllers\Api\V1\DomainController;
+use App\Http\Controllers\Api\V1\PostController;
+use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Middleware\ApiTokenMiddleware;
 
 /*
@@ -39,7 +39,7 @@ use App\Http\Middleware\ApiTokenMiddleware;
 | routes/api.php already has /api prefix automatically.
 | So we ONLY use /v1 here.
 */
-Route::prefix('v1')->group(function () {
+Route::prefix('api/v1')->group(function () {
 
     // =========================
     // Public endpoints
@@ -82,4 +82,7 @@ Route::prefix('v1')->group(function () {
         Route::put('/domains/{id}', [DomainController::class, 'update']);
         Route::delete('/domains/{id}', [DomainController::class, 'destroy']);
     });
+    foreach (glob(base_path('plugins/*/routes/api.php')) as $file) {
+        require $file;
+    }
 });

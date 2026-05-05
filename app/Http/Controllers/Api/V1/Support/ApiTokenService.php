@@ -27,7 +27,7 @@
  
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api\Support;
+namespace App\Http\Controllers\Api\V1\Support;
 
 use App\Models\User;
 use Illuminate\Support\Str;

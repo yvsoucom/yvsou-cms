@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\v1;
 
-use App\Http\Controllers\Api\Concerns\ApiResponse;
-use App\Http\Controllers\Api\Requests\StoreDomainRequest;
-use App\Http\Controllers\Api\Requests\UpdateDomainRequest;
+use App\Support\Api\ApiResponse;
+use App\Http\Requests\Api\V1\StoreDomainRequest;
+use App\Http\Requests\Api\V1\UpdateDomainRequest;
 use App\Http\Controllers\Controller;
 use App\Models\DomainManager;
 use Illuminate\Http\JsonResponse;
@@ -14,15 +14,14 @@ use Throwable;
 
 class DomainController extends Controller
 {
-    use ApiResponse;
-
+    
     public function index(): JsonResponse
     {
         try {
             $domains = DomainManager::query()->paginate(20);
-            return $this->success($domains, 'Domains fetched');
+            return ApiResponse::success($domains, 'Domains fetched');
         } catch (Throwable $e) {
-            return $this->error('Failed to fetch domains', ['exception' => $e->getMessage()], 500);
+            return ApiResponse::error('Failed to fetch domains', ['exception' => $e->getMessage()], 500);
         }
     }
 
@@ -31,12 +30,12 @@ class DomainController extends Controller
         try {
             $domain = DomainManager::query()->find($id);
             if ($domain === null) {
-                return $this->error('Domain not found', ['id' => $id], 404);
+                return ApiResponse::error('Domain not found', ['id' => $id], 404);
             }
 
-            return $this->success($domain, 'Domain fetched');
+            return ApiResponse::success($domain, 'Domain fetched');
         } catch (Throwable $e) {
-            return $this->error('Failed to fetch domain', ['exception' => $e->getMessage()], 500);
+            return ApiResponse::error('Failed to fetch domain', ['exception' => $e->getMessage()], 500);
         }
     }
 
@@ -49,9 +48,9 @@ class DomainController extends Controller
             $payload['m_type'] = $payload['m_type'] ?? 'c';
 
             $domain = DomainManager::query()->create($payload);
-            return $this->success($domain, 'Domain created', 201);
+            return ApiResponse::success($domain, 'Domain created', 201);
         } catch (Throwable $e) {
-            return $this->error('Failed to create domain', ['exception' => $e->getMessage()], 500);
+            return ApiResponse::error('Failed to create domain', ['exception' => $e->getMessage()], 500);
         }
     }
 
@@ -60,15 +59,15 @@ class DomainController extends Controller
         try {
             $domain = DomainManager::query()->find($id);
             if ($domain === null) {
-                return $this->error('Domain not found', ['id' => $id], 404);
+                return ApiResponse::error('Domain not found', ['id' => $id], 404);
             }
 
             $domain->fill($request->validated());
             $domain->save();
 
-            return $this->success($domain->fresh(), 'Domain updated');
+            return ApiResponse::success($domain->fresh(), 'Domain updated');
         } catch (Throwable $e) {
-            return $this->error('Failed to update domain', ['exception' => $e->getMessage()], 500);
+            return ApiResponse::error('Failed to update domain', ['exception' => $e->getMessage()], 500);
         }
     }
 
@@ -77,13 +76,13 @@ class DomainController extends Controller
         try {
             $domain = DomainManager::query()->find($id);
             if ($domain === null) {
-                return $this->error('Domain not found', ['id' => $id], 404);
+                return ApiResponse::error('Domain not found', ['id' => $id], 404);
             }
 
             $domain->delete();
-            return $this->success(['id' => $id], 'Domain deleted');
+            return ApiResponse::success(['id' => $id], 'Domain deleted');
         } catch (Throwable $e) {
-            return $this->error('Failed to delete domain', ['exception' => $e->getMessage()], 500);
+            return ApiResponse::error('Failed to delete domain', ['exception' => $e->getMessage()], 500);
         }
     }
 }

@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\v1;
 
-use App\Http\Controllers\Api\Concerns\ApiResponse;
-use App\Http\Controllers\Api\Requests\StorePostRequest;
-use App\Http\Controllers\Api\Requests\UpdatePostRequest;
+use App\Support\Api\ApiResponse;
+
+use App\Http\Requests\Api\V1\StorePostRequest;
+use App\Http\Requests\Api\V1\UpdatePostRequest;
 use App\Http\Controllers\Controller;
 use App\Models\DomainPost;
 use Illuminate\Http\JsonResponse;
@@ -14,15 +15,13 @@ use Throwable;
 
 class PostController extends Controller
 {
-    use ApiResponse;
-
     public function index(): JsonResponse
     {
         try {
             $posts = DomainPost::query()->paginate(20);
-            return $this->success($posts, 'Posts fetched');
+            return ApiResponse::success($posts, 'Posts fetched');
         } catch (Throwable $e) {
-            return $this->error('Failed to fetch posts', ['exception' => $e->getMessage()], 500);
+            return ApiResponse::error('Failed to fetch posts', ['exception' => $e->getMessage()], 500);
         }
     }
 
@@ -31,12 +30,12 @@ class PostController extends Controller
         try {
             $post = DomainPost::query()->find($id);
             if ($post === null) {
-                return $this->error('Post not found', ['id' => $id], 404);
+                return ApiResponse::error('Post not found', ['id' => $id], 404);
             }
 
-            return $this->success($post, 'Post fetched');
+            return ApiResponse::success($post, 'Post fetched');
         } catch (Throwable $e) {
-            return $this->error('Failed to fetch post', ['exception' => $e->getMessage()], 500);
+            return ApiResponse::error('Failed to fetch post', ['exception' => $e->getMessage()], 500);
         }
     }
 
@@ -51,9 +50,9 @@ class PostController extends Controller
 
             $post = DomainPost::query()->create($payload);
 
-            return $this->success($post, 'Post created', 201);
+            return ApiResponse::success($post, 'Post created', 201);
         } catch (Throwable $e) {
-            return $this->error('Failed to create post', ['exception' => $e->getMessage()], 500);
+            return ApiResponse::error('Failed to create post', ['exception' => $e->getMessage()], 500);
         }
     }
 
@@ -62,7 +61,7 @@ class PostController extends Controller
         try {
             $post = DomainPost::query()->find($id);
             if ($post === null) {
-                return $this->error('Post not found', ['id' => $id], 404);
+                return ApiResponse::error('Post not found', ['id' => $id], 404);
             }
 
             $payload = $request->validated();
@@ -70,9 +69,9 @@ class PostController extends Controller
             $post->fill($payload);
             $post->save();
 
-            return $this->success($post->fresh(), 'Post updated');
+            return ApiResponse::success($post->fresh(), 'Post updated');
         } catch (Throwable $e) {
-            return $this->error('Failed to update post', ['exception' => $e->getMessage()], 500);
+            return ApiResponse::error('Failed to update post', ['exception' => $e->getMessage()], 500);
         }
     }
 
@@ -81,13 +80,13 @@ class PostController extends Controller
         try {
             $post = DomainPost::query()->find($id);
             if ($post === null) {
-                return $this->error('Post not found', ['id' => $id], 404);
+                return ApiResponse::error('Post not found', ['id' => $id], 404);
             }
 
             $post->delete();
-            return $this->success(['id' => $id], 'Post deleted');
+            return ApiResponse::success(['id' => $id], 'Post deleted');
         } catch (Throwable $e) {
-            return $this->error('Failed to delete post', ['exception' => $e->getMessage()], 500);
+            return ApiResponse::error('Failed to delete post', ['exception' => $e->getMessage()], 500);
         }
     }
 }

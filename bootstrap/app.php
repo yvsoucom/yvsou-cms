@@ -26,6 +26,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
         web: __DIR__ . '/../routes/web.php',
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
+        api: __DIR__.'/../routes/api_v1.php',
     )
     ->withMiddleware(function (Middleware $middleware) {
         // Register global middleware

@@ -28,7 +28,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Http\Controllers\Api\Support\ApiTokenService;
+use App\Http\Controllers\Api\V1\Support\ApiTokenService;
 
 class CheckScope
 {
